@@ -190,9 +190,6 @@ const showAlertPlaceholder = (pAlertType: 'hidden' | 'danger' | 'success' | 'war
                             {{ t("views.warehouse.table.cols.name") }}
                         </Table.Th>
                         <Table.Th class="whitespace-nowrap">
-                            {{ t("views.warehouse.table.cols.is_main") }}
-                        </Table.Th>
-                        <Table.Th class="whitespace-nowrap">
                             {{ t("views.warehouse.table.cols.status") }}
                         </Table.Th>
                         <Table.Th class="whitespace-nowrap"></Table.Th>
