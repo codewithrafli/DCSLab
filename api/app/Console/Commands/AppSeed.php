@@ -135,6 +135,8 @@ class AppSeed extends Command
         $progressBar->advance();
         $this->runBranchTableSeeder(5, 0);
         $progressBar->advance();
+        $this->runWarehouseTableSeeder(5, 0);
+        $progressBar->advance();
         $this->runProductCategoryTableSeeder(5, 0);
         $progressBar->advance();
         $this->runBrandTableSeeder(5, 0);
