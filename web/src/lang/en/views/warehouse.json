@@ -35,7 +35,7 @@
         "status": "Status"
     },
     "alert": {
-        "delete_Warehouse": {
+        "delete_warehouse": {
             "title": "Delete Warehouse",
             "content": "Warehouse Deleted Successfully"
         }

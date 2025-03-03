@@ -26,6 +26,7 @@ import BranchEdit from "../pages/branch/BranchEdit.vue";
 import WarehouseIndex from "@/pages/warehouse/WarehouseIndex.vue";
 import WarehouseList from "@/pages/warehouse/WarehouseList.vue";
 import WarehouseCreate from "@/pages/warehouse/WarehouseCreate.vue";
+import WarehouseEdit from "@/pages/warehouse/WarehouseEdit.vue";
 
 export default [
     {
@@ -149,7 +150,6 @@ export default [
                             }
                         ]
                     },
-                    // warehouse
                     {
                         path: "/dashboard/company/warehouse",
                         name: "side-menu-company-warehouse",
@@ -172,6 +172,14 @@ export default [
                                     remember: true,
                                 },
                             },
+                            {
+                                path: "/dashboard/company/warehouse/edit/:ulid",
+                                name: "side-menu-company-warehouse-edit",
+                                component: WarehouseEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
                         ]
 
                     }

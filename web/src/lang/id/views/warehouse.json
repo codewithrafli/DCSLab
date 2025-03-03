@@ -35,7 +35,7 @@
         "status": "Status"
     },
     "alert": {
-        "delete_branch": {
+        "delete_warehouse": {
             "title": "Hapus Gudang",
             "content": "Gudang Berhasil Dihapus"
         }
