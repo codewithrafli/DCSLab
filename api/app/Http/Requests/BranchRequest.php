@@ -69,7 +69,7 @@ class BranchRequest extends FormRequest
 
                     'search' => ['nullable', 'string'],
                     'is_main' => ['nullable', 'boolean'],
-                    'status' => ['nullable', 'integer', 'in:' . implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['required_if:paginate,true', 'numeric', 'min:1'],

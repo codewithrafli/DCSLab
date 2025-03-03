@@ -18,7 +18,9 @@ class BranchActions
     use CacheHelper;
     use LoggerHelper;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function create(array $data): Branch
     {
@@ -124,7 +126,7 @@ class BranchActions
 
         try {
             $cacheSearch = empty($search) ? '[empty]' : $search;
-            $cacheKey = 'readAny_' . $companyId . '_' . $cacheSearch . '-' . $paginate . '-' . $page . '-' . $perPage;
+            $cacheKey = 'readAny_'.$companyId.'_'.$cacheSearch.'-'.$paginate.'-'.$page.'-'.$perPage;
             if ($useCache) {
                 $cacheResult = $this->readFromCache($cacheKey);
 
@@ -285,7 +287,7 @@ class BranchActions
             $tryCount = 0;
             do {
                 $count = $company->branches()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'BC' . str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'BC'.str_pad($count, 3, '0', STR_PAD_LEFT);
                 $tryCount++;
             } while (! $this->isUniqueCode($companyId, $code, $exceptId));
 

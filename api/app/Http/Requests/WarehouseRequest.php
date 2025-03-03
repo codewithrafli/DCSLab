@@ -68,7 +68,7 @@ class WarehouseRequest extends FormRequest
                     'search' => ['nullable', 'string'],
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
                     'branch_id' => ['nullable', 'integer', 'bail', new IsValidBranch($this->company_id, false)],
-                    'status' => ['nullable', 'integer', 'in:' . implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],

@@ -18,7 +18,9 @@ class CompanyActions
     use CacheHelper;
     use LoggerHelper;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function create(User $user, array $data): Company
     {
@@ -117,7 +119,7 @@ class CompanyActions
         $recordsCount = 0;
 
         try {
-            $cacheKey = 'readAny_' . $user->id . '-' . (empty($search) ? '[empty]' : $search) . '-' . $paginate . '-' . $page . '-' . $perPage;
+            $cacheKey = 'readAny_'.$user->id.'-'.(empty($search) ? '[empty]' : $search).'-'.$paginate.'-'.$page.'-'.$perPage;
             if ($useCache === true) {
                 $cacheResult = $this->readFromCache($cacheKey);
 
@@ -199,7 +201,7 @@ class CompanyActions
 
                 $orders = $query->getQuery()->orders;
                 $query->reorder();
-                $query->orderByRaw('FIELD(id, ' . implode(',', $includeIds) . ') desc');
+                $query->orderByRaw('FIELD(id, '.implode(',', $includeIds).') desc');
                 if (! empty($orders)) {
                     foreach ($orders as $order) {
                         $query->orderBy($order['column'], $order['direction']);
@@ -313,9 +315,9 @@ class CompanyActions
             $tryCount = 0;
             do {
                 $count = $user->companies()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'CP' . str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'CP'.str_pad($count, 3, '0', STR_PAD_LEFT);
                 $tryCount++;
-            } while (!$this->isUniqueCode($user, $code, $exceptId));
+            } while (! $this->isUniqueCode($user, $code, $exceptId));
 
             return $code;
         } else {
