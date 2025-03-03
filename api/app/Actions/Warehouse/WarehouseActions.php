@@ -169,7 +169,7 @@ class WarehouseActions
 
     public function read(Warehouse $warehouse): Warehouse
     {
-        return $warehouse->with('company', 'branch')->first();
+        return $warehouse->load('company', 'branch');
     }
 
     public function getAllActiveWarehouse(
