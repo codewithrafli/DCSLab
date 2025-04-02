@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Database\Seeders\BranchTableSeeder;
 use Database\Seeders\BrandTableSeeder;
 use Database\Seeders\CompanyTableSeeder;
+use Database\Seeders\CustomerGroupTableSeeder;
 use Database\Seeders\ProductCategoryTableSeeder;
 use Database\Seeders\ProductTableSeeder;
 use Database\Seeders\RoleTableSeeder;
@@ -109,6 +110,10 @@ class AppSeed extends Command
                 case 'producttableseeder':
                     $this->runProductTableSeederInteractive();
                     break;
+                case 'customergroup':
+                case 'customergrouptableseeder':
+                    $this->runCustomerTableSeederInteractive();
+                    break;
                     // case 'supplier':
                     // case 'suppliertableseeder':
                     //     $this->runSupplierTableSeederInteractive();
@@ -144,6 +149,8 @@ class AppSeed extends Command
         $this->runUnitTableSeeder(5, 0);
         $progressBar->advance();
         $this->runProductTableSeeder(5, 0);
+        $progressBar->advance();
+        $this->runCustomerGroupTableSeeder(5, 0);
         $progressBar->advance();
         // $this->runSupplierTableSeeder(5, 0);
         // $progressBar->advance();
@@ -270,6 +277,12 @@ class AppSeed extends Command
     {
         $seeder = new ProductTableSeeder();
         $seeder->callWith(ProductTableSeeder::class, [$productPerCompanies, $onlyThisCompanyId]);
+    }
+
+    private function runCustomerGroupTableSeeder($customerGroupPerCompanies, $onlyThisCompanyId)
+    {
+        $seeder = new CustomerGroupTableSeeder();
+        $seeder->callWith(CustomerGroupTableSeeder::class, [$customerGroupPerCompanies, $onlyThisCompanyId]);
     }
 
     // private function runSupplierTableSeeder($supplierPerCompanies, $onlyThisCompanyId)

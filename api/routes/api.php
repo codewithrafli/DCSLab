@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
@@ -53,6 +54,13 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'product', 'as' => '.product'], function () {
                 Route::get('read', [ProductController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{product:ulid}', [ProductController::class, 'read'])->name('.read');
+            });
+        });
+
+        Route::group(['prefix' => 'customer', 'as' => '.customer'], function () {
+            Route::group(['prefix' => 'customer_group', 'as' => '.customer_group'], function () {
+                Route::get('read', [CustomerGroupController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{customer_group:ulid}', [CustomerGroupController::class, 'read'])->name('.read');
             });
         });
 
