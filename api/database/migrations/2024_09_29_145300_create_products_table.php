@@ -14,19 +14,19 @@ return new class extends Migration
 
             $table->foreignId('company_id')->references('id')->on('companies');
             $table->string('code');
-            $table->boolean('is_factory_code');
+            $table->boolean('is_manufacturer_sku');
             $table->foreignId('category_id')->references('id')->on('product_categories');
             $table->foreignId('brand_id')->nullable()->references('id')->on('brands');
             $table->string('name');
             $table->string('slug');
-            $table->boolean('taxable_supply')->default(false);
-            $table->integer('standard_rated_supply', 30, 8)->default(0);
-            $table->boolean('price_include_vat')->default(false);
+            $table->boolean('is_taxable')->default(false);
+            $table->decimal('vat_rate', 30, 8)->default(0);
+            $table->boolean('is_price_include_vat')->default(false);
+            $table->boolean('is_use_serial_number')->default(false);
+            $table->boolean('is_expirable')->default(false);
             $table->integer('point')->default(0);
-            $table->boolean('use_serial_number')->default(false);
-            $table->boolean('has_expiry_date')->default(false);
-            $table->integer('type');
             $table->string('remarks')->nullable();
+            $table->integer('type');
             $table->integer('status');
 
             $table->unsignedBigInteger('created_by')->default(0);

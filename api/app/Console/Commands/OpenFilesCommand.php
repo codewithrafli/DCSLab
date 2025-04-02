@@ -313,8 +313,8 @@ class OpenFilesCommand extends Command
 
     protected function openInCodeEditor($filePath)
     {
-        // $command = 'code '.escapeshellarg($filePath);
-        $command = 'cursor '.escapeshellarg($filePath);
+        $command = 'code '.escapeshellarg($filePath);
+        // $command = 'cursor '.escapeshellarg($filePath);
         exec($command);
     }
 }

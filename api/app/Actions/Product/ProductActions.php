@@ -30,19 +30,19 @@ class ProductActions
             $product = new Product();
             $product->company_id = $data['company_id'];
             $product->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
-            $product->is_factory_code = $data['is_factory_code'];
+            $product->is_manufacturer_sku = $data['is_manufacturer_sku'];
             $product->category_id = $data['category_id'];
             $product->brand_id = $data['brand_id'];
             $product->name = $data['name'];
             $product->slug = $data['slug'];
-            $product->taxable_supply = $data['taxable_supply'];
-            $product->standard_rated_supply = $data['standard_rated_supply'];
-            $product->price_include_vat = $data['price_include_vat'];
+            $product->is_taxable = $data['is_taxable'];
+            $product->vat_rate = $data['vat_rate'];
+            $product->is_price_include_vat = $data['is_price_include_vat'];
+            $product->is_use_serial_number = $data['is_use_serial_number'];
+            $product->is_expirable = $data['is_expirable'];
             $product->point = $data['point'];
-            $product->use_serial_number = $data['use_serial_number'];
-            $product->has_expiry_date = $data['has_expiry_date'];
-            $product->type = $data['type'];
             $product->remarks = $data['remarks'];
+            $product->type = $data['type'];
             $product->status = $data['status'];
             $product->save();
 
@@ -224,19 +224,19 @@ class ProductActions
 
         try {
             $product->code = $this->generateUniqueCode($product->company_id, $data['code'], $product->id);
-            $product->is_factory_code = $data['is_factory_code'];
+            $product->is_manufacturer_sku = $data['is_manufacturer_sku'];
             $product->category_id = $data['category_id'];
             $product->brand_id = $data['brand_id'];
             $product->name = $data['name'];
             $product->slug = $data['slug'];
-            $product->taxable_supply = $data['taxable_supply'];
-            $product->standard_rated_supply = $data['standard_rated_supply'];
-            $product->price_include_vat = $data['price_include_vat'];
+            $product->is_taxable = $data['is_taxable'];
+            $product->vat_rate = $data['vat_rate'];
+            $product->is_price_include_vat = $data['is_price_include_vat'];
+            $product->is_use_serial_number = $data['is_use_serial_number'];
+            $product->is_expirable = $data['is_expirable'];
             $product->point = $data['point'];
-            $product->use_serial_number = $data['use_serial_number'];
-            $product->has_expiry_date = $data['has_expiry_date'];
-            $product->type = $data['type'];
             $product->remarks = $data['remarks'];
+            $product->type = $data['type'];
             $product->status = $data['status'];
             $product->save();
 
