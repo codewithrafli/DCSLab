@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Vinkla\Hashids\Facades\Hashids;
+
+class CustomerResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => Hashids::encode($this->id),
+            'ulid' => $this->ulid,
+            'company' => new CompanyResource($this->company),
+            'user_id' => new UserResource($this->user),
+            'customer_group' => new CustomerGroupResource($this->customer_group),
+            'code' => $this->code,
+            'is_active' => $this->is_active,
+            'name' => $this->name,
+            'zone' => $this->zone,
+            'max_open_invoice' => $this->max_open_invoice,
+            'max_outstanding_invoice' => $this->max_outstanding_invoice,
+            'max_invoice_age' => $this->max_invoice_age,
+            'payment_term_type' => $this->payment_term_type,
+            'payment_term' => $this->payment_term,
+            'taxable_enterprise' => $this->taxable_enterprise,
+            'tax_id' => $this->tax_id,
+            'status' => $this->status,
+            'remarks' => $this->remarks,
+        ];
+    }
+}

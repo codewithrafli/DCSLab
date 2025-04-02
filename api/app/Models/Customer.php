@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentTermType;
+use App\Enums\RecordStatus;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomerGroup extends Model
+class Customer extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -15,33 +17,28 @@ class CustomerGroup extends Model
 
     protected $fillable = [
         'company_id',
+        'customer_id',
+        'user_id',
         'code',
+        'is_member',
         'name',
+        'zone',
         'max_open_invoice',
         'max_outstanding_invoice',
         'max_invoice_age',
         'payment_term_type',
         'payment_term',
-        'selling_point',
-        'selling_point_multiple',
-        'sell_at_cost',
-        'price_markup_percent',
-        'price_markup_nominal',
-        'price_markdown_percent',
-        'price_markdown_nominal',
-        'round_on',
-        'round_digit',
+        'taxable_enterprise',
+        'tax_id',
+        'status',
         'remarks',
     ];
 
     protected $casts = [
-        'max_outstanding_invoice' => 'decimal:8',
-        'selling_point' => 'decimal:8',
-        'selling_point_multiple' => 'decimal:8',
-        'price_markup_percent' => 'decimal:8',
-        'price_markup_nominal' => 'decimal:8',
-        'price_markdown_percent' => 'decimal:8',
-        'price_markdown_nominal' => 'decimal:8',
+        'is_member' => 'boolean',
+        'payment_term_type' => PaymentTermType::class,
+        'taxable_enterprise' => 'boolean',
+        'status' => RecordStatus::class,
     ];
 
     public function company()
@@ -49,15 +46,21 @@ class CustomerGroup extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function customers()
+    public function user()
     {
-        return $this->hasMany(Customer::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
             ->orWhere('name', 'like', '%'.$search.'%')
+            ->orWhere('zone', 'like', '%'.$search.'%')
             ->orWhere('remarks', 'like', '%'.$search.'%');
     }
 }

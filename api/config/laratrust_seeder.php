@@ -39,6 +39,7 @@ return [
             'unit' => 'c,r,ra,u,d',
             'product' => 'c,r,ra,u,d',
             'customer_group' => 'c,r,ra,u,d',
+            'customer' => 'c,r,ra,u,d',
             'supplier' => 'c,r,ra,u,d',
         ],
         /* #endregion */
