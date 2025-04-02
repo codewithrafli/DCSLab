@@ -17,11 +17,12 @@ class Product extends Model
 
     protected $fillable = [
         'company_id',
-        'product_category_id',
-        'brand_id',
         'code',
+        'is_factory_code',
+        'category_id',
+        'brand_id',
         'name',
-        'product_type',
+        'slug',
         'taxable_supply',
         'standard_rated_supply',
         'price_include_vat',
@@ -36,7 +37,9 @@ class Product extends Model
     protected function casts(): array
     {
         return [
+            'is_factory_code' => 'boolean',
             'taxable_supply' => 'boolean',
+            'standard_rated_supply' => 'decimal:8',
             'price_include_vat' => 'boolean',
             'use_serial_number' => 'boolean',
             'has_expiry_date' => 'boolean',
@@ -47,17 +50,17 @@ class Product extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class)->withTrashed();
     }
 
-    public function productCategory()
+    public function category()
     {
-        return $this->belongsTo(ProductCategory::class);
+        return $this->belongsTo(ProductCategory::class, 'category_id')->withTrashed();
     }
 
     public function brand()
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsTo(Brand::class)->withTrashed();
     }
 
     public function productUnits()

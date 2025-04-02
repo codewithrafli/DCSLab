@@ -29,19 +29,21 @@ class ProductActions
         try {
             $product = new Product();
             $product->company_id = $data['company_id'];
-            $product->product_category_id = $data['product_category_id'];
-            $product->brand_id = $data['brand_id'];
             $product->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
+            $product->is_factory_code = $data['is_factory_code'];
+            $product->category_id = $data['category_id'];
+            $product->brand_id = $data['brand_id'];
             $product->name = $data['name'];
-            $product->product_type = $data['product_type'];
+            $product->slug = $data['slug'];
             $product->taxable_supply = $data['taxable_supply'];
             $product->standard_rated_supply = $data['standard_rated_supply'];
             $product->price_include_vat = $data['price_include_vat'];
             $product->point = $data['point'];
             $product->use_serial_number = $data['use_serial_number'];
             $product->has_expiry_date = $data['has_expiry_date'];
-            $product->status = $data['status'];
+            $product->type = $data['type'];
             $product->remarks = $data['remarks'];
+            $product->status = $data['status'];
             $product->save();
 
             $this->saveProductUnit($product, $data['product_units']);
@@ -172,7 +174,6 @@ class ProductActions
     }
 
     public function getAllActiveProduct(
-        ?array $with,
         ?bool $withTrashed,
 
         ?string $search,
@@ -222,19 +223,21 @@ class ProductActions
         $timer_start = microtime(true);
 
         try {
-            $product->product_category_id = $data['product_category_id'];
-            $product->brand_id = $data['brand_id'];
             $product->code = $this->generateUniqueCode($product->company_id, $data['code'], $product->id);
+            $product->is_factory_code = $data['is_factory_code'];
+            $product->category_id = $data['category_id'];
+            $product->brand_id = $data['brand_id'];
             $product->name = $data['name'];
-            $product->product_type = $data['product_type'];
+            $product->slug = $data['slug'];
             $product->taxable_supply = $data['taxable_supply'];
             $product->standard_rated_supply = $data['standard_rated_supply'];
             $product->price_include_vat = $data['price_include_vat'];
             $product->point = $data['point'];
             $product->use_serial_number = $data['use_serial_number'];
             $product->has_expiry_date = $data['has_expiry_date'];
-            $product->status = $data['status'];
+            $product->type = $data['type'];
             $product->remarks = $data['remarks'];
+            $product->status = $data['status'];
             $product->save();
 
             $this->updateProductUnit($product, $data['deleted_product_unit_ids'], $data['product_units']);
@@ -274,14 +277,18 @@ class ProductActions
                     'remarks' => $productUnit['remarks'],
                 ], false);
             } else {
-                $productUnitActions->update($productUnit['id'], [
-                    'unit_id' => $productUnit['unit_id'],
-                    'code' => $productUnit['code'],
-                    'is_base' => $productUnit['is_base'],
-                    'conversion_value' => $productUnit['conversion_value'],
-                    'is_primary_unit' => $productUnit['is_primary_unit'],
-                    'remarks' => $productUnit['remarks'],
-                ], false);
+                $productUnitActions->update(
+                    $productUnit['id'],
+                    [
+                        'unit_id' => $productUnit['unit_id'],
+                        'code' => $productUnit['code'],
+                        'is_base' => $productUnit['is_base'],
+                        'conversion_value' => $productUnit['conversion_value'],
+                        'is_primary_unit' => $productUnit['is_primary_unit'],
+                        'remarks' => $productUnit['remarks'],
+                    ],
+                    false
+                );
             }
         }
     }
@@ -318,7 +325,7 @@ class ProductActions
 
             $tryCount = 0;
             do {
-                $count = $company->products()->withTrashed()->count() + 1 + $tryCount;
+                $count = $company->products()->count() + 1 + $tryCount;
                 $code = 'PDT'.str_pad($count, 3, '0', STR_PAD_LEFT);
                 $tryCount++;
             } while (! $this->isUniqueCode($companyId, $code, $exceptId));

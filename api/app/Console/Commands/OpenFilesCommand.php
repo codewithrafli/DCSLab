@@ -58,7 +58,7 @@ class OpenFilesCommand extends Command
                 continue;
             } else {
                 $this->info("Opening: {$migration}");
-                $this->openInVSCode($migration);
+                $this->openInCodeEditor($migration);
             }
         }
     }
@@ -73,7 +73,7 @@ class OpenFilesCommand extends Command
             return;
         } else {
             $this->info("Opening: {$modelPath}");
-            $this->openInVSCode($modelPath);
+            $this->openInCodeEditor($modelPath);
         }
     }
 
@@ -87,7 +87,7 @@ class OpenFilesCommand extends Command
             return;
         } else {
             $this->info("Opening: {$factoryPath}");
-            $this->openInVSCode($factoryPath);
+            $this->openInCodeEditor($factoryPath);
         }
     }
 
@@ -101,7 +101,7 @@ class OpenFilesCommand extends Command
             return;
         } else {
             $this->info("Opening: {$seederPath}");
-            $this->openInVSCode($seederPath);
+            $this->openInCodeEditor($seederPath);
         }
     }
 
@@ -113,7 +113,7 @@ class OpenFilesCommand extends Command
             $this->error("Seeder file not found: {$path}");
         } else {
             $this->info("Opening: {$path}");
-            $this->openInVSCode($path);
+            $this->openInCodeEditor($path);
         }
     }
 
@@ -127,7 +127,7 @@ class OpenFilesCommand extends Command
             return;
         } else {
             $this->info("Opening: {$ActionsPath}");
-            $this->openInVSCode($ActionsPath);
+            $this->openInCodeEditor($ActionsPath);
         }
     }
 
@@ -141,7 +141,7 @@ class OpenFilesCommand extends Command
             return;
         } else {
             $this->info("Opening: {$resourcePath}");
-            $this->openInVSCode($resourcePath);
+            $this->openInCodeEditor($resourcePath);
         }
     }
 
@@ -153,7 +153,7 @@ class OpenFilesCommand extends Command
     //         $this->error("menu json file not found: {$path}");
     //     } else {
     //         $this->info("Opening: {$path}");
-    //         $this->openInVSCode($path);
+    //         $this->openInCodeEditor($path);
     //     }
     // }
 
@@ -165,7 +165,7 @@ class OpenFilesCommand extends Command
     //         $this->error("menu json file not found: {$path}");
     //     } else {
     //         $this->info("Opening: {$path}");
-    //         $this->openInVSCode($path);
+    //         $this->openInCodeEditor($path);
     //     }
     // }
 
@@ -179,7 +179,7 @@ class OpenFilesCommand extends Command
             return;
         } else {
             $this->info("Opening: {$policyPath}");
-            $this->openInVSCode($policyPath);
+            $this->openInCodeEditor($policyPath);
         }
     }
 
@@ -189,7 +189,7 @@ class OpenFilesCommand extends Command
 
         if (File::exists($requestPath)) {
             $this->info("Opening: {$requestPath}");
-            $this->openInVSCode($requestPath);
+            $this->openInCodeEditor($requestPath);
         } else {
             $this->error("Request file not found: {$requestPath}");
         }
@@ -205,7 +205,7 @@ class OpenFilesCommand extends Command
             return;
         } else {
             $this->info("Opening: {$controllerPath}");
-            $this->openInVSCode($controllerPath);
+            $this->openInCodeEditor($controllerPath);
         }
     }
 
@@ -217,7 +217,7 @@ class OpenFilesCommand extends Command
             $this->error("laratrust_seeder file not found: {$path}");
         } else {
             $this->info("Opening: {$path}");
-            $this->openInVSCode($path);
+            $this->openInCodeEditor($path);
         }
     }
 
@@ -229,7 +229,7 @@ class OpenFilesCommand extends Command
             $this->error("API routes file not found: {$path}");
         } else {
             $this->info("Opening: {$path}");
-            $this->openInVSCode($path);
+            $this->openInCodeEditor($path);
         }
     }
 
@@ -241,7 +241,7 @@ class OpenFilesCommand extends Command
             $this->error("Test file not found: {$createTest}");
         } else {
             $this->info("Opening: {$createTest}");
-            $this->openInVSCode($createTest);
+            $this->openInCodeEditor($createTest);
         }
 
         $readTest = base_path("tests/Unit/Actions/{$name}Actions/{$name}ActionsReadTest.php");
@@ -250,7 +250,7 @@ class OpenFilesCommand extends Command
             $this->error("Test file not found: {$readTest}");
         } else {
             $this->info("Opening: {$readTest}");
-            $this->openInVSCode($readTest);
+            $this->openInCodeEditor($readTest);
         }
 
         $editTest = base_path("tests/Unit/Actions/{$name}Actions/{$name}ActionsEditTest.php");
@@ -259,7 +259,7 @@ class OpenFilesCommand extends Command
             $this->error("Test file not found: {$editTest}");
         } else {
             $this->info("Opening: {$editTest}");
-            $this->openInVSCode($editTest);
+            $this->openInCodeEditor($editTest);
         }
 
         $deleteTest = base_path("tests/Unit/Actions/{$name}Actions/{$name}ActionsDeleteTest.php");
@@ -268,7 +268,7 @@ class OpenFilesCommand extends Command
             $this->error("Test file not found: {$deleteTest}");
         } else {
             $this->info("Opening: {$deleteTest}");
-            $this->openInVSCode($deleteTest);
+            $this->openInCodeEditor($deleteTest);
         }
     }
 
@@ -280,7 +280,7 @@ class OpenFilesCommand extends Command
             $this->error("Test file not found: {$createTest}");
         } else {
             $this->info("Opening: {$createTest}");
-            $this->openInVSCode($createTest);
+            $this->openInCodeEditor($createTest);
         }
 
         $readTest = base_path("tests/Feature/API/{$name}API/{$name}APIReadTest.php");
@@ -289,7 +289,7 @@ class OpenFilesCommand extends Command
             $this->error("Test file not found: {$readTest}");
         } else {
             $this->info("Opening: {$readTest}");
-            $this->openInVSCode($readTest);
+            $this->openInCodeEditor($readTest);
         }
 
         $editTest = base_path("tests/Feature/API/{$name}API/{$name}APIEditTest.php");
@@ -298,7 +298,7 @@ class OpenFilesCommand extends Command
             $this->error("Test file not found: {$editTest}");
         } else {
             $this->info("Opening: {$editTest}");
-            $this->openInVSCode($editTest);
+            $this->openInCodeEditor($editTest);
         }
 
         $deleteTest = base_path("tests/Feature/API/{$name}API/{$name}APIDeleteTest.php");
@@ -307,13 +307,14 @@ class OpenFilesCommand extends Command
             $this->error("Test file not found: {$deleteTest}");
         } else {
             $this->info("Opening: {$deleteTest}");
-            $this->openInVSCode($deleteTest);
+            $this->openInCodeEditor($deleteTest);
         }
     }
 
-    protected function openInVSCode($filePath)
+    protected function openInCodeEditor($filePath)
     {
-        $command = 'code '.escapeshellarg($filePath);
+        // $command = 'code '.escapeshellarg($filePath);
+        $command = 'cursor '.escapeshellarg($filePath);
         exec($command);
     }
 }

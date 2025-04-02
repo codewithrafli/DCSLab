@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Enums\ProductCategoryType;
 use App\Enums\ProductType;
 use App\Enums\RecordStatus;
+use App\Helpers\FactoryHelper;
 use App\Models\Brand;
 use App\Models\ProductCategory;
 use App\Models\ProductUnit;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Vinkla\Hashids\Facades\Hashids;
 
 class ProductFactory extends Factory
 {
@@ -16,68 +17,81 @@ class ProductFactory extends Factory
     {
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'name' => fake()->randomElement(['Minyak Goreng Sania 1L', 'Rokok Sampoerna Mild 16', 'Cokelat 100gr']),
-            'product_type' => fake()->randomElement(ProductType::toArrayEnum()),
+            'is_factory_code' => fake()->boolean(),
+            'name' => fake()->words(3, true),
+            'slug' => fake()->slug(),
             'taxable_supply' => fake()->boolean(),
             'standard_rated_supply' => fake()->numberBetween(0, 100),
             'price_include_vat' => fake()->boolean(),
             'point' => fake()->numberBetween(0, 100),
             'use_serial_number' => fake()->boolean(),
             'has_expiry_date' => fake()->boolean(),
-            'status' => fake()->randomElement(RecordStatus::toArrayEnum()),
+            'type' => fake()->randomElement(ProductType::toArrayEnum()),
             'remarks' => fake()->sentence(),
+            'status' => fake()->randomElement(RecordStatus::toArrayEnum()),
         ];
     }
 
-    public function withRelation(bool $encode)
+    public function setProductTypeAsProduct(bool $encode)
     {
         return $this->state(function (array $attributes) use ($encode) {
-            $productCategory = ProductCategory::inRandomOrder()->first();
+            $productCategory = ProductCategory::where('type', ProductCategoryType::PRODUCT->value)->inRandomOrder()->first();
+            $brand = Brand::inRandomOrder()->first();
+            $types = [ProductType::RAW_MATERIAL->value, ProductType::WORK_IN_PROGRESS->value, ProductType::FINISHED_GOODS->value];
+
+            $productUnits = (function () use ($encode) {
+                $productUnits = ProductUnit::factory()->count(mt_rand(1, 3))->make()->toArray();
+
+                foreach ($productUnits as $productUnit) {
+                    if ($encode) $productUnit = FactoryHelper::encodeIds($productUnit);
+                }
+
+                return $productUnits;
+            })();
+
+            $result = [
+                'category_id' => $productCategory->id,
+                'brand_id' => $brand->id,
+                'type' => fake()->randomElement($types),
+                'product_units' => $productUnits,
+            ];
+
+            if ($encode) $result = FactoryHelper::encodeIds($result);
+
+            return $result;
+        });
+    }
+
+    public function setProductTypeAsService(bool $encode)
+    {
+        return $this->state(function (array $attributes) use ($encode) {
+            $productCategory = ProductCategory::where('type', ProductCategoryType::SERVICE->value)->inRandomOrder()->first();
             $brand = Brand::inRandomOrder()->first();
 
-            return [
-                'product_category_id' => $encode ? Hashids::encode($productCategory->id) : $productCategory->id,
-                'brand_id' => $encode ? Hashids::encode($brand->id) : $brand->id,
-                'product_units' => ProductUnit::factory()->count(mt_rand(1, 3))->make()->toArray(),
-            ];
-        });
-    }
+            $productUnits = (function () use ($encode) {
+                $productUnits = ProductUnit::factory()->make([
+                    'is_base' => true,
+                    'conversion_value' => 1,
+                    'is_primary_unit' => true,
+                ])->toArray();
 
-    public function insertStringInName(string $str)
-    {
-        return $this->state(function (array $attributes) use ($str) {
-            return [
-                'name' => $this->craftName($str),
-            ];
-        });
-    }
+                foreach ($productUnits as $productUnit) {
+                    if ($encode) $productUnit = FactoryHelper::encodeIds($productUnit);
+                }
 
-    private function craftName(string $str)
-    {
-        $text = fake()->randomElement(['Minyak Goreng Sania 1L', 'Rokok Sampoerna Mild 16', 'Cokelat 100gr']);
+                return $productUnits;
+            })();
 
-        return substr_replace($text, $str, random_int(0, strlen($text) - 1), 0);
-    }
-
-    public function setProductTypeAsProduct(?ProductType $productType = null)
-    {
-        return $this->state(function (array $attributes) {
-            return [
-                'type' => fake()->randomElement([
-                    ProductType::RAW_MATERIAL->value,
-                    ProductType::WORK_IN_PROGRESS->value,
-                    ProductType::FINISHED_GOODS->value,
-                ]),
-            ];
-        });
-    }
-
-    public function setProductTypeAsService()
-    {
-        return $this->state(function (array $attributes) {
-            return [
+            $result = [
+                'category_id' => $productCategory->id,
+                'brand_id' => mt_rand(0, 1) ? $brand->id : null,
                 'type' => ProductType::SERVICE->value,
+                'product_units' => $productUnits,
             ];
+
+            if ($encode) $result = FactoryHelper::encodeIds($result);
+
+            return $result;
         });
     }
 }

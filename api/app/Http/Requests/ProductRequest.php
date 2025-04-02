@@ -72,9 +72,9 @@ class ProductRequest extends FormRequest
             case 'store':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+                    'code' => ['required', 'string', 'max:255', new ProductStoreValidCode($this->company_id)],
                     'product_category_id' => ['required', 'integer', new IsValidProductCategory()],
                     'brand_id' => ['required', 'integer', new IsValidBrand()],
-                    'code' => ['required', 'string', 'max:255', new ProductStoreValidCode($this->company_id)],
                     'name' => ['required', 'string', 'max:255'],
                     'product_type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
                     'taxable_supply' => ['required', 'boolean'],

@@ -30,12 +30,12 @@ class ProductCategory extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class)->withTrashed();
     }
 
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)

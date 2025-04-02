@@ -8,18 +8,21 @@ use Illuminate\Database\Seeder;
 
 class ProductCategoryTableSeeder extends Seeder
 {
-    public function run(?int $companyId, ?int $qtyPerCompany)
+    /**
+     * Seed product categories for companies.
+     *
+     * @param  int|null  $companyId  Specific company ID to seed categories for
+     * @param  int  $qtyPerCompany  Number of categories to create per company
+     */
+    public function run(?int $companyId = null, int $qtyPerCompany = 5): void
     {
-        $query = Company::query();
-        if ($companyId) $query->where('id', '=', $companyId);
-        $companies = $query->get();
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
 
-        if (! $qtyPerCompany) $qtyPerCompany = 5;
         foreach ($companies as $company) {
-            for ($i = 0; $i < $qtyPerCompany; $i++) {
-                $productCategoryFactory = ProductCategory::factory()->for($company);
-                $productCategoryFactory->create();
-            }
+            ProductCategory::factory()
+                ->count($qtyPerCompany)
+                ->for($company)
+                ->create();
         }
     }
 }

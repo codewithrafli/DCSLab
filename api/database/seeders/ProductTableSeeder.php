@@ -15,17 +15,9 @@ use Vinkla\Hashids\Facades\Hashids;
 
 class ProductTableSeeder extends Seeder
 {
-    public function run(?int $companyId, ?int $qtyPerCompany)
+    public function run(?int $companyId, int $qtyPerCompany = 5)
     {
-        $query = Company::query();
-        if ($companyId) {
-            $query->where('id', '=', $companyId);
-        }
-        $companies = $query->get();
-
-        if (! $qtyPerCompany) {
-            $qtyPerCompany = 5;
-        }
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
 
         foreach ($companies as $company) {
             for ($i = 0; $i < $qtyPerCompany; $i++) {
@@ -40,6 +32,11 @@ class ProductTableSeeder extends Seeder
                 $productFactory->create();
             }
         }
+    }
+
+    public function makeRegularProduct(bool $encode)
+    {
+
     }
 
     public function makeProductUnits(bool $encode)
