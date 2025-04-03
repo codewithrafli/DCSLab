@@ -156,8 +156,42 @@ class PurchaseOrderProductUnitRequest extends FormRequest
     {
         return [
             'company_id' => trans('validation_attributes.purchase_order_product_unit.company'),
-            'code' => trans('validation_attributes.purchase_order_product_unit.code'),
-            'remarks' => trans('validation_attributes.purchase_order_product_unit.remarks'),
+            'branch_id' => trans('validation_attributes.purchase_order_product_unit.branch'),
+            'purchase_order_id' => trans('validation_attributes.purchase_order_product_unit.purchase_order'),
+
+            'qty' => trans('validation_attributes.purchase_order_product_unit.qty'),
+            'product_id' => trans('validation_attributes.purchase_order_product_unit.product'),
+            'product_unit_id' => trans('validation_attributes.purchase_order_product_unit.product_unit'),
+            'product_unit_amount_per_unit' => trans('validation_attributes.purchase_order_product_unit.product_unit_amount_per_unit'),
+            'product_unit_amount_total' => trans('validation_attributes.purchase_order_product_unit.product_unit_amount_total'),
+            'product_unit_initial_price' => trans('validation_attributes.purchase_order_product_unit.product_unit_initial_price'),
+            'product_unit_discount_rate1' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_rate1'),
+            'product_unit_discount_rate2' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_rate2'),
+            'product_unit_discount_rate3' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_rate3'),
+            'product_unit_discount_rate4' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_rate4'),
+            'product_unit_discount_rate5' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_rate5'),
+            'product_unit_discount_fixed1' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_fixed1'),
+            'product_unit_discount_fixed2' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_fixed2'),
+            'product_unit_discount_fixed3' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_fixed3'),
+            'product_unit_discount_fixed4' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_fixed4'),
+            'product_unit_discount_fixed5' => trans('validation_attributes.purchase_order_product_unit.product_unit_discount_fixed5'),
+            'product_unit_net_price' => trans('validation_attributes.purchase_order_product_unit.product_unit_net_price'),
+            'product_unit_subtotal' => trans('validation_attributes.purchase_order_product_unit.product_unit_subtotal'),
+            'product_unit_subtotal_discount_rate' => trans('validation_attributes.purchase_order_product_unit.product_unit_subtotal_discount_rate'),
+            'product_unit_subtotal_discount_fixed' => trans('validation_attributes.purchase_order_product_unit.product_unit_subtotal_discount_fixed'),
+            'product_unit_total' => trans('validation_attributes.purchase_order_product_unit.product_unit_total'),
+            'product_unit_global_discount_rate' => trans('validation_attributes.purchase_order_product_unit.product_unit_global_discount_rate'),
+            'product_unit_global_discount_fixed' => trans('validation_attributes.purchase_order_product_unit.product_unit_global_discount_fixed'),
+            'product_unit_grand_total' => trans('validation_attributes.purchase_order_product_unit.product_unit_grand_total'),
+
+            'product_is_taxable' => trans('validation_attributes.purchase_order_product_unit.product_is_taxable'),
+            'product_vat_rate' => trans('validation_attributes.purchase_order_product_unit.product_vat_rate'),
+            'product_price_include_vat' => trans('validation_attributes.purchase_order_product_unit.product_price_include_vat'),
+            'product_vat_base' => trans('validation_attributes.purchase_order_product_unit.product_vat_base'),
+            'product_vat' => trans('validation_attributes.purchase_order_product_unit.product_vat'),
+
+            'product_unit_final_price' => trans('validation_attributes.purchase_order_product_unit.product_unit_final_price'),
+            'product_final_price_base_unit' => trans('validation_attributes.purchase_order_product_unit.product_final_price_base_unit'),
         ];
     }
 
@@ -191,7 +225,6 @@ class PurchaseOrderProductUnitRequest extends FormRequest
             case 'update':
                 $this->merge([
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
-                    'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
                 break;
             default:
