@@ -29,6 +29,12 @@ return [
         'remarks' => 'Remarks',
         'status' => 'Status',
     ],
+    'investor' => [
+        'company' => 'Company',
+        'code' => 'Code',
+        'name' => 'Name',
+        'remarks' => 'Remarks',
+    ],
     'cash_account' => [
         'company' => 'Company',
         'branch' => 'Branch',

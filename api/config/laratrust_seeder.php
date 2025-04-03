@@ -34,6 +34,7 @@ return [
             'company' => 'c,r,ra,u,d',
             'branch' => 'c,r,ra,u,d',
             'warehouse' => 'c,r,ra,u,d',
+            'investor' => 'c,r,ra,u,d',
             'cash_account' => 'c,r,ra,u,d',
             'product_category' => 'c,r,ra,u,d',
             'brand' => 'c,r,ra,u,d',

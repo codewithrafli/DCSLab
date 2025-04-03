@@ -29,6 +29,12 @@ return [
         'remarks' => 'Catatan',
         'status' => 'Status',
     ],
+    'investor' => [
+        'company' => 'Perusahaan',
+        'code' => 'Kode',
+        'name' => 'Nama',
+        'remarks' => 'Catatan',
+    ],
     'cash_account' => [
         'company' => 'Perusahaan',
         'branch' => 'Cabang',
