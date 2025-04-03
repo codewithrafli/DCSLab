@@ -44,6 +44,7 @@ return [
             'customer' => 'c,r,ra,u,d',
             'supplier' => 'c,r,ra,u,d',
             'purchase_order' => 'c,r,ra,u,d',
+            'purchase_order_unit' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],

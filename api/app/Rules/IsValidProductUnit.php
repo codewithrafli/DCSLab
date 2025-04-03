@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class IsValidSupplier implements ValidationRule
+class IsValidProductUnit implements ValidationRule
 {
     /**
      * Run the validation rule.
@@ -14,8 +14,8 @@ class IsValidSupplier implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! auth()->user()->suppliers->pluck('id')->contains($value)) {
-            $fail('rules.valid_supplier')->translate();
+        if (! auth()->product()->product_units->pluck('id')->contains($value)) {
+            $fail('rules.valid_product_unit')->translate();
         }
     }
 }

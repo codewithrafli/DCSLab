@@ -14,6 +14,7 @@ use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseOrderProductUnitController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SupplierController;
@@ -98,6 +99,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'purchase_order', 'as' => '.purchase_order'], function () {
                 Route::get('read', [PurchaseOrderController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase_order:ulid}', [PurchaseOrderController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'purchase_order_product_unit', 'as' => '.purchase_order_product_unit'], function () {
+                Route::get('read', [PurchaseOrderProductUnitController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{purchase_order_product_unit:ulid}', [PurchaseOrderProductUnitController::class, 'read'])->name('.read');
             });
         });
         /* #endregion */
