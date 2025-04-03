@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use Illuminate\Database\Seeder;
 
-class PurchaseOrderDownPaymentsTableSeeder extends Seeder
+class PurchaseOrderDownPaymentTableSeeder extends Seeder
 {
     public function run(?int $companyId, ?int $qtyPerCompany)
     {
@@ -17,7 +17,7 @@ class PurchaseOrderDownPaymentsTableSeeder extends Seeder
         if (! $qtyPerCompany) $qtyPerCompany = 5;
         foreach ($companies as $company) {
             for ($i = 0; $i < $qtyPerCompany; $i++) {
-                $purchaseOrderDownPaymentsFactory = PurchaseOrderDownPayments::factory()->for($company);
+                $purchaseOrderDownPaymentsFactory = PurchaseOrderDownPayment::factory()->for($company);
                 $purchaseOrderDownPaymentsFactory->create();
             }
         }

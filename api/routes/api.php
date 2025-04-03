@@ -15,7 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
-use App\Http\Controllers\PurchaseOrderDownPaymentsController;
+use App\Http\Controllers\PurchaseOrderDownPaymentController;
 use App\Http\Controllers\PurchaseOrderProductUnitController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SearchController;
@@ -107,8 +107,8 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read/{purchase_order_product_unit:ulid}', [PurchaseOrderProductUnitController::class, 'read'])->name('.read');
             });
             Route::group(['prefix' => 'purchase_order_down_payment', 'as' => '.purchase_order_down_payment'], function () {
-                Route::get('read', [PurchaseOrderDownPaymentsController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{purchase_order_down_payment:ulid}', [PurchaseOrderDownPaymentsController::class, 'read'])->name('.read');
+                Route::get('read', [PurchaseOrderDownPaymentController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{purchase_order_down_payment:ulid}', [PurchaseOrderDownPaymentController::class, 'read'])->name('.read');
             });
             Route::group(['prefix' => 'purchase_order_down_payment_apply', 'as' => '.purchase_order_down_payment_apply'], function () {
                 Route::get('read', [PurchaseOrderDownPaymentApplyController::class, 'readAny'])->name('.read_any');
@@ -224,9 +224,9 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('delete/{purcase_order_product_unit:ulid}', [PurchaseOrderProductUnitController::class, 'delete'])->name('.delete');
             });
             Route::group(['prefix' => 'purcase_order_down_payment', 'as' => '.purcase_order_down_payment'], function () {
-                Route::post('save', [PurchaseOrderDownPaymentsController::class, 'store'])->name('.save');
-                Route::post('edit/{purcase_order_down_payment:ulid}', [PurchaseOrderDownPaymentsController::class, 'update'])->name('.edit');
-                Route::post('delete/{purcase_order_down_payment:ulid}', [PurchaseOrderDownPaymentsController::class, 'delete'])->name('.delete');
+                Route::post('save', [PurchaseOrderDownPaymentController::class, 'store'])->name('.save');
+                Route::post('edit/{purcase_order_down_payment:ulid}', [PurchaseOrderDownPaymentController::class, 'update'])->name('.edit');
+                Route::post('delete/{purcase_order_down_payment:ulid}', [PurchaseOrderDownPaymentController::class, 'delete'])->name('.delete');
             });
             Route::group(['prefix' => 'purcase_order_down_payment_apply', 'as' => '.purcase_order_down_payment_apply'], function () {
                 Route::post('save', [PurchaseOrderDownPaymentApplyController::class, 'store'])->name('.save');

@@ -1,17 +1,17 @@
 <?php
 
-namespace Tests\Feature\API\PurchaseOrderDownPaymentsAPI;
+namespace Tests\Feature\API\PurchaseOrderDownPaymentAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Models\Role;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Str;
 use Tests\APITestCase;
 
-class PurchaseOrderDownPaymentsAPIDeleteTest extends APITestCase
+class PurchaseOrderDownPaymentAPIDeleteTest extends APITestCase
 {
     protected function setUp(): void
     {
@@ -26,9 +26,9 @@ class PurchaseOrderDownPaymentsAPIDeleteTest extends APITestCase
             ->create();
 
         $company = $user->companies()->inRandomOrder()->first();
-        $purchaseOrderDownPayments = PurchaseOrderDownPayments::factory()->for($company)->create();
+        $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayments->ulid));
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
 
         $api->assertStatus(401);
     }
@@ -42,9 +42,9 @@ class PurchaseOrderDownPaymentsAPIDeleteTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->inRandomOrder()->first();
-        $purchaseOrderDownPayments = PurchaseOrderDownPayments::factory()->for($company)->create();
+        $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayments->ulid));
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
 
         $api->assertStatus(403);
     }
@@ -59,13 +59,13 @@ class PurchaseOrderDownPaymentsAPIDeleteTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->inRandomOrder()->first();
-        $purchaseOrderDownPayments = PurchaseOrderDownPayments::factory()->for($company)->create();
+        $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayments->ulid));
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('purchase_order_down_payments', [
-            'id' => $purchaseOrderDownPayments->id,
+            'id' => $purchaseOrderDownPayment->id,
         ]);
     }
 

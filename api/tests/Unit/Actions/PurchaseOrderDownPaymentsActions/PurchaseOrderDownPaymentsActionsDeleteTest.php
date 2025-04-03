@@ -1,39 +1,39 @@
 <?php
 
-namespace Tests\Unit\Actions\PurchaseOrderDownPaymentsActions;
+namespace Tests\Unit\Actions\PurchaseOrderDownPaymentActions;
 
-use App\Actions\PurchaseOrderDownPayments\PurchaseOrderDownPaymentsActions;
+use App\Actions\PurchaseOrderDownPayment\PurchaseOrderDownPaymentActions;
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Models\User;
 use Tests\ActionsTestCase;
 
-class PurchaseOrderDownPaymentsActionsDeleteTest extends ActionsTestCase
+class PurchaseOrderDownPaymentActionsDeleteTest extends ActionsTestCase
 {
-    private PurchaseOrderDownPaymentsActions $purchaseOrderDownPaymentsActions;
+    private PurchaseOrderDownPaymentActions $purchaseOrderDownPaymentActions;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->purchaseOrderDownPaymentsActions = new PurchaseOrderDownPaymentsActions();
+        $this->purchaseOrderDownPaymentActions = new PurchaseOrderDownPaymentActions();
     }
 
     public function test_purchase_order_down_payments_actions_call_delete_expect_bool()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(PurchaseOrderDownPayments::factory())
+                ->has(PurchaseOrderDownPayment::factory())
             )->create();
 
-        $purchaseOrderDownPayments = $user->companies()->inRandomOrder()->first()
-            ->purchaseOrderDownPayments()->inRandomOrder()->first();
-        $result = $this->purchaseOrderDownPaymentsActions->delete($purchaseOrderDownPayments);
+        $purchaseOrderDownPayment = $user->companies()->inRandomOrder()->first()
+            ->purchaseOrderDownPayment()->inRandomOrder()->first();
+        $result = $this->purchaseOrderDownPaymentActions->delete($purchaseOrderDownPayment);
 
         $this->assertIsBool($result);
         $this->assertTrue($result);
         $this->assertSoftDeleted('purchase_order_down_payments', [
-            'id' => $purchaseOrderDownPayments->id,
+            'id' => $purchaseOrderDownPayment->id,
         ]);
     }
 }

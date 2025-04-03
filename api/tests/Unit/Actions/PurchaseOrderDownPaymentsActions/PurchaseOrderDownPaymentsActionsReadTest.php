@@ -1,37 +1,37 @@
 <?php
 
-namespace Tests\Unit\Actions\PurchaseOrderDownPaymentsActions;
+namespace Tests\Unit\Actions\PurchaseOrderDownPaymentActions;
 
-use App\Actions\PurchaseOrderDownPayments\PurchaseOrderDownPaymentsActions;
+use App\Actions\PurchaseOrderDownPayment\PurchaseOrderDownPaymentActions;
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Tests\ActionsTestCase;
 
-class PurchaseOrderDownPaymentsActionsReadTest extends ActionsTestCase
+class PurchaseOrderDownPaymentActionsReadTest extends ActionsTestCase
 {
-    private PurchaseOrderDownPaymentsActions $purchaseOrderDownPaymentsActions;
+    private PurchaseOrderDownPaymentActions $purchaseOrderDownPaymentActions;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->purchaseOrderDownPaymentsActions = new PurchaseOrderDownPaymentsActions();
+        $this->purchaseOrderDownPaymentActions = new PurchaseOrderDownPaymentActions();
     }
 
     public function test_purchase_order_down_payments_actions_call_read_any_with_paginate_true_expect_paginator_object()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(PurchaseOrderDownPayments::factory())
+                ->has(PurchaseOrderDownPayment::factory())
             )->create();
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $result = $this->purchaseOrderDownPaymentsActions->readAny(
+        $result = $this->purchaseOrderDownPaymentActions->readAny(
             companyId: $company->id,
             useCache: true,
             withTrashed: false,
@@ -51,12 +51,12 @@ class PurchaseOrderDownPaymentsActionsReadTest extends ActionsTestCase
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(PurchaseOrderDownPayments::factory())
+                ->has(PurchaseOrderDownPayment::factory())
             )->create();
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $result = $this->purchaseOrderDownPaymentsActions->readAny(
+        $result = $this->purchaseOrderDownPaymentActions->readAny(
             companyId: $company->id,
             useCache: true,
             withTrashed: false,
@@ -76,7 +76,7 @@ class PurchaseOrderDownPaymentsActionsReadTest extends ActionsTestCase
     {
         $maxId = Company::max('id') + 1;
 
-        $result = $this->purchaseOrderDownPaymentsActions->readAny(
+        $result = $this->purchaseOrderDownPaymentActions->readAny(
             companyId: $maxId,
             useCache: true,
             withTrashed: false,
@@ -95,14 +95,14 @@ class PurchaseOrderDownPaymentsActionsReadTest extends ActionsTestCase
 
     public function test_purchase_order_down_payments_actions_call_read_any_with_search_parameter_expect_filtered_results()
     {
-        $purchaseOrderDownPaymentsCount = 4;
-        $idxTest = random_int(0, $purchaseOrderDownPaymentsCount - 1);
-        $defaultName = PurchaseOrderDownPayments::factory()->make()->name;
-        $testname = PurchaseOrderDownPayments::factory()->insertStringInName('testing')->make()->name;
+        $purchaseOrderDownPaymentCount = 4;
+        $idxTest = random_int(0, $purchaseOrderDownPaymentCount - 1);
+        $defaultName = PurchaseOrderDownPayment::factory()->make()->name;
+        $testname = PurchaseOrderDownPayment::factory()->insertStringInName('testing')->make()->name;
 
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(PurchaseOrderDownPayments::factory()->count($purchaseOrderDownPaymentsCount)
+                ->has(PurchaseOrderDownPayment::factory()->count($purchaseOrderDownPaymentCount)
                     ->state(new Sequence(
                         fn (Sequence $sequence) => [
                             'name' => $sequence->index == $idxTest ? $testname : $defaultName,
@@ -114,7 +114,7 @@ class PurchaseOrderDownPaymentsActionsReadTest extends ActionsTestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $result = $this->purchaseOrderDownPaymentsActions->readAny(
+        $result = $this->purchaseOrderDownPaymentActions->readAny(
             companyId: $company->id,
             useCache: true,
             withTrashed: false,
@@ -145,14 +145,14 @@ class PurchaseOrderDownPaymentsActionsReadTest extends ActionsTestCase
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(PurchaseOrderDownPayments::factory())
+                ->has(PurchaseOrderDownPayment::factory())
             )->create();
 
-        $purchaseOrderDownPayments = $user->companies()->inRandomOrder()->first()
-            ->purchaseOrderDownPayments()->inRandomOrder()->first();
+        $purchaseOrderDownPayment = $user->companies()->inRandomOrder()->first()
+            ->purchaseOrderDownPayment()->inRandomOrder()->first();
 
-        $result = $this->purchaseOrderDownPaymentsActions->read($purchaseOrderDownPayments);
+        $result = $this->purchaseOrderDownPaymentActions->read($purchaseOrderDownPayment);
 
-        $this->assertInstanceOf(PurchaseOrderDownPayments::class, $result);
+        $this->assertInstanceOf(PurchaseOrderDownPayment::class, $result);
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Rules;
 
-use App\Actions\PurchaseOrderDownPayments\PurchaseOrderDownPaymentsActions;
+use App\Actions\PurchaseOrderDownPayment\PurchaseOrderDownPaymentActions;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class PurchaseOrderDownPaymentsStoreValidCode implements ValidationRule
+class PurchaseOrderDownPaymentStoreValidCode implements ValidationRule
 {
     protected $companyId;
 
@@ -18,9 +18,9 @@ class PurchaseOrderDownPaymentsStoreValidCode implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if ($value !== config('dcslab.KEYWORDS.AUTO')) {
-            $purchaseOrderDownPaymentsActions = new PurchaseOrderDownPaymentsActions();
+            $purchaseOrderDownPaymentActions = new PurchaseOrderDownPaymentActions();
 
-            if (! $purchaseOrderDownPaymentsActions->isUniqueCode($this->companyId, $value, null)) {
+            if (! $purchaseOrderDownPaymentActions->isUniqueCode($this->companyId, $value, null)) {
                 $fail('rules.unique_code')->translate();
 
                 return;

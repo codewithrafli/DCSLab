@@ -3,16 +3,16 @@
 namespace App\Http\Requests;
 
 use App\Enums\RecordStatus;
-use App\Rules\IsValidBranch;
-use App\Rules\IsValidCompany;
 use App\Helpers\HashidsHelper;
-use App\Rules\IsValidCashAccount;
-use App\Rules\IsValidPurchaseOrder;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\PurchaseOrderDownPaymentApply;
+use App\Rules\IsValidBranch;
+use App\Rules\IsValidCashAccount;
+use App\Rules\IsValidCompany;
+use App\Rules\IsValidPurchaseOrder;
 use App\Rules\PurchaseOrderDownPaymentApplyStoreValidCode;
 use App\Rules\PurchaseOrderDownPaymentApplyUpdateValidCode;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class PurchaseOrderDownPaymentApplyRequest extends FormRequest
 {

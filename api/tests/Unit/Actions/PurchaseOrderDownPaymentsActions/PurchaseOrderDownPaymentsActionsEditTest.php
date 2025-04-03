@@ -1,45 +1,45 @@
 <?php
 
-namespace Tests\Unit\Actions\PurchaseOrderDownPaymentsActions;
+namespace Tests\Unit\Actions\PurchaseOrderDownPaymentActions;
 
-use App\Actions\PurchaseOrderDownPayments\PurchaseOrderDownPaymentsActions;
+use App\Actions\PurchaseOrderDownPayment\PurchaseOrderDownPaymentActions;
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Models\User;
 use Exception;
 use Tests\ActionsTestCase;
 
-class PurchaseOrderDownPaymentsActionsEditTest extends ActionsTestCase
+class PurchaseOrderDownPaymentActionsEditTest extends ActionsTestCase
 {
-    private PurchaseOrderDownPaymentsActions $purchaseOrderDownPaymentsActions;
+    private PurchaseOrderDownPaymentActions $purchaseOrderDownPaymentActions;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->purchaseOrderDownPaymentsActions = new PurchaseOrderDownPaymentsActions();
+        $this->purchaseOrderDownPaymentActions = new PurchaseOrderDownPaymentActions();
     }
 
     public function test_purchase_order_down_payments_actions_call_update_expect_db_updated()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(PurchaseOrderDownPayments::factory())
+                ->has(PurchaseOrderDownPayment::factory())
             )->create();
 
         $company = $user->companies()->inRandomOrder()->first();
-        $purchaseOrderDownPayments = $company->purchaseOrderDownPayments()->inRandomOrder()->first();
+        $purchaseOrderDownPayment = $company->purchaseOrderDownPayment()->inRandomOrder()->first();
 
-        $purchaseOrderDownPaymentsArr = PurchaseOrderDownPayments::factory()->make()->toArray();
+        $purchaseOrderDownPaymentArr = PurchaseOrderDownPayment::factory()->make()->toArray();
 
-        $result = $this->purchaseOrderDownPaymentsActions->update($purchaseOrderDownPayments, $purchaseOrderDownPaymentsArr);
+        $result = $this->purchaseOrderDownPaymentActions->update($purchaseOrderDownPayment, $purchaseOrderDownPaymentArr);
 
-        $this->assertInstanceOf(PurchaseOrderDownPayments::class, $result);
+        $this->assertInstanceOf(PurchaseOrderDownPayment::class, $result);
         $this->assertDatabaseHas('purchase_order_down_payments', [
-            'id' => $purchaseOrderDownPayments->id,
-            'company_id' => $purchaseOrderDownPayments->company_id,
-            'code' => $purchaseOrderDownPaymentsArr['code'],
-            'name' => $purchaseOrderDownPaymentsArr['name'],
+            'id' => $purchaseOrderDownPayment->id,
+            'company_id' => $purchaseOrderDownPayment->company_id,
+            'code' => $purchaseOrderDownPaymentArr['code'],
+            'name' => $purchaseOrderDownPaymentArr['name'],
         ]);
     }
 
@@ -49,14 +49,14 @@ class PurchaseOrderDownPaymentsActionsEditTest extends ActionsTestCase
 
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(PurchaseOrderDownPayments::factory())
+                ->has(PurchaseOrderDownPayment::factory())
             )->create();
 
-        $purchaseOrderDownPayments = $user->companies()->inRandomOrder()->first()
-            ->purchaseOrderDownPayments()->inRandomOrder()->first();
+        $purchaseOrderDownPayment = $user->companies()->inRandomOrder()->first()
+            ->purchaseOrderDownPayment()->inRandomOrder()->first();
 
-        $purchaseOrderDownPaymentsArr = [];
+        $purchaseOrderDownPaymentArr = [];
 
-        $this->purchaseOrderDownPaymentsActions->update($purchaseOrderDownPayments, $purchaseOrderDownPaymentsArr);
+        $this->purchaseOrderDownPaymentActions->update($purchaseOrderDownPayment, $purchaseOrderDownPaymentArr);
     }
 }

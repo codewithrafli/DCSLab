@@ -1,23 +1,23 @@
 <?php
 
-namespace Tests\Unit\Actions\PurchaseOrderDownPaymentsActions;
+namespace Tests\Unit\Actions\PurchaseOrderDownPaymentActions;
 
-use App\Actions\PurchaseOrderDownPayments\PurchaseOrderDownPaymentsActions;
+use App\Actions\PurchaseOrderDownPayment\PurchaseOrderDownPaymentActions;
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Models\User;
 use Exception;
 use Tests\ActionsTestCase;
 
-class PurchaseOrderDownPaymentsActionsCreateTest extends ActionsTestCase
+class PurchaseOrderDownPaymentActionsCreateTest extends ActionsTestCase
 {
-    private PurchaseOrderDownPaymentsActions $purchaseOrderDownPaymentsActions;
+    private PurchaseOrderDownPaymentActions $purchaseOrderDownPaymentActions;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->purchaseOrderDownPaymentsActions = new PurchaseOrderDownPaymentsActions();
+        $this->purchaseOrderDownPaymentActions = new PurchaseOrderDownPaymentActions();
     }
 
     public function test_purchase_order_down_payments_actions_call_create_expect_db_has_record()
@@ -28,22 +28,22 @@ class PurchaseOrderDownPaymentsActionsCreateTest extends ActionsTestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $purchaseOrderDownPaymentsArr = PurchaseOrderDownPayments::factory()->for($company)
+        $purchaseOrderDownPaymentArr = PurchaseOrderDownPayment::factory()->for($company)
             ->make()->toArray();
 
-        $result = $this->purchaseOrderDownPaymentsActions->create($purchaseOrderDownPaymentsArr);
+        $result = $this->purchaseOrderDownPaymentActions->create($purchaseOrderDownPaymentArr);
 
         $this->assertDatabaseHas('purchase_order_down_payments', [
             'id' => $result->id,
-            'company_id' => $purchaseOrderDownPaymentsArr['company_id'],
-            'code' => $purchaseOrderDownPaymentsArr['code'],
-            'name' => $purchaseOrderDownPaymentsArr['name'],
+            'company_id' => $purchaseOrderDownPaymentArr['company_id'],
+            'code' => $purchaseOrderDownPaymentArr['code'],
+            'name' => $purchaseOrderDownPaymentArr['name'],
         ]);
     }
 
     public function test_purchase_order_down_payments_actions_call_create_with_empty_array_parameters_expect_exception()
     {
         $this->expectException(Exception::class);
-        $this->purchaseOrderDownPaymentsActions->create([]);
+        $this->purchaseOrderDownPaymentActions->create([]);
     }
 }

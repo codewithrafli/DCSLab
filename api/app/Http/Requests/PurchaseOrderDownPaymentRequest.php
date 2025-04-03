@@ -4,17 +4,17 @@ namespace App\Http\Requests;
 
 use App\Enums\RecordStatus;
 use App\Helpers\HashidsHelper;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Rules\IsValidBranch;
 use App\Rules\IsValidCashAccount;
 use App\Rules\IsValidCompany;
 use App\Rules\IsValidPurchaseOrder;
-use App\Rules\PurchaseOrderDownPaymentsStoreValidCode;
-use App\Rules\PurchaseOrderDownPaymentsUpdateValidCode;
+use App\Rules\PurchaseOrderDownPaymentStoreValidCode;
+use App\Rules\PurchaseOrderDownPaymentUpdateValidCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class PurchaseOrderDownPaymentsRequest extends FormRequest
+class PurchaseOrderDownPaymentRequest extends FormRequest
 {
     public function authorize()
     {
@@ -24,20 +24,20 @@ class PurchaseOrderDownPaymentsRequest extends FormRequest
 
         /** @var \App\User */
         $user = Auth::user();
-        $purchaseOrderDownPayments = $this->route('purchase_order_down_payments');
+        $purchaseOrderDownPayment = $this->route('purchase_order_down_payments');
 
         $currentRouteMethod = $this->route()->getActionMethod();
         switch ($currentRouteMethod) {
             case 'readAny':
-                return $user->can('viewAny', PurchaseOrderDownPayments::class) ? true : false;
+                return $user->can('viewAny', PurchaseOrderDownPayment::class) ? true : false;
             case 'read':
-                return $user->can('view', PurchaseOrderDownPayments::class, $purchaseOrderDownPayments) ? true : false;
+                return $user->can('view', PurchaseOrderDownPayment::class, $purchaseOrderDownPayment) ? true : false;
             case 'store':
-                return $user->can('create', PurchaseOrderDownPayments::class) ? true : false;
+                return $user->can('create', PurchaseOrderDownPayment::class) ? true : false;
             case 'update':
-                return $user->can('update', PurchaseOrderDownPayments::class, $purchaseOrderDownPayments) ? true : false;
+                return $user->can('update', PurchaseOrderDownPayment::class, $purchaseOrderDownPayment) ? true : false;
             case 'delete':
-                return $user->can('delete', PurchaseOrderDownPayments::class, $purchaseOrderDownPayments) ? true : false;
+                return $user->can('delete', PurchaseOrderDownPayment::class, $purchaseOrderDownPayment) ? true : false;
             default:
                 return false;
         }
@@ -73,7 +73,7 @@ class PurchaseOrderDownPaymentsRequest extends FormRequest
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
                     'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
                     'purchase_order_id' => ['required', 'integer', 'bail', new IsValidPurchaseOrder()],
-                    'code' => ['required', 'string', 'max:255', new PurchaseOrderDownPaymentsStoreValidCode($this->company_id)],
+                    'code' => ['required', 'string', 'max:255', new PurchaseOrderDownPaymentStoreValidCode($this->company_id)],
                     'cash_account_id' => ['required', 'integer', 'bail', new IsValidCashAccount()],
                     'amount' => ['nullable', 'numeric', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
@@ -83,7 +83,7 @@ class PurchaseOrderDownPaymentsRequest extends FormRequest
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
                     'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
                     'purchase_order_id' => ['required', 'integer', 'bail', new IsValidPurchaseOrder()],
-                    'code' => ['required', 'string', 'max:255', new PurchaseOrderDownPaymentsUpdateValidCode($this->company_id, $this->route('purchase_order_down_payments'))],
+                    'code' => ['required', 'string', 'max:255', new PurchaseOrderDownPaymentUpdateValidCode($this->company_id, $this->route('purchase_order_down_payments'))],
                     'cash_account_id' => ['required', 'integer', 'bail', new IsValidCashAccount()],
                     'amount' => ['nullable', 'numeric', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],

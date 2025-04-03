@@ -1,16 +1,16 @@
 <?php
 
-namespace Tests\Feature\API\PurchaseOrderDownPaymentsAPI;
+namespace Tests\Feature\API\PurchaseOrderDownPaymentAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Models\Role;
 use App\Models\User;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
 
-class PurchaseOrderDownPaymentsAPICreateTest extends APITestCase
+class PurchaseOrderDownPaymentAPICreateTest extends APITestCase
 {
     protected function setUp(): void
     {
@@ -26,11 +26,11 @@ class PurchaseOrderDownPaymentsAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $purchaseOrderDownPaymentsArr = PurchaseOrderDownPayments::factory()->make([
+        $purchaseOrderDownPaymentArr = PurchaseOrderDownPayment::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentsArr);
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentArr);
 
         $api->assertUnauthorized();
     }
@@ -45,11 +45,11 @@ class PurchaseOrderDownPaymentsAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $purchaseOrderDownPaymentsArr = PurchaseOrderDownPayments::factory()->make([
+        $purchaseOrderDownPaymentArr = PurchaseOrderDownPayment::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentsArr);
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentArr);
 
         $api->assertForbidden();
     }
@@ -75,17 +75,17 @@ class PurchaseOrderDownPaymentsAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $purchaseOrderDownPaymentsArr = PurchaseOrderDownPayments::factory()->make([
+        $purchaseOrderDownPaymentArr = PurchaseOrderDownPayment::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentsArr);
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_order_down_payments', [
             'company_id' => $company->id,
-            'code' => $purchaseOrderDownPaymentsArr['code'],
-            'name' => $purchaseOrderDownPaymentsArr['name'],
+            'code' => $purchaseOrderDownPaymentArr['code'],
+            'name' => $purchaseOrderDownPaymentArr['name'],
         ]);
     }
 
@@ -106,16 +106,16 @@ class PurchaseOrderDownPaymentsAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create([
+        PurchaseOrderDownPayment::factory()->for($company)->create([
             'code' => 'test1',
         ]);
 
-        $purchaseOrderDownPaymentsArr = PurchaseOrderDownPayments::factory()->make([
+        $purchaseOrderDownPaymentArr = PurchaseOrderDownPayment::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentsArr);
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -139,22 +139,22 @@ class PurchaseOrderDownPaymentsAPICreateTest extends APITestCase
 
         $company_2 = $companies[1];
 
-        PurchaseOrderDownPayments::factory()->for($company_1)->create([
+        PurchaseOrderDownPayment::factory()->for($company_1)->create([
             'code' => 'test1',
         ]);
 
-        $purchaseOrderDownPaymentsArr = PurchaseOrderDownPayments::factory()->make([
+        $purchaseOrderDownPaymentArr = PurchaseOrderDownPayment::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentsArr);
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_order_down_payments', [
             'company_id' => $company_2->id,
-            'code' => $purchaseOrderDownPaymentsArr['code'],
-            'name' => $purchaseOrderDownPaymentsArr['name'],
+            'code' => $purchaseOrderDownPaymentArr['code'],
+            'name' => $purchaseOrderDownPaymentArr['name'],
         ]);
     }
 
@@ -167,9 +167,9 @@ class PurchaseOrderDownPaymentsAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $purchaseOrderDownPaymentsArr = [];
+        $purchaseOrderDownPaymentArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentsArr);
+        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.save'), $purchaseOrderDownPaymentArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

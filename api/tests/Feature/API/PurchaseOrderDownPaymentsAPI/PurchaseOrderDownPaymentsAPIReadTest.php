@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Feature\API\PurchaseOrderDownPaymentsAPI;
+namespace Tests\Feature\API\PurchaseOrderDownPaymentAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Models\Role;
 use App\Models\User;
 use Exception;
@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
 
-class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
+class PurchaseOrderDownPaymentAPIReadTest extends APITestCase
 {
     protected function setUp(): void
     {
@@ -28,7 +28,7 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create();
+        PurchaseOrderDownPayment::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read_any', [
             'company_id' => Hashids::encode($company->id),
@@ -52,7 +52,7 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create();
+        PurchaseOrderDownPayment::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read_any', [
             'company_id' => Hashids::encode($company->id),
@@ -75,9 +75,9 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $purchaseOrderDownPayments = PurchaseOrderDownPayments::factory()->for($company)->create();
+        $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $ulid = $purchaseOrderDownPayments->ulid;
+        $ulid = $purchaseOrderDownPayment->ulid;
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read', $ulid));
 
@@ -94,9 +94,9 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $purchaseOrderDownPayments = PurchaseOrderDownPayments::factory()->for($company)->create();
+        $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $ulid = $purchaseOrderDownPayments->ulid;
+        $ulid = $purchaseOrderDownPayment->ulid;
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read', $ulid));
 
@@ -114,7 +114,7 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create();
+        PurchaseOrderDownPayment::factory()->for($company)->create();
 
         $injections = [
             "' OR '1'='1",
@@ -271,7 +271,7 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create();
+        PurchaseOrderDownPayment::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read_any', [
             'refresh' => true,
@@ -322,7 +322,7 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create();
+        PurchaseOrderDownPayment::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read_any', [
             'refresh' => true,
@@ -365,10 +365,10 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)
+        PurchaseOrderDownPayment::factory()->for($company)
             ->count(2)->create();
 
-        PurchaseOrderDownPayments::factory()->for($company)
+        PurchaseOrderDownPayment::factory()->for($company)
             ->insertStringInName('testing')
             ->count(3)->create();
 
@@ -412,7 +412,7 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create();
+        PurchaseOrderDownPayment::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read_any', [
             'company_id' => Hashids::encode($company->id),
@@ -432,7 +432,7 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create();
+        PurchaseOrderDownPayment::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read_any', [
             'refresh' => false,
@@ -470,7 +470,7 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        PurchaseOrderDownPayments::factory()->for($company)->create();
+        PurchaseOrderDownPayment::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read_any', [
             'refresh' => false,
@@ -499,9 +499,9 @@ class PurchaseOrderDownPaymentsAPIReadTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $purchaseOrderDownPayments = PurchaseOrderDownPayments::factory()->for($company)->create();
+        $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $ulid = $purchaseOrderDownPayments->ulid;
+        $ulid = $purchaseOrderDownPayment->ulid;
 
         $api = $this->getJson(route('api.get.db.product.purchase_order_down_payments.read', $ulid));
 

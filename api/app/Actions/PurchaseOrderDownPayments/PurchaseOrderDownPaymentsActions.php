@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Actions\PurchaseOrderDownPayments;
+namespace App\Actions\PurchaseOrderDownPayment;
 
 use App\Models\Company;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
 use Exception;
@@ -11,7 +11,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class PurchaseOrderDownPaymentsActions
+class PurchaseOrderDownPaymentActions
 {
     use CacheHelper;
     use LoggerHelper;
@@ -20,28 +20,28 @@ class PurchaseOrderDownPaymentsActions
     {
     }
 
-    public function create(array $data): PurchaseOrderDownPayments
+    public function create(array $data): PurchaseOrderDownPayment
     {
         DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
-            $purchaseOrderDownPayments = new PurchaseOrderDownPayments();
-            $purchaseOrderDownPayments->company_id = $data['company_id'];
-            $purchaseOrderDownPayments->branch_id = $data['branch_id'];
-            $purchaseOrderDownPayments->purchase_order_id = $data['purchase_order_id'];
-            $purchaseOrderDownPayments->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
-            $purchaseOrderDownPayments->date = $data['date'];
-            $purchaseOrderDownPayments->cash_account_id = $data['cash_account_id'];
-            $purchaseOrderDownPayments->amount = $data['amount'];
-            $purchaseOrderDownPayments->remarks = $data['remarks'];
-            $purchaseOrderDownPayments->save();
+            $purchaseOrderDownPayment = new PurchaseOrderDownPayment();
+            $purchaseOrderDownPayment->company_id = $data['company_id'];
+            $purchaseOrderDownPayment->branch_id = $data['branch_id'];
+            $purchaseOrderDownPayment->purchase_order_id = $data['purchase_order_id'];
+            $purchaseOrderDownPayment->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
+            $purchaseOrderDownPayment->date = $data['date'];
+            $purchaseOrderDownPayment->cash_account_id = $data['cash_account_id'];
+            $purchaseOrderDownPayment->amount = $data['amount'];
+            $purchaseOrderDownPayment->remarks = $data['remarks'];
+            $purchaseOrderDownPayment->save();
 
             DB::commit();
 
             $this->flushCache();
 
-            return $purchaseOrderDownPayments;
+            return $purchaseOrderDownPayment;
         } catch (Exception $e) {
             DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
@@ -60,7 +60,7 @@ class PurchaseOrderDownPaymentsActions
 
         ?int $limit
     ) {
-        $query = PurchaseOrderDownPayments::with('company')->withTrashed()
+        $query = PurchaseOrderDownPayment::with('company')->withTrashed()
             ->withAggregate('company', 'name')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
@@ -139,12 +139,12 @@ class PurchaseOrderDownPaymentsActions
         }
     }
 
-    public function read(PurchaseOrderDownPayments $purchaseOrderDownPayments): PurchaseOrderDownPayments
+    public function read(PurchaseOrderDownPayment $purchaseOrderDownPayment): PurchaseOrderDownPayment
     {
-        return $purchaseOrderDownPayments->with('company')->first();
+        return $purchaseOrderDownPayment->with('company')->first();
     }
 
-    public function getAllActivePurchaseOrderDownPayments(
+    public function getAllActivePurchaseOrderDownPayment(
         ?array $with,
         ?bool $withTrashed,
 
@@ -189,24 +189,24 @@ class PurchaseOrderDownPaymentsActions
         }
     }
 
-    public function update(PurchaseOrderDownPayments $purchaseOrderDownPayments, array $data): PurchaseOrderDownPayments
+    public function update(PurchaseOrderDownPayment $purchaseOrderDownPayment, array $data): PurchaseOrderDownPayment
     {
         DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
-            $purchaseOrderDownPayments->code = $this->generateUniqueCode($purchaseOrderDownPayments->company_id, $data['code'], $purchaseOrderDownPayments->id);
-            $purchaseOrderDownPayments->date = $data['date'];
-            $purchaseOrderDownPayments->cash_account_id = $data['cash_account_id'];
-            $purchaseOrderDownPayments->amount = $data['amount'];
-            $purchaseOrderDownPayments->remarks = $data['remarks'];
-            $purchaseOrderDownPayments->save();
+            $purchaseOrderDownPayment->code = $this->generateUniqueCode($purchaseOrderDownPayment->company_id, $data['code'], $purchaseOrderDownPayment->id);
+            $purchaseOrderDownPayment->date = $data['date'];
+            $purchaseOrderDownPayment->cash_account_id = $data['cash_account_id'];
+            $purchaseOrderDownPayment->amount = $data['amount'];
+            $purchaseOrderDownPayment->remarks = $data['remarks'];
+            $purchaseOrderDownPayment->save();
 
             DB::commit();
 
             $this->flushCache();
 
-            return $purchaseOrderDownPayments->refresh();
+            return $purchaseOrderDownPayment->refresh();
         } catch (Exception $e) {
             DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
@@ -217,7 +217,7 @@ class PurchaseOrderDownPaymentsActions
         }
     }
 
-    public function delete(PurchaseOrderDownPayments $purchaseOrderDownPayments): bool
+    public function delete(PurchaseOrderDownPayment $purchaseOrderDownPayment): bool
     {
         DB::beginTransaction();
         $timer_start = microtime(true);
@@ -225,7 +225,7 @@ class PurchaseOrderDownPaymentsActions
         $retval = false;
 
         try {
-            $retval = $purchaseOrderDownPayments->delete();
+            $retval = $purchaseOrderDownPayment->delete();
 
             DB::commit();
 
@@ -249,7 +249,7 @@ class PurchaseOrderDownPaymentsActions
 
             $tryCount = 0;
             do {
-                $count = $company->purchaseOrderDownPayments()->withTrashed()->count() + 1 + $tryCount;
+                $count = $company->purchaseOrderDownPayment()->withTrashed()->count() + 1 + $tryCount;
                 $code = 'PODP'.str_pad($count, 3, '0', STR_PAD_LEFT);
                 $tryCount++;
             } while (! $this->isUniqueCode($companyId, $code, $exceptId));
@@ -262,7 +262,7 @@ class PurchaseOrderDownPaymentsActions
 
     public function isUniqueCode(int $companyId, string $code, ?int $exceptId): bool
     {
-        $result = PurchaseOrderDownPayments::whereCompanyId($companyId)->where('code', '=', $code);
+        $result = PurchaseOrderDownPayment::whereCompanyId($companyId)->where('code', '=', $code);
 
         if ($exceptId) {
             $result = $result->where('id', '<>', $exceptId);

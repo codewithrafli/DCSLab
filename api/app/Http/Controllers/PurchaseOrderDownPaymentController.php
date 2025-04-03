@@ -2,32 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\PurchaseOrderDownPayments\PurchaseOrderDownPaymentsActions;
-use App\Http\Requests\PurchaseOrderDownPaymentsRequest;
-use App\Http\Resources\PurchaseOrderDownPaymentsResource;
-use App\Models\PurchaseOrderDownPayments;
+use App\Actions\PurchaseOrderDownPayment\PurchaseOrderDownPaymentActions;
+use App\Http\Requests\PurchaseOrderDownPaymentRequest;
+use App\Http\Resources\PurchaseOrderDownPaymentResource;
+use App\Models\PurchaseOrderDownPayment;
 use Exception;
 
-class PurchaseOrderDownPaymentsController extends BaseController
+class PurchaseOrderDownPaymentController extends BaseController
 {
-    private $purchaseOrderDownPaymentsActions;
+    private $purchaseOrderDownPaymentActions;
 
-    public function __construct(PurchaseOrderDownPaymentsActions $purchaseOrderDownPaymentsActions)
+    public function __construct(PurchaseOrderDownPaymentActions $purchaseOrderDownPaymentActions)
     {
         parent::__construct();
 
-        $this->purchaseOrderDownPaymentsActions = $purchaseOrderDownPaymentsActions;
+        $this->purchaseOrderDownPaymentActions = $purchaseOrderDownPaymentActions;
     }
 
-    public function store(PurchaseOrderDownPaymentsRequest $purchaseOrderDownPaymentsRequest)
+    public function store(PurchaseOrderDownPaymentRequest $purchaseOrderDownPaymentRequest)
     {
-        $request = $purchaseOrderDownPaymentsRequest->validated();
+        $request = $purchaseOrderDownPaymentRequest->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->purchaseOrderDownPaymentsActions->create($request);
+            $result = $this->purchaseOrderDownPaymentActions->create($request);
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
@@ -35,15 +35,15 @@ class PurchaseOrderDownPaymentsController extends BaseController
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function readAny(PurchaseOrderDownPaymentsRequest $purchaseOrderDownPaymentsRequest)
+    public function readAny(PurchaseOrderDownPaymentRequest $purchaseOrderDownPaymentRequest)
     {
-        $request = $purchaseOrderDownPaymentsRequest->validated();
+        $request = $purchaseOrderDownPaymentRequest->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->purchaseOrderDownPaymentsActions->readAny(
+            $result = $this->purchaseOrderDownPaymentActions->readAny(
                 useCache: $request['refresh'],
                 withTrashed: $request['with_trashed'],
 
@@ -62,21 +62,21 @@ class PurchaseOrderDownPaymentsController extends BaseController
         if (is_null($result)) {
             return response()->error($errorMsg);
         } else {
-            $response = PurchaseOrderDownPaymentsResource::collection($result);
+            $response = PurchaseOrderDownPaymentResource::collection($result);
 
             return $response;
         }
     }
 
-    public function read(PurchaseOrderDownPayments $purchaseOrderDownPayments, PurchaseOrderDownPaymentsRequest $purchaseOrderDownPaymentsRequest)
+    public function read(PurchaseOrderDownPayment $purchaseOrderDownPayment, PurchaseOrderDownPaymentRequest $purchaseOrderDownPaymentRequest)
     {
-        $request = $purchaseOrderDownPaymentsRequest->validated();
+        $request = $purchaseOrderDownPaymentRequest->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->purchaseOrderDownPaymentsActions->read($purchaseOrderDownPayments);
+            $result = $this->purchaseOrderDownPaymentActions->read($purchaseOrderDownPayment);
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
@@ -84,22 +84,22 @@ class PurchaseOrderDownPaymentsController extends BaseController
         if (is_null($result)) {
             return response()->error($errorMsg);
         } else {
-            $response = new PurchaseOrderDownPaymentsResource($result);
+            $response = new PurchaseOrderDownPaymentResource($result);
 
             return $response;
         }
     }
 
-    public function update(PurchaseOrderDownPayments $purchaseOrderDownPayments, PurchaseOrderDownPaymentsRequest $purchaseOrderDownPaymentsRequest)
+    public function update(PurchaseOrderDownPayment $purchaseOrderDownPayment, PurchaseOrderDownPaymentRequest $purchaseOrderDownPaymentRequest)
     {
-        $request = $purchaseOrderDownPaymentsRequest->validated();
+        $request = $purchaseOrderDownPaymentRequest->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->purchaseOrderDownPaymentsActions->update(
-                purchaseOrderDownPayments: $purchaseOrderDownPayments,
+            $result = $this->purchaseOrderDownPaymentActions->update(
+                purchaseOrderDownPayment: $purchaseOrderDownPayment,
                 data: $request
             );
         } catch (Exception $e) {
@@ -109,13 +109,13 @@ class PurchaseOrderDownPaymentsController extends BaseController
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function delete(PurchaseOrderDownPayments $purchaseOrderDownPayments, PurchaseOrderDownPaymentsRequest $purchaseOrderDownPaymentsRequest)
+    public function delete(PurchaseOrderDownPayment $purchaseOrderDownPayment, PurchaseOrderDownPaymentRequest $purchaseOrderDownPaymentRequest)
     {
         $result = false;
         $errorMsg = '';
 
         try {
-            $result = $this->purchaseOrderDownPaymentsActions->delete($purchaseOrderDownPayments);
+            $result = $this->purchaseOrderDownPaymentActions->delete($purchaseOrderDownPayment);
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }

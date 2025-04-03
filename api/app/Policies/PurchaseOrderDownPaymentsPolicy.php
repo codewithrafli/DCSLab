@@ -3,11 +3,11 @@
 namespace App\Policies;
 
 use App\Enums\UserRoles;
-use App\Models\PurchaseOrderDownPayments;
+use App\Models\PurchaseOrderDownPayment;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PurchaseOrderDownPaymentsPolicy
+class PurchaseOrderDownPaymentPolicy
 {
     use HandlesAuthorization;
 
@@ -21,12 +21,12 @@ class PurchaseOrderDownPaymentsPolicy
             return true;
         }
 
-        if ($user->hasPermission('purchaseOrderDownPayments-readAny')) {
+        if ($user->hasPermission('purchaseOrderDownPayment-readAny')) {
             return true;
         }
     }
 
-    public function view(User $user, ?PurchaseOrderDownPayments $purchaseOrderDownPayments = null)
+    public function view(User $user, ?PurchaseOrderDownPayment $purchaseOrderDownPayment = null)
     {
         if ($user->roles->isEmpty()) {
             return false;
@@ -36,7 +36,7 @@ class PurchaseOrderDownPaymentsPolicy
             return true;
         }
 
-        if ($user->hasPermission('purchaseOrderDownPayments-read')) {
+        if ($user->hasPermission('purchaseOrderDownPayment-read')) {
             return true;
         }
     }
@@ -51,12 +51,12 @@ class PurchaseOrderDownPaymentsPolicy
             return true;
         }
 
-        if ($user->hasPermission('purchaseOrderDownPayments-create')) {
+        if ($user->hasPermission('purchaseOrderDownPayment-create')) {
             return true;
         }
     }
 
-    public function update(User $user, ?PurchaseOrderDownPayments $purchaseOrderDownPayments = null)
+    public function update(User $user, ?PurchaseOrderDownPayment $purchaseOrderDownPayment = null)
     {
         if ($user->roles->isEmpty()) {
             return false;
@@ -66,12 +66,12 @@ class PurchaseOrderDownPaymentsPolicy
             return true;
         }
 
-        if ($user->hasPermission('purchaseOrderDownPayments-update')) {
+        if ($user->hasPermission('purchaseOrderDownPayment-update')) {
             return true;
         }
     }
 
-    public function delete(User $user, ?PurchaseOrderDownPayments $purchaseOrderDownPayments = null)
+    public function delete(User $user, ?PurchaseOrderDownPayment $purchaseOrderDownPayment = null)
     {
         if ($user->roles->isEmpty()) {
             return false;
@@ -81,17 +81,17 @@ class PurchaseOrderDownPaymentsPolicy
             return true;
         }
 
-        if ($user->hasPermission('purchaseOrderDownPayments-delete')) {
+        if ($user->hasPermission('purchaseOrderDownPayment-delete')) {
             return true;
         }
     }
 
-    public function restore(User $user, PurchaseOrderDownPayments $purchaseOrderDownPayments)
+    public function restore(User $user, PurchaseOrderDownPayment $purchaseOrderDownPayment)
     {
         return false;
     }
 
-    public function forceDelete(User $user, PurchaseOrderDownPayments $purchaseOrderDownPayments)
+    public function forceDelete(User $user, PurchaseOrderDownPayment $purchaseOrderDownPayment)
     {
         return false;
     }
