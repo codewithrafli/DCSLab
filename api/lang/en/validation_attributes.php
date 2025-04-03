@@ -206,4 +206,14 @@ return [
         'amount' => 'Amount',
         'remarks' => 'Remarks',
     ],
+    'purchase_order_down_payment_apply' => [
+        'company_id' => 'Company Id',
+        'branch_id' => 'Branch Id',
+        'purchase_order_id' => 'Purchase Order Id',
+        'code' => 'Code',
+        'date' => 'Date',
+        'cash_account_id' => 'Cash Account Id',
+        'amount' => 'Amount',
+        'remarks' => 'Remarks',
+    ],
 ];

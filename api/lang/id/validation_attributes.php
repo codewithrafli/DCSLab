@@ -213,4 +213,14 @@ return [
         'amount' => 'Jumlah',
         'remarks' => 'Catatan',
     ],
+    'purchase_order_down_payment_apply' => [
+        'company_id' => 'Perusahaan',
+        'branch_id' => 'Cabang',
+        'purchase_order_id' => 'Purchase Order',
+        'code' => 'Kode',
+        'date' => 'Tanggal',
+        'cash_account_id' => 'Akun Kas',
+        'amount' => 'Jumlah',
+        'remarks' => 'Catatan',
+    ],
 ];
