@@ -2,7 +2,6 @@
 
 namespace App\Actions\PurchaseOrderProductUnit;
 
-use App\Models\Company;
 use App\Models\PurchaseOrderProductUnit;
 use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
