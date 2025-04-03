@@ -41,6 +41,7 @@ return [
             'customer_group' => 'c,r,ra,u,d',
             'customer' => 'c,r,ra,u,d',
             'supplier' => 'c,r,ra,u,d',
+            'purchase_order' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],
