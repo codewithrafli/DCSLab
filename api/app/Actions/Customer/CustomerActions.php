@@ -28,7 +28,7 @@ class CustomerActions
         try {
             $customer = new Customer();
             $customer->company_id = $data['company_id'];
-            $customer->customer_id = $data['customer_id'];
+            $customer->customer_group_id = $data['customer_group_id'];
             $customer->user_id = $data['user_id'];
             $customer->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $customer->is_member = $data['is_member'];
