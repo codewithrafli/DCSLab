@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CashAccountController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SupplierController;
@@ -36,6 +38,13 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'warehouse', 'as' => '.warehouse'], function () {
                 Route::get('read', [WarehouseController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{warehouse:ulid}', [WarehouseController::class, 'read'])->name('.read');
+            });
+        });
+
+        Route::group(['prefix' => 'cash_account', 'as' => '.cash_account'], function () {
+            Route::group(['prefix' => 'cash_account', 'as' => '.cash_account'], function () {
+                Route::get('read', [CashAccountController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{cash_account:ulid}', [CashAccountController::class, 'read'])->name('.read');
             });
         });
 
@@ -74,6 +83,13 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'supplier', 'as' => '.supplier'], function () {
                 Route::get('read', [SupplierController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{supplier:ulid}', [SupplierController::class, 'read'])->name('.read');
+            });
+        });
+
+        Route::group(['prefix' => 'purchase_order', 'as' => '.purchase_order'], function () {
+            Route::group(['prefix' => 'purchase_order', 'as' => '.purchase_order'], function () {
+                Route::get('read', [PurchaseOrderController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{purchase_order:ulid}', [PurchaseOrderController::class, 'read'])->name('.read');
             });
         });
         /* #endregion */

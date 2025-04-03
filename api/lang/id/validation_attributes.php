@@ -29,6 +29,15 @@ return [
         'remarks' => 'Catatan',
         'status' => 'Status',
     ],
+    'cash_account' => [
+        'company' => 'Perusahaan',
+        'branch' => 'Cabang',
+        'code' => 'Kode',
+        'name' => 'Nama',
+        'is_bank' => 'Bank',
+        'is_active' => 'Aktif',
+        'remarks' => 'Catatan',
+    ],
     'product_category' => [
         'company' => 'Perusahaan',
         'code' => 'Kode',

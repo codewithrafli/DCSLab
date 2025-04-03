@@ -29,6 +29,15 @@ return [
         'remarks' => 'Remarks',
         'status' => 'Status',
     ],
+    'cash_account' => [
+        'company' => 'Company',
+        'branch' => 'Branch',
+        'code' => 'Code',
+        'name' => 'Name',
+        'is_bank' => 'Is Bank',
+        'is_active' => 'Is Active',
+        'remarks' => 'Remarks',
+    ],
     'product_category' => [
         'company' => 'Company',
         'code' => 'Code',
@@ -46,7 +55,6 @@ return [
         'description' => 'Description',
         'category' => 'Category',
     ],
-
     'product' => [
         'company' => 'Company',
         'product_category' => 'Product Category',
@@ -73,7 +81,6 @@ return [
             'remarks' => 'Product Unit Remarks',
         ],
     ],
-
     'customer' => [
         'company' => 'Company',
         'customer_group' => 'Customer Group',
@@ -92,7 +99,6 @@ return [
         'status' => 'Status',
         'remarks' => 'Remarks',
     ],
-
     'customer_group' => [
         'company' => 'Company',
         'code' => 'Code',
@@ -113,7 +119,6 @@ return [
         'round_digit' => 'Round Digit',
         'remarks' => 'Remarks',
     ],
-
     'supplier' => [
         'company' => 'Company',
         'user' => 'User',
@@ -128,7 +133,6 @@ return [
         'status' => 'Status',
         'remarks' => 'Remarks',
     ],
-
     'purchase_order' => [
         'company' => 'Company',
         'branch' => 'Branch',
