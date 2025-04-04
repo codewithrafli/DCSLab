@@ -13,6 +13,7 @@ use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
 use App\Http\Controllers\PurchaseOrderDownPaymentController;
@@ -113,6 +114,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'purchase_order_down_payment_apply', 'as' => '.purchase_order_down_payment_apply'], function () {
                 Route::get('read', [PurchaseOrderDownPaymentApplyController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase_order_down_payment_apply:ulid}', [PurchaseOrderDownPaymentApplyController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'purchase', 'as' => '.purchase'], function () {
+                Route::get('read', [PurchaseController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{purchase:ulid}', [PurchaseController::class, 'read'])->name('.read');
             });
         });
         /* #endregion */
@@ -232,6 +237,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [PurchaseOrderDownPaymentApplyController::class, 'store'])->name('.save');
                 Route::post('edit/{purcase_order_down_payment_apply:ulid}', [PurchaseOrderDownPaymentApplyController::class, 'update'])->name('.edit');
                 Route::post('delete/{purcase_order_down_payment_apply:ulid}', [PurchaseOrderDownPaymentApplyController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'purchase', 'as' => '.purchase'], function () {
+                Route::post('save', [PurchaseController::class, 'store'])->name('.save');
+                Route::post('edit/{purchase:ulid}', [PurchaseController::class, 'update'])->name('.edit');
+                Route::post('delete/{purchase:ulid}', [PurchaseController::class, 'delete'])->name('.delete');
             });
         });
 

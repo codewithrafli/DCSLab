@@ -47,6 +47,7 @@ return [
             'purchase_order_unit' => 'c,r,ra,u,d',
             'purchase_order_down_payment' => 'c,r,ra,u,d',
             'purchase_order_down_payment_apply' => 'c,r,ra,u,d',
+            'purchase' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],
