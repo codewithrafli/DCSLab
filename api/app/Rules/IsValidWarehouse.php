@@ -2,8 +2,8 @@
 
 namespace App\Rules;
 
-use Closure;
 use App\Models\Company;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class IsValidWarehouse implements ValidationRule
@@ -28,4 +28,3 @@ class IsValidWarehouse implements ValidationRule
         }
     }
 }
-

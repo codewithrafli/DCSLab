@@ -18,6 +18,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
 use App\Http\Controllers\PurchaseOrderDownPaymentController;
 use App\Http\Controllers\PurchaseOrderProductUnitController;
+use App\Http\Controllers\PurchaseProductUnitController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SupplierController;
@@ -115,9 +116,16 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read', [PurchaseOrderDownPaymentApplyController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase_order_down_payment_apply:ulid}', [PurchaseOrderDownPaymentApplyController::class, 'read'])->name('.read');
             });
+        });
+
+        Route::group(['prefix' => 'purchase', 'as' => '.purchase'], function () {
             Route::group(['prefix' => 'purchase', 'as' => '.purchase'], function () {
                 Route::get('read', [PurchaseController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase:ulid}', [PurchaseController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'purchase_product_unit', 'as' => '.purchase_product_unit'], function () {
+                Route::get('read', [PurchaseProductUnitController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{purchase_product_unit:ulid}', [PurchaseProductUnitController::class, 'read'])->name('.read');
             });
         });
         /* #endregion */
@@ -238,18 +246,26 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('edit/{purcase_order_down_payment_apply:ulid}', [PurchaseOrderDownPaymentApplyController::class, 'update'])->name('.edit');
                 Route::post('delete/{purcase_order_down_payment_apply:ulid}', [PurchaseOrderDownPaymentApplyController::class, 'delete'])->name('.delete');
             });
+        });
+
+        Route::group(['prefix' => 'purchase', 'middleware' => ['precognitive'], 'as' => '.purchase'], function () {
+            Route::group(['prefix' => 'cash_account', 'as' => '.cash_account'], function () {
+                Route::post('save', [CashAccountController::class, 'store'])->name('.save');
+                Route::post('edit/{cash_account:ulid}', [CashAccountController::class, 'update'])->name('.edit');
+                Route::post('delete/{cash_account:ulid}', [CashAccountController::class, 'delete'])->name('.delete');
+            });
+        });
+
+        Route::group(['prefix' => 'supplier', 'middleware' => ['precognitive'], 'as' => '.supplier'], function () {
             Route::group(['prefix' => 'purchase', 'as' => '.purchase'], function () {
                 Route::post('save', [PurchaseController::class, 'store'])->name('.save');
                 Route::post('edit/{purchase:ulid}', [PurchaseController::class, 'update'])->name('.edit');
                 Route::post('delete/{purchase:ulid}', [PurchaseController::class, 'delete'])->name('.delete');
             });
-        });
-
-        Route::group(['prefix' => 'supplier', 'middleware' => ['precognitive'], 'as' => '.supplier'], function () {
-            Route::group(['prefix' => 'supplier', 'as' => '.supplier'], function () {
-                Route::post('save', [SupplierController::class, 'store'])->name('.save');
-                Route::post('edit/{supplier:ulid}', [SupplierController::class, 'update'])->name('.edit');
-                Route::post('delete/{supplier:ulid}', [SupplierController::class, 'delete'])->name('.delete');
+            Route::group(['prefix' => 'purchase_product_unit', 'as' => '.purchase_product_unit'], function () {
+                Route::post('save', [PurchaseProductUnitController::class, 'store'])->name('.save');
+                Route::post('edit/{purchase_product_unit:ulid}', [PurchaseProductUnitController::class, 'update'])->name('.edit');
+                Route::post('delete/{purchase_product_unit:ulid}', [PurchaseProductUnitController::class, 'delete'])->name('.delete');
             });
         });
         /* #endregion */

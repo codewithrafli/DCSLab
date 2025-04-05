@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('date');
             $table->integer('due_days');
             $table->foreignId('warehouse_id')->references('id')->on('warehouses')->nullable();
-            $table->foreignId('supplier_id')->references('id')->on('suppliers')->nullable();;
+            $table->foreignId('supplier_id')->references('id')->on('suppliers')->nullable();
             $table->foreignId('purchase_order_id')->references('id')->on('purchase_orders')->nullable();
             $table->string('purchase_tax_invoice_number');
             $table->decimal('purchase_tax_invoice_vat_base', 30, 8)->default(0);
