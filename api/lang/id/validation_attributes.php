@@ -308,4 +308,9 @@ return [
         'purchase_product_unit_id' => 'Satuan Pembelian',
         'serial' => 'Serial',
     ],
+    'purchase_additional_cost' => [
+        'company_id' => 'Perusahaan',
+        'code' => 'Kode',
+        'name' => 'Nama',
+    ],
 ];

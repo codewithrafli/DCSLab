@@ -50,6 +50,7 @@ return [
             'purchase' => 'c,r,ra,u,d',
             'purchase_product_unit' => 'c,r,ra,u,d',
             'purchase_product_unit_serial' => 'c,r,ra,u,d',
+            'purchase_additional_cost_category' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],

@@ -301,4 +301,9 @@ return [
         'purchase_product_unit_id' => 'Purchase Product Unit Id',
         'serial' => 'Serial',
     ],
+    'purchase_additional_cost' => [
+        'company_id' => 'Company Id',
+        'code' => 'Code',
+        'name' => 'Name',
+    ],
 ];
