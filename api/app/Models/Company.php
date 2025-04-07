@@ -85,6 +85,21 @@ class Company extends Model
         return $this->hasMany(PurchaseOrder::class);
     }
 
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    public function purchaseProductUnits()
+    {
+        return $this->hasMany(PurchaseProductUnit::class);
+    }
+
+    public function purchaseProductUnitSerials()
+    {
+        return $this->hasMany(PurchaseProductUnitSerial::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
