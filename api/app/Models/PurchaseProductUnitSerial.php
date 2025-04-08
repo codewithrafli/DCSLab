@@ -26,22 +26,22 @@ class PurchaseProductUnitSerial extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class)->withTrashed();
     }
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class)->withTrashed();
     }
 
     public function purchase()
     {
-        return $this->belongsTo(Purchase::class);
+        return $this->belongsTo(Purchase::class)->withTrashed();
     }
 
     public function purchaseProductUnit()
     {
-        return $this->belongsTo(PurchaseProductUnit::class);
+        return $this->belongsTo(PurchaseProductUnit::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)

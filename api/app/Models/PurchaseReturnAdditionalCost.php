@@ -30,22 +30,22 @@ class PurchaseReturnAdditionalCost extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class)->withTrashed();
     }
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class)->withTrashed();
     }
 
     public function purchase()
     {
-        return $this->belongsTo(Purchase::class);
+        return $this->belongsTo(Purchase::class)->withTrashed();
     }
 
     public function category()
     {
-        return $this->belongsTo(PurchaseReturnAdditionalCostCategory::class);
+        return $this->belongsTo(PurchaseReturnAdditionalCostCategory::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)

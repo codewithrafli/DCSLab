@@ -27,7 +27,7 @@ class PurchaseReturnProductUnitSerial extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class)->withTrashed();
     }
 
     public function branch()
@@ -37,12 +37,12 @@ class PurchaseReturnProductUnitSerial extends Model
 
     public function purchase()
     {
-        return $this->belongsTo(Purchase::class);
+        return $this->belongsTo(Purchase::class)->withTrashed();
     }
 
     public function purchaseReturnProductUnit()
     {
-        return $this->belongsTo(PurchaseReturnProductUnit::class);
+        return $this->belongsTo(PurchaseReturnProductUnit::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)
