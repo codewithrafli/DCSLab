@@ -395,4 +395,16 @@ return [
         'is_posted' => 'Is Posted',
         'is_valid' => 'Is Valid',
     ],
+    'purchase_receipt_product_unit' => [
+        'company_id' => 'Company Id',
+        'branch_id' => 'Branch Id',
+        'purchase_receipt_id' => 'Purchase Receipt Id',
+        'purchase_id' => 'Purchase Id',
+        'qty' => 'Qty',
+        'product_id' => 'Product Id',
+        'product_unit_id' => 'Product Unit Id',
+        'product_unit_amount_per_unit' => 'Product Unit Amount Per Unit',
+        'product_unit_amount_total' => 'Product Unit Amount Total',
+        'is_has_purchase' => 'Is Has Purchase',
+    ],
 ];

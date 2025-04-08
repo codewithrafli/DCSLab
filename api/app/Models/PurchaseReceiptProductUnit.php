@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PurchaseReceipt extends Model
+class PurchaseReceiptProductUnit extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -16,16 +16,18 @@ class PurchaseReceipt extends Model
     protected $fillable = [
         'company_id',
         'branch_id',
-        'code',
+        'purchase_receipt_id',
         'purchase_id',
-        'warehouse_id',
-        'is_posted',
-        'is_valid',
+        'qty',
+        'product_id',
+        'product_unit_id',
+        'product_unit_amount_per_unit',
+        'product_unit_amount_total',
+        'is_has_purchase',
     ];
 
     protected $casts = [
-        'is_posted' => 'boolean',
-        'is_valid' => 'boolean',
+
     ];
 
     public function company()
@@ -38,23 +40,24 @@ class PurchaseReceipt extends Model
         return $this->belongsTo(Branch::class)->withTrashed();
     }
 
-    public function purchase()
+    public function purchaseReceipt()
     {
-        return $this->belongsTo(Purchase::class)->withTrashed();
+        return $this->belongsTo(PurchaseReceipt::class)->withTrashed();
     }
 
-    public function warehouse()
+    public function product()
     {
-        return $this->belongsTo(Warehouse::class)->withTrashed();
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
-    public function purchaseReceiptProductUnits()
+    public function productUnit()
     {
-        return $this->hasMany(PurchaseReceiptProductUnit::class);
+        return $this->belongsTo(ProductUnit::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%');
+        return $query->where('code', 'like', '%'.$search.'%')
+            ->orWhere('remarks', 'like', '%'.$search.'%');
     }
 }

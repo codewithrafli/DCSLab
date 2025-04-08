@@ -402,5 +402,16 @@ return [
         'is_posted' => 'Diposting',
         'is_valid' => 'Valid',
     ],
-
+    'purchase_receipt_product_unit' => [
+        'company_id' => 'Perusahaan',
+        'branch_id' => 'Cabang',
+        'purchase_id' => 'Pembelian',
+        'warehouse_id' => 'Gudang',
+        'qty' => 'Qty',
+        'product_id' => 'Product',
+        'product_unit_id' => 'Satuan Produk',
+        'product_unit_amount_per_unit' => 'Nilai Per Satuan',
+        'product_unit_amount_total' => 'Nilai Total',
+        'is_has_purchase' => 'Pembelian',
+    ],
 ];

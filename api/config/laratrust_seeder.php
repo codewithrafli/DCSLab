@@ -58,6 +58,7 @@ return [
             'purchase_return_additional_cost' => 'c,r,ra,u,d',
             'purchase_payment' => 'c,r,ra,u,d',
             'purchase_receipt' => 'c,r,ra,u,d',
+            'purchase_receipt_product_unit' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],

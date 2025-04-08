@@ -74,6 +74,11 @@ class Product extends Model
         return $this->hasMany(PurchaseReturnProductUnit::class);
     }
 
+    public function purchaseReceiptProductUnits()
+    {
+        return $this->hasMany(PurchaseReceiptProductUnit::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
