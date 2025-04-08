@@ -59,7 +59,8 @@ class PurchaseOrderProductUnitActions
             $purchaseOrderProductUnit->product_vat_base = $data['product_vat_base'];
             $purchaseOrderProductUnit->product_vat = $data['product_vat'];
             $purchaseOrderProductUnit->product_unit_final_price = $data['product_unit_final_price'];
-            $purchaseOrderProductUnit->product_final_price_base_unit = $data['product_final_price_base_unit'];
+            $purchaseOrderProductUnit->is_received = $data['is_received'];
+            $purchaseOrderProductUnit->is_valid = $data['is_valid'];
 
             $purchaseOrderProductUnit->save();
 
@@ -254,7 +255,8 @@ class PurchaseOrderProductUnitActions
             $purchaseOrderProductUnit->product_vat_base = $data['product_vat_base'];
             $purchaseOrderProductUnit->product_vat = $data['product_vat'];
             $purchaseOrderProductUnit->product_unit_final_price = $data['product_unit_final_price'];
-            $purchaseOrderProductUnit->product_final_price_base_unit = $data['product_final_price_base_unit'];
+            $purchaseOrderProductUnit->is_received = $data['is_received'];
+            $purchaseOrderProductUnit->is_valid = $data['is_valid'];
             $purchaseOrderProductUnit->save();
 
             DB::commit();

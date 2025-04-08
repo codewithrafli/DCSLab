@@ -135,6 +135,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read', [PurchaseAdditionalCostController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase_additional_cost:ulid}', [PurchaseAdditionalCostController::class, 'read'])->name('.read');
             });
+            Route::group(['prefix' => 'purchase_return_product_unit', 'as' => '.purchase_return_product_unit'], function () {
+                Route::get('read', [PurchaseOrderProductUnitController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{purchase_return_product_unit:ulid}', [PurchaseOrderProductUnitController::class, 'read'])->name('.read');
+            });
         });
 
         Route::group(['prefix' => 'supplier', 'as' => '.supplier'], function () {
@@ -288,6 +292,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [PurchaseAdditionalCostController::class, 'store'])->name('.save');
                 Route::post('edit/{purchase_additional_cost:ulid}', [PurchaseAdditionalCostController::class, 'update'])->name('.edit');
                 Route::post('delete/{purchase_additional_cost:ulid}', [PurchaseAdditionalCostController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'purchase_return_product_unit', 'as' => '.purchase_return_product_unit'], function () {
+                Route::post('save', [PurchaseOrderProductUnitController::class, 'store'])->name('.save');
+                Route::post('edit/{purchase_return_product_unit:ulid}', [PurchaseOrderProductUnitController::class, 'update'])->name('.edit');
+                Route::post('delete/{purchase_return_product_unit:ulid}', [PurchaseOrderProductUnitController::class, 'delete'])->name('.delete');
             });
         });
 

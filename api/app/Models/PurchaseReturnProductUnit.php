@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PurchaseOrderProductUnit extends Model
+class PurchaseReturnProductUnit extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -51,7 +51,7 @@ class PurchaseOrderProductUnit extends Model
 
         'product_unit_final_price',
 
-        'is_received',
+        'is_sent',
         'is_valid',
     ];
 
@@ -84,13 +84,33 @@ class PurchaseOrderProductUnit extends Model
         'product_vat_base' => 'decimal:8',
         'product_vat' => 'decimal:8',
         'product_base_unit_final_price' => 'decimal:8',
-        'is_received' => 'boolean',
+        'is_sent' => 'boolean',
         'is_valid' => 'boolean',
     ];
 
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class)->withTrashed();
+    }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(PurchaseOrder::class)->withTrashed();
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class)->withTrashed();
+    }
+
+    public function productUnit()
+    {
+        return $this->belongsTo(ProductUnit::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)

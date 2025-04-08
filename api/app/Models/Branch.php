@@ -64,6 +64,11 @@ class Branch extends Model
         return $this->hasMany(PurchaseAdditionalCost::class);
     }
 
+    public function purchaseReturnProductUnits()
+    {
+        return $this->hasMany(PurchaseReturnProductUnit::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))

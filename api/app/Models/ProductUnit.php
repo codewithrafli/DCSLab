@@ -48,6 +48,11 @@ class ProductUnit extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    public function purchaseReturnProductUnits()
+    {
+        return $this->hasMany(PurchaseReturnProductUnit::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
