@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PurchaseReturnAdditionalCostCategory extends Model
+class PurchaseReturnAdditionalCost extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -15,12 +15,17 @@ class PurchaseReturnAdditionalCostCategory extends Model
 
     protected $fillable = [
         'company_id',
+        'branch_id',
+        'purchase_id',
         'code',
-        'name',
+        'date',
+        'amount',
+        'remarks',
     ];
 
     protected $casts = [
-
+        'date' => 'datetime',
+        'amount' => 'decimal:8',
     ];
 
     public function company()
@@ -28,14 +33,24 @@ class PurchaseReturnAdditionalCostCategory extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function purchaseReturnAdditionalCosts()
+    public function branch()
     {
-        return $this->hasMany(PurchaseReturnAdditionalCost::class);
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function purchase()
+    {
+        return $this->belongsTo(Purchase::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(PurchaseReturnAdditionalCostCategory::class);
     }
 
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%');
+            ->orWhere('remarks', 'like', '%'.$search.'%');
     }
 }
