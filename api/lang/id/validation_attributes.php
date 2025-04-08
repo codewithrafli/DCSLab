@@ -393,4 +393,14 @@ return [
         'amount' => 'Jumlah',
         'remarks' => 'Catatan',
     ],
+    'purchase_receipt' => [
+        'company_id' => 'Perusahaan',
+        'branch_id' => 'Cabang',
+        'code' => 'Kode',
+        'purchase_id' => 'Pembelian',
+        'warehouse_id' => 'Gudang',
+        'is_posted' => 'Diposting',
+        'is_valid' => 'Valid',
+    ],
+
 ];

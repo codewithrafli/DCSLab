@@ -23,6 +23,7 @@ use App\Http\Controllers\PurchaseOrderProductUnitController;
 use App\Http\Controllers\PurchasePaymentController;
 use App\Http\Controllers\PurchaseProductUnitController;
 use App\Http\Controllers\PurchaseProductUnitSerialController;
+use App\Http\Controllers\PurchaseReceiptController;
 use App\Http\Controllers\PurchaseReturnAdditionalCostCategoryController;
 use App\Http\Controllers\PurchaseReturnAdditionalCostController;
 use App\Http\Controllers\PurchaseReturnProductUnitController;
@@ -159,6 +160,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'purchase_payment', 'as' => '.purchase_payment'], function () {
                 Route::get('read', [PurchasePaymentController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase_payment:ulid}', [PurchasePaymentController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'purchase_receipt', 'as' => '.purchase_receipt'], function () {
+                Route::get('read', [PurchaseReceiptController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{purchase_receipt:ulid}', [PurchaseReceiptController::class, 'read'])->name('.read');
             });
         });
 
@@ -338,6 +343,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [PurchasePaymentController::class, 'store'])->name('.save');
                 Route::post('edit/{purchase_payment:ulid}', [PurchasePaymentController::class, 'update'])->name('.edit');
                 Route::post('delete/{purchase_payment:ulid}', [PurchasePaymentController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'purchase_receipt', 'as' => '.purchase_receipt'], function () {
+                Route::post('save', [PurchaseReceiptController::class, 'store'])->name('.save');
+                Route::post('edit/{purchase_receipt:ulid}', [PurchaseReceiptController::class, 'update'])->name('.edit');
+                Route::post('delete/{purchase_receipt:ulid}', [PurchaseReceiptController::class, 'delete'])->name('.delete');
             });
         });
 

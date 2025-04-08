@@ -130,6 +130,11 @@ class Company extends Model
         return $this->hasMany(PurchasePayment::class);
     }
 
+    public function purchaseReceipts()
+    {
+        return $this->hasMany(PurchaseReceipt::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

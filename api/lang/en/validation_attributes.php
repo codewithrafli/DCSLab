@@ -386,4 +386,13 @@ return [
         'amount' => 'Amount',
         'remarks' => 'Remarks',
     ],
+    'purchase_receipt' => [
+        'company_id' => 'Company Id',
+        'branch_id' => 'Branch Id',
+        'code' => 'Code',
+        'purchase_id' => 'Purchase Id',
+        'warehouse_id' => 'Warehouse Id',
+        'is_posted' => 'Is Posted',
+        'is_valid' => 'Is Valid',
+    ],
 ];

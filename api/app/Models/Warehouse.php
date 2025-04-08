@@ -40,6 +40,11 @@ class Warehouse extends Model
         return $this->belongsTo(Branch::class);
     }
 
+    public function purchaseReceipts()
+    {
+        return $this->hasMany(PurchaseReceipt::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))
