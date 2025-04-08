@@ -407,4 +407,12 @@ return [
         'product_unit_amount_total' => 'Product Unit Amount Total',
         'is_has_purchase' => 'Is Has Purchase',
     ],
+    'purchase_receipt_product_unit_serial' => [
+        'company_id' => 'Company Id',
+        'branch_id' => 'Branch Id',
+        'purchase_receipt_id' => 'Purchase Receipt Id',
+        'purchase_id' => 'Purchase Id',
+        'purchase_receipt_product_unit_id' => 'Purchase Receipt Product Unit Id',
+        'serial' => 'Serial',
+    ],
 ];

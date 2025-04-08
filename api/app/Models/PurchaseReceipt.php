@@ -53,6 +53,11 @@ class PurchaseReceipt extends Model
         return $this->hasMany(PurchaseReceiptProductUnit::class);
     }
 
+    public function purchaseReceiptProductUnitSerials()
+    {
+        return $this->hasMany(PurchaseReceiptProductUnitSerial::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%');

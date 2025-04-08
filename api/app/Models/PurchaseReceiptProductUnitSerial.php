@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PurchaseReceiptProductUnit extends Model
+class PurchaseReceiptProductUnitSerial extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -17,13 +17,8 @@ class PurchaseReceiptProductUnit extends Model
         'company_id',
         'branch_id',
         'purchase_receipt_id',
-        'purchase_id',
-        'qty',
-        'product_id',
-        'product_unit_id',
-        'product_unit_amount_per_unit',
-        'product_unit_amount_total',
-        'is_has_purchase',
+        'purchase_receipt_product_unit_id',
+        'serial',
     ];
 
     protected $casts = [
@@ -37,27 +32,17 @@ class PurchaseReceiptProductUnit extends Model
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class)->withTrashed();
+        return $this->belongsTo(Branch::class);
     }
 
     public function purchaseReceipt()
     {
-        return $this->belongsTo(PurchaseReceipt::class)->withTrashed();
+        return $this->belongsTo(PurchaseReceipt::class);
     }
 
-    public function product()
+    public function purchaseReceiptProductUnit()
     {
-        return $this->belongsTo(Product::class)->withTrashed();
-    }
-
-    public function productUnit()
-    {
-        return $this->belongsTo(ProductUnit::class)->withTrashed();
-    }
-
-    public function purchaseReceiptProductUnitSerials()
-    {
-        return $this->hasMany(PurchaseReceiptProductUnitSerial::class);
+        return $this->belongsTo(PurchaseReceiptProductUnit::class);
     }
 
     public function scopeSearch($query, string $search)

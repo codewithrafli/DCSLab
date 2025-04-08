@@ -59,6 +59,7 @@ return [
             'purchase_payment' => 'c,r,ra,u,d',
             'purchase_receipt' => 'c,r,ra,u,d',
             'purchase_receipt_product_unit' => 'c,r,ra,u,d',
+            'purchase_receipt_product_unit_serial' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],

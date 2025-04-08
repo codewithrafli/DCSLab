@@ -414,4 +414,11 @@ return [
         'product_unit_amount_total' => 'Nilai Total',
         'is_has_purchase' => 'Pembelian',
     ],
+    'purchase_receipt_product_unit_serial' => [
+        'company_id' => 'Perusahaan',
+        'branch_id' => 'Cabang',
+        'purchase_id' => 'Pembelian',
+        'purchase_receipt_product_unit_id' => 'Satuan Pembelian',
+        'serial' => 'Serial',
+    ],
 ];
