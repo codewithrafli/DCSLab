@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CashAccount extends Model
+class PurchasePayment extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -16,21 +16,21 @@ class CashAccount extends Model
     protected $fillable = [
         'company_id',
         'branch_id',
+        'purchase_id',
         'code',
-        'name',
-        'is_bank',
-        'is_active',
+        'date',
+        'cash_account_id',
+        'amount',
         'remarks',
     ];
 
     protected $casts = [
-        'is_bank' => 'boolean',
-        'is_active' => 'boolean',
+
     ];
 
     public function company()
     {
-        return $this->belongsTo(Company::class)->withTrashed();
+        return $this->belongsTo(Company::class);
     }
 
     public function branch()
@@ -38,15 +38,19 @@ class CashAccount extends Model
         return $this->belongsTo(Branch::class)->withTrashed();
     }
 
-    public function purchasePayments()
+    public function purchase()
     {
-        return $this->hasMany(PurchasePayment::class);
+        return $this->belongsTo(Purchase::class)->withTrashed();
+    }
+
+    public function cashAccount()
+    {
+        return $this->belongsTo(CashAccount::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
             ->orWhere('remarks', 'like', '%'.$search.'%');
     }
 }

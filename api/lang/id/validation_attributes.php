@@ -383,4 +383,14 @@ return [
         'amount' => 'Jumlah',
         'remarks' => 'Catatan',
     ],
+    'purchase_payment' => [
+        'company_id' => 'Perusahaan',
+        'branch_id' => 'Cabang',
+        'purchase_id' => 'Pembelian',
+        'code' => 'Kode',
+        'date' => 'Tanggal',
+        'cash_account_id' => 'Akun Kas',
+        'amount' => 'Jumlah',
+        'remarks' => 'Catatan',
+    ],
 ];

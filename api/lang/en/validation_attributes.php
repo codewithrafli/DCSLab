@@ -376,4 +376,14 @@ return [
         'amount' => 'Amount',
         'remarks' => 'Remarks',
     ],
+    'purchase_payment' => [
+        'company_id' => 'Company Id',
+        'branch_id' => 'Branch Id',
+        'purchase_id' => 'Purchase Id',
+        'code' => 'Code',
+        'date' => 'Date',
+        'cash_account_id' => 'Cash Account Id',
+        'amount' => 'Amount',
+        'remarks' => 'Remarks',
+    ],
 ];
