@@ -301,9 +301,19 @@ return [
         'purchase_product_unit_id' => 'Purchase Product Unit Id',
         'serial' => 'Serial',
     ],
-    'purchase_additional_cost' => [
+    'purchase_additional_cost_category' => [
         'company_id' => 'Company Id',
         'code' => 'Code',
         'name' => 'Name',
+    ],
+    'purchase_additional_cost' => [
+        'company_id' => 'Company Id',
+        'branch_id' => 'Branch Id',
+        'purchase_id' => 'Purchase Id',
+        'category_id' => 'Category Id',
+        'code' => 'Code',
+        'date' => 'Date',
+        'amount' => 'Amount',
+        'remarks' => 'Remarks',
     ],
 ];

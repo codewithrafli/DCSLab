@@ -308,9 +308,19 @@ return [
         'purchase_product_unit_id' => 'Satuan Pembelian',
         'serial' => 'Serial',
     ],
-    'purchase_additional_cost' => [
+    'purchase_additional_cost_category' => [
         'company_id' => 'Perusahaan',
         'code' => 'Kode',
         'name' => 'Nama',
+    ],
+    'purchase_additional_cost' => [
+        'company_id' => 'Perusahaan',
+        'branch_id' => 'Cabang',
+        'purchase_id' => 'Pembelian',
+        'code' => 'Kode',
+        'date' => 'Tanggal',
+        'category_id' => 'Kategori Biaya Tambahan',
+        'amount' => 'Jumlah',
+        'remarks' => 'Catatan',
     ],
 ];

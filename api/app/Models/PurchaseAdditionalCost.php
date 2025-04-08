@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PurchaseAdditionalCostCategory extends Model
+class PurchaseAdditionalCost extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -15,8 +15,13 @@ class PurchaseAdditionalCostCategory extends Model
 
     protected $fillable = [
         'company_id',
+        'branch_id',
+        'purchase_id',
         'code',
-        'name',
+        'date',
+        'category_id',
+        'amount',
+        'remarks',
     ];
 
     protected $casts = [
@@ -28,15 +33,24 @@ class PurchaseAdditionalCostCategory extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function purchaseAdditionalCosts()
+    public function branch()
     {
-        return $this->hasMany(PurchaseAdditionalCost::class);
+        return $this->belongsTo(Branch::class)->withTrashed();
+    }
+
+    public function purchase()
+    {
+        return $this->belongsTo(Purchase::class)->withTrashed();
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(PurchaseAdditionalCostCategory::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
             ->orWhere('remarks', 'like', '%'.$search.'%');
     }
 }

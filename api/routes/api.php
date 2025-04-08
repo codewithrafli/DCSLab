@@ -14,6 +14,7 @@ use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseAdditionalCostCategoryController;
+use App\Http\Controllers\PurchaseAdditionalCostController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
@@ -129,6 +130,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'purchase_additional_cost_category', 'as' => '.purchase_additional_cost_category'], function () {
                 Route::get('read', [PurchaseAdditionalCostCategoryController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase_additional_cost_category:ulid}', [PurchaseAdditionalCostCategoryController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'purchase_additional_cost', 'as' => '.purchase_additional_cost'], function () {
+                Route::get('read', [PurchaseAdditionalCostController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{purchase_additional_cost:ulid}', [PurchaseAdditionalCostController::class, 'read'])->name('.read');
             });
         });
 
@@ -278,6 +283,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [PurchaseAdditionalCostCategoryController::class, 'store'])->name('.save');
                 Route::post('edit/{purchase_additional_cost_category:ulid}', [PurchaseAdditionalCostCategoryController::class, 'update'])->name('.edit');
                 Route::post('delete/{purchase_additional_cost_category:ulid}', [PurchaseAdditionalCostCategoryController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'purchase_additional_cost', 'as' => '.purchase_additional_cost'], function () {
+                Route::post('save', [PurchaseAdditionalCostController::class, 'store'])->name('.save');
+                Route::post('edit/{purchase_additional_cost:ulid}', [PurchaseAdditionalCostController::class, 'update'])->name('.edit');
+                Route::post('delete/{purchase_additional_cost:ulid}', [PurchaseAdditionalCostController::class, 'delete'])->name('.delete');
             });
         });
 
