@@ -113,6 +113,11 @@ class PurchaseReturnProductUnit extends Model
         return $this->belongsTo(ProductUnit::class)->withTrashed();
     }
 
+    public function purchaseReturnProductUnitSerials()
+    {
+        return $this->hasMany(PurchaseReturnProductUnitSerial::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

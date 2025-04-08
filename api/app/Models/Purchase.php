@@ -118,6 +118,11 @@ class Purchase extends Model
         return $this->hasMany(PurchaseAdditionalCost::class);
     }
 
+    public function purchaseReturnProductUnitSerials()
+    {
+        return $this->hasMany(PurchaseReturnProductUnitSerial::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

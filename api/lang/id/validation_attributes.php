@@ -361,4 +361,11 @@ return [
         'is_sent' => 'Dikirim',
         'is_valid' => 'Valid',
     ],
+    'purchase_return_product_unit_serial' => [
+        'company_id' => 'Perusahaan',
+        'branch_id' => 'Cabang',
+        'purchase_id' => 'Pembelian',
+        'purchase_return_product_unit_id' => 'Satuan Pembelian',
+        'serial' => 'Serial',
+    ],
 ];

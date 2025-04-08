@@ -110,6 +110,11 @@ class Company extends Model
         return $this->hasMany(PurchaseReturnProductUnit::class);
     }
 
+    public function purchaseReturnProductUnitSerials()
+    {
+        return $this->hasMany(PurchaseReturnProductUnitSerial::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

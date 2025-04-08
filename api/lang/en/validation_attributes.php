@@ -354,4 +354,11 @@ return [
         'is_sent' => 'Is Sent',
         'is_valid' => 'Is Valid',
     ],
+    'purchase_return_product_unit_serial' => [
+        'company_id' => 'Company Id',
+        'branch_id' => 'Branch Id',
+        'purchase_id' => 'Purchase Id',
+        'purchase_return_product_unit_id' => 'Purchase Return Product Unit Id',
+        'serial' => 'Serial',
+    ],
 ];
