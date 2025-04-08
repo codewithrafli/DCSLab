@@ -115,6 +115,11 @@ class Company extends Model
         return $this->hasMany(PurchaseReturnProductUnitSerial::class);
     }
 
+    public function purchaseReturnAdditionalCostCategories()
+    {
+        return $this->hasMany(PurchaseReturnAdditionalCostCategory::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

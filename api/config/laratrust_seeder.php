@@ -54,6 +54,7 @@ return [
             'purchase_additional_cost' => 'c,r,ra,u,d',
             'purchase_return_product_unit' => 'c,r,ra,u,d',
             'purchase_return_product_unit_serial' => 'c,r,ra,u,d',
+            'purchase_return_additional_cost_category' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],
