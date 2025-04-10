@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('capital_additions', function (Blueprint $table) {
+        Schema::create('capital_withdrawals', function (Blueprint $table) {
             $table->id();
             $table->ulid();
 
@@ -31,6 +31,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('capital_additions');
+        Schema::dropIfExists('capital_withdrawals');
     }
 };

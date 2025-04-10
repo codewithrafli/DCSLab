@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CashAccount extends Model
+class CapitalWithdrawal extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -17,20 +17,20 @@ class CashAccount extends Model
         'company_id',
         'branch_id',
         'code',
-        'name',
-        'is_bank',
-        'is_active',
+        'date',
+        'investor_id',
+        'cash_account_id',
+        'amount',
         'remarks',
     ];
 
     protected $casts = [
-        'is_bank' => 'boolean',
-        'is_active' => 'boolean',
+
     ];
 
     public function company()
     {
-        return $this->belongsTo(Company::class)->withTrashed();
+        return $this->belongsTo(Company::class);
     }
 
     public function branch()
@@ -38,25 +38,19 @@ class CashAccount extends Model
         return $this->belongsTo(Branch::class)->withTrashed();
     }
 
-    public function purchasePayments()
+    public function investor()
     {
-        return $this->hasMany(PurchasePayment::class);
+        return $this->belongsTo(Investor::class)->withTrashed();
     }
 
-    public function capitalAdditions()
+    public function cashAccount()
     {
-        return $this->hasMany(CapitalAddition::class);
-    }
-
-    public function capitalWithdrawals()
-    {
-        return $this->hasMany(CapitalWithdrawal::class);
+        return $this->belongsTo(CashAccount::class)->withTrashed();
     }
 
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
             ->orWhere('remarks', 'like', '%'.$search.'%');
     }
 }

@@ -33,6 +33,21 @@ class CapitalAddition extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class)->withTrashed();
+    }
+
+    public function investor()
+    {
+        return $this->belongsTo(Investor::class)->withTrashed();
+    }
+
+    public function cashAccount()
+    {
+        return $this->belongsTo(CashAccount::class)->withTrashed();
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
