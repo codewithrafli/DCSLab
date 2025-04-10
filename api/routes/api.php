@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CapitalAdditionController;
 use App\Http\Controllers\CashAccountController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\CompanyController;
@@ -67,6 +68,13 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'cash_account', 'as' => '.cash_account'], function () {
                 Route::get('read', [CashAccountController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{cash_account:ulid}', [CashAccountController::class, 'read'])->name('.read');
+            });
+        });
+
+        Route::group(['prefix' => 'capital', 'as' => '.capital'], function () {
+            Route::group(['prefix' => 'capital_addition', 'as' => '.capital_addition'], function () {
+                Route::get('read', [CapitalAdditionController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{capital_addition:ulid}', [CapitalAdditionController::class, 'read'])->name('.read');
             });
         });
 
@@ -252,6 +260,14 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [CashAccountController::class, 'store'])->name('.save');
                 Route::post('edit/{cash_account:ulid}', [CashAccountController::class, 'update'])->name('.edit');
                 Route::post('delete/{cash_account:ulid}', [CashAccountController::class, 'delete'])->name('.delete');
+            });
+        });
+
+        Route::group(['prefix' => 'capital', 'middleware' => ['precognitive'], 'as' => '.capital'], function () {
+            Route::group(['prefix' => 'capital_addition', 'as' => '.capital_addition'], function () {
+                Route::post('save', [CapitalAdditionController::class, 'store'])->name('.save');
+                Route::post('edit/{capital_addition:ulid}', [CapitalAdditionController::class, 'update'])->name('.edit');
+                Route::post('delete/{capital_addition:ulid}', [CapitalAdditionController::class, 'delete'])->name('.delete');
             });
         });
 

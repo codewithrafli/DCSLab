@@ -44,6 +44,16 @@ return [
         'is_active' => 'Aktif',
         'remarks' => 'Catatan',
     ],
+    'capital_addition' => [
+        'company' => 'Perusahaan',
+        'branch' => 'Cabang',
+        'code' => 'Kode',
+        'date' => 'Tanggal',
+        'investor_id' => 'Investor',
+        'cash_account_id' => 'Akun Kas',
+        'amount' => 'Jumlah',
+        'remarks' => 'Catatan',
+    ],
     'product_category' => [
         'company' => 'Perusahaan',
         'code' => 'Kode',

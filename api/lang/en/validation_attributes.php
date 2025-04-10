@@ -44,6 +44,16 @@ return [
         'is_active' => 'Is Active',
         'remarks' => 'Remarks',
     ],
+    'capital_addition' => [
+        'company' => 'Company',
+        'branch' => 'Branch',
+        'code' => 'Code',
+        'date' => 'Date',
+        'investor' => 'Investor',
+        'cash_account' => 'Cash Account',
+        'amount' => 'Amount',
+        'remarks' => 'Remarks',
+    ],
     'product_category' => [
         'company' => 'Company',
         'code' => 'Code',
