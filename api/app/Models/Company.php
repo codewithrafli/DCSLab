@@ -80,6 +80,31 @@ class Company extends Model
         return $this->hasMany(Supplier::class);
     }
 
+    public function investors()
+    {
+        return $this->hasMany(Investor::class);
+    }
+
+    public function cashAccounts()
+    {
+        return $this->hasMany(CashAccount::class);
+    }
+
+    public function capitalAdditions()
+    {
+        return $this->hasMany(CapitalAddition::class);
+    }
+
+    public function capitalWithdrawals()
+    {
+        return $this->hasMany(CapitalWithdrawal::class);
+    }
+
+    public function nonCapitalAdditionCategories()
+    {
+        return $this->hasMany(NonCapitalAdditionCategory::class);
+    }
+
     public function purchaseOrders()
     {
         return $this->hasMany(PurchaseOrder::class);
@@ -143,16 +168,6 @@ class Company extends Model
     public function purchaseReceiptProductUnitSerials()
     {
         return $this->hasMany(PurchaseReceiptProductUnitSerial::class);
-    }
-
-    public function capitalAdditions()
-    {
-        return $this->hasMany(CapitalAddition::class);
-    }
-
-    public function capitalWithdrawals()
-    {
-        return $this->hasMany(CapitalWithdrawal::class);
     }
 
     public function scopeSearch($query, string $search)

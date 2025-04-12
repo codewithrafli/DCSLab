@@ -12,6 +12,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvestorController;
+use App\Http\Controllers\NonCapitalAdditionCategoryController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -80,6 +81,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'capital_withdrawal', 'as' => '.capital_withdrawal'], function () {
                 Route::get('read', [CapitalWithdrawalController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{capital_withdrawal:ulid}', [CapitalWithdrawalController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'non_capita_addition_category', 'as' => '.non_capita_addition_category'], function () {
+                Route::get('read', [NonCapitalAdditionCategoryController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{non_capita_addition_category:ulid}', [NonCapitalAdditionCategoryController::class, 'read'])->name('.read');
             });
         });
 
@@ -278,6 +283,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [CapitalWithdrawalController::class, 'store'])->name('.save');
                 Route::post('edit/{capital_withdrawal:ulid}', [CapitalWithdrawalController::class, 'update'])->name('.edit');
                 Route::post('delete/{capital_withdrawal:ulid}', [CapitalWithdrawalController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'non_capital_addition_category', 'as' => '.non_capital_addition_category'], function () {
+                Route::post('save', [NonCapitalAdditionCategoryController::class, 'store'])->name('.save');
+                Route::post('edit/{non_capital_addition_category:ulid}', [NonCapitalAdditionCategoryController::class, 'update'])->name('.edit');
+                Route::post('delete/{non_capital_addition_category:ulid}', [NonCapitalAdditionCategoryController::class, 'delete'])->name('.delete');
             });
         });
 

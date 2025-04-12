@@ -64,6 +64,11 @@ return [
         'amount' => 'Jumlah',
         'remarks' => 'Catatan',
     ],
+    'non_capital_addition_category' => [
+        'company' => 'Perusahaan',
+        'code' => 'Kode',
+        'name' => 'Nama',
+    ],
     'product_category' => [
         'company' => 'Perusahaan',
         'code' => 'Kode',

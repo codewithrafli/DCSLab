@@ -64,6 +64,11 @@ return [
         'amount' => 'Amount',
         'remarks' => 'Remarks',
     ],
+    'non_capital_addition_category' => [
+        'company' => 'Company',
+        'code' => 'Code',
+        'name' => 'Name',
+    ],
     'product_category' => [
         'company' => 'Company',
         'code' => 'Code',
