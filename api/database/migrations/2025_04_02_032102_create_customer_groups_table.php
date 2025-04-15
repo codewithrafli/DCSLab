@@ -13,7 +13,6 @@ return new class extends Migration
             $table->ulid();
 
             $table->foreignId('company_id')->references('id')->on('companies');
-            $table->foreignId('customer_id')->references('id')->on('customers');
             $table->string('code');
             $table->string('name');
             $table->integer('max_open_invoice')->default(0);

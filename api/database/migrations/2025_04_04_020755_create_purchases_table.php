@@ -45,7 +45,6 @@ return new class extends Migration
             $table->decimal('amount_paid_on_invoice', 30, 8)->default(0);
             $table->decimal('amount_paid_after_invoice', 30, 8)->default(0);
             $table->decimal('amount_paid_total', 30, 8)->default(0);
-            $table->decimal('amount_due', 30, 8)->default(0);
             $table->boolean('is_paid_off')->default(false);
             $table->boolean('is_valid')->default(false);
 
