@@ -109,6 +109,11 @@ class Branch extends Model
         return $this->hasMany(CapitalWithdrawal::class);
     }
 
+    public function nonCapitalAdditions()
+    {
+        return $this->hasMany(NonCapitalAddition::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))

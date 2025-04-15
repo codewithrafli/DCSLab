@@ -105,6 +105,11 @@ class Company extends Model
         return $this->hasMany(NonCapitalAdditionCategory::class);
     }
 
+    public function nonCapitalAdditions()
+    {
+        return $this->hasMany(NonCapitalAddition::class);
+    }
+
     public function purchaseOrders()
     {
         return $this->hasMany(PurchaseOrder::class);
