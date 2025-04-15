@@ -10,7 +10,6 @@ use App\Rules\IsValidBrand;
 use App\Rules\IsValidCompany;
 use App\Rules\IsValidProductCategory;
 use App\Rules\ProductStoreValidCode;
-use App\Rules\ProductUpdateValidCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Vinkla\Hashids\Facades\Hashids;
@@ -73,18 +72,20 @@ class ProductRequest extends FormRequest
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
                     'code' => ['required', 'string', 'max:255', new ProductStoreValidCode($this->company_id)],
-                    'product_category_id' => ['required', 'integer', new IsValidProductCategory()],
+                    'category_id' => ['required', 'integer', new IsValidProductCategory()],
                     'brand_id' => ['required', 'integer', new IsValidBrand()],
                     'name' => ['required', 'string', 'max:255'],
-                    'product_type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
-                    'taxable_supply' => ['required', 'boolean'],
-                    'standard_rated_supply' => ['required', 'numeric'],
-                    'price_include_vat' => ['required', 'boolean'],
+                    'slug' => ['required', 'string', 'max:255'],
+                    'is_manufacturer_sku' => ['required', 'boolean'],
+                    'is_taxable' => ['required', 'boolean'],
+                    'vat_rate' => ['required', 'numeric'],
+                    'is_price_include_vat' => ['required', 'boolean'],
+                    'is_use_serial_number' => ['required', 'boolean'],
+                    'is_expirable' => ['required', 'boolean'],
                     'point' => ['required', 'integer'],
-                    'use_serial_number' => ['required', 'boolean'],
-                    'has_expiry_date' => ['required', 'boolean'],
-                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
                     'remarks' => ['nullable', 'string', 'max:255'],
+                    'type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
+                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
 
                     'product_units' => 'required|array',
                     'product_units.*.unit_id' => 'required|integer',
@@ -97,19 +98,21 @@ class ProductRequest extends FormRequest
             case 'update':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'product_category_id' => ['required', 'integer', new IsValidProductCategory()],
+                    'code' => ['required', 'string', 'max:255', new ProductStoreValidCode($this->company_id)],
+                    'category_id' => ['required', 'integer', new IsValidProductCategory()],
                     'brand_id' => ['required', 'integer', new IsValidBrand()],
-                    'code' => ['required', 'string', 'max:255', new ProductUpdateValidCode($this->company_id, $this->route('product'))],
                     'name' => ['required', 'string', 'max:255'],
-                    'product_type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
-                    'taxable_supply' => ['required', 'boolean'],
-                    'standard_rated_supply' => ['required', 'numeric'],
-                    'price_include_vat' => ['required', 'boolean'],
+                    'slug' => ['required', 'string', 'max:255'],
+                    'is_manufacturer_sku' => ['required', 'boolean'],
+                    'is_taxable' => ['required', 'boolean'],
+                    'vat_rate' => ['required', 'numeric'],
+                    'is_price_include_vat' => ['required', 'boolean'],
+                    'is_use_serial_number' => ['required', 'boolean'],
+                    'is_expirable' => ['required', 'boolean'],
                     'point' => ['required', 'integer'],
-                    'use_serial_number' => ['required', 'boolean'],
-                    'has_expiry_date' => ['required', 'boolean'],
-                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
                     'remarks' => ['nullable', 'string', 'max:255'],
+                    'type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
+                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
 
                     'delete_product_unit_ids' => 'nullable|array',
                     'delete_product_unit_ids.*' => 'required|integer|exists:product_units,id',
@@ -137,19 +140,21 @@ class ProductRequest extends FormRequest
     {
         return [
             'company_id' => trans('validation_attributes.product.company'),
-            'brand_id' => trans('validation_attributes.product.brand'),
-            'product_category_id' => trans('validation_attributes.product.product_category'),
             'code' => trans('validation_attributes.product.code'),
+            'is_manufacturer_sku' => trans('validation_attributes.product.is_manufacturer_sku'),
+            'category_id' => trans('validation_attributes.product.product_category'),
+            'brand_id' => trans('validation_attributes.product.brand'),
             'name' => trans('validation_attributes.product.name'),
-            'product_type' => trans('validation_attributes.product.product_type'),
-            'taxable_supply' => trans('validation_attributes.product.taxable_supply'),
-            'standard_rated_supply' => trans('validation_attributes.product.standard_rated_supply'),
-            'price_include_vat' => trans('validation_attributes.product.price_include_vat'),
+            'slug' => trans('validation_attributes.product.slug'),
+            'is_taxable' => trans('validation_attributes.product.is_taxable'),
+            'vat_rate' => trans('validation_attributes.product.vat_rate'),
+            'is_price_include_vat' => trans('validation_attributes.product.is_price_include_vat'),
+            'is_use_serial_number' => trans('validation_attributes.product.is_use_serial_number'),
+            'is_expirable' => trans('validation_attributes.product.is_expirable'),
             'point' => trans('validation_attributes.product.point'),
-            'use_serial_number' => trans('validation_attributes.product.use_serial_number'),
-            'has_expiry_date' => trans('validation_attributes.product.has_expiry_date'),
-            'status' => trans('validation_attributes.product.status'),
             'remarks' => trans('validation_attributes.product.remarks'),
+            'type' => trans('validation_attributes.product.product_type'),
+            'status' => trans('validation_attributes.product.status'),
         ];
     }
 

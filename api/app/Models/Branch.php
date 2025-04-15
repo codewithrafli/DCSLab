@@ -44,6 +44,76 @@ class Branch extends Model
         return $this->hasMany(Warehouse::class);
     }
 
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    public function cashAccounts()
+    {
+        return $this->hasMany(CashAccount::class);
+    }
+
+    public function purchaseProductUnitSerials()
+    {
+        return $this->hasMany(PurchaseProductUnitSerial::class);
+    }
+
+    public function purchaseAdditionalCosts()
+    {
+        return $this->hasMany(PurchaseAdditionalCost::class);
+    }
+
+    public function purchaseReturnProductUnits()
+    {
+        return $this->hasMany(PurchaseReturnProductUnit::class);
+    }
+
+    public function purchaseReturnProductUnitSerials()
+    {
+        return $this->hasMany(PurchaseReturnProductUnitSerial::class);
+    }
+
+    public function purchaseReturnAdditionalCosts()
+    {
+        return $this->hasMany(PurchaseReturnAdditionalCost::class);
+    }
+
+    public function purchasePayments()
+    {
+        return $this->hasMany(PurchasePayment::class);
+    }
+
+    public function purchaseReceipts()
+    {
+        return $this->hasMany(PurchaseReceipt::class);
+    }
+
+    public function purchaseReceiptProductUnits()
+    {
+        return $this->hasMany(PurchaseReceiptProductUnit::class);
+    }
+
+    public function purchaseReceiptProductUnitSerials()
+    {
+        return $this->hasMany(PurchaseReceiptProductUnitSerial::class);
+    }
+
+    public function capitalAdditions()
+    {
+        return $this->hasMany(CapitalAddition::class);
+    }
+
+    public function capitalWithdrawals()
+    {
+        return $this->hasMany(CapitalWithdrawal::class);
+    }
+
+    public function nonCapitalAdditions()
+    {
+        return $this->hasMany(NonCapitalAddition::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))

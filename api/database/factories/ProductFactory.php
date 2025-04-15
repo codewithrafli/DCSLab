@@ -17,17 +17,17 @@ class ProductFactory extends Factory
     {
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'is_factory_code' => fake()->boolean(),
+            'is_manufacturer_sku' => fake()->boolean(),
             'name' => fake()->words(3, true),
             'slug' => fake()->slug(),
-            'taxable_supply' => fake()->boolean(),
-            'standard_rated_supply' => fake()->numberBetween(0, 100),
-            'price_include_vat' => fake()->boolean(),
+            'is_taxable' => fake()->boolean(),
+            'vat_rate' => fake()->numberBetween(0, 100),
+            'is_price_include_vat' => fake()->boolean(),
+            'is_use_serial_number' => fake()->boolean(),
+            'is_expirable' => fake()->boolean(),
             'point' => fake()->numberBetween(0, 100),
-            'use_serial_number' => fake()->boolean(),
-            'has_expiry_date' => fake()->boolean(),
-            'type' => fake()->randomElement(ProductType::toArrayEnum()),
             'remarks' => fake()->sentence(),
+            'type' => fake()->randomElement(ProductType::toArrayEnum()),
             'status' => fake()->randomElement(RecordStatus::toArrayEnum()),
         ];
     }

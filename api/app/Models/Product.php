@@ -18,30 +18,31 @@ class Product extends Model
     protected $fillable = [
         'company_id',
         'code',
-        'is_factory_code',
+        'is_manufacturer_sku',
         'category_id',
         'brand_id',
         'name',
         'slug',
-        'taxable_supply',
-        'standard_rated_supply',
-        'price_include_vat',
+        'is_taxable',
+        'vat_rate',
+        'is_price_include_vat',
+        'is_use_serial_number',
+        'is_expirable',
         'point',
-        'use_serial_number',
-        'has_expiry_date',
-        'type',
         'remarks',
+        'type',
         'status',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_factory_code' => 'boolean',
-            'taxable_supply' => 'boolean',
-            'standard_rated_supply' => 'decimal:8',
-            'price_include_vat' => 'boolean',
-            'use_serial_number' => 'boolean',
+            'is_manufacturer_sku' => 'boolean',
+            'is_taxable' => 'boolean',
+            'vat_rate' => 'decimal:8',
+            'is_price_include_vat' => 'boolean',
+            'is_use_serial_number' => 'boolean',
+            'is_expirable' => 'boolean',
             'has_expiry_date' => 'boolean',
             'type' => ProductType::class,
             'status' => RecordStatus::class,
@@ -66,6 +67,16 @@ class Product extends Model
     public function productUnits()
     {
         return $this->hasMany(ProductUnit::class);
+    }
+
+    public function purchaseReturnProductUnits()
+    {
+        return $this->hasMany(PurchaseReturnProductUnit::class);
+    }
+
+    public function purchaseReceiptProductUnits()
+    {
+        return $this->hasMany(PurchaseReceiptProductUnit::class);
     }
 
     public function scopeSearch($query, string $search)
