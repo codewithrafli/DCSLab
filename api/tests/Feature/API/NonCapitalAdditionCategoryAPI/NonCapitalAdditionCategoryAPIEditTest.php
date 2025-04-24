@@ -31,7 +31,7 @@ class NonCapitalAdditionCategoryAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition_category.edit', $nonCapitalAdditionCategory->ulid), $nonCapitalAdditionCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition_category.edit', $nonCapitalAdditionCategory->ulid), $nonCapitalAdditionCategoryArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class NonCapitalAdditionCategoryAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition_category.edit', $nonCapitalAdditionCategory->ulid), $nonCapitalAdditionCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition_category.edit', $nonCapitalAdditionCategory->ulid), $nonCapitalAdditionCategoryArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class NonCapitalAdditionCategoryAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition_category.edit', $nonCapitalAdditionCategory->ulid), $nonCapitalAdditionCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition_category.edit', $nonCapitalAdditionCategory->ulid), $nonCapitalAdditionCategoryArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('non_capital_addition_categories', [
@@ -119,7 +119,7 @@ class NonCapitalAdditionCategoryAPIEditTest extends APITestCase
             'code' => $nonCapitalAdditionCategory_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition_category.edit', $nonCapitalAdditionCategory_2->ulid), $nonCapitalAdditionCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition_category.edit', $nonCapitalAdditionCategory_2->ulid), $nonCapitalAdditionCategoryArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class NonCapitalAdditionCategoryAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition_category.edit', $nonCapitalAdditionCategory_2->ulid), $nonCapitalAdditionCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition_category.edit', $nonCapitalAdditionCategory_2->ulid), $nonCapitalAdditionCategoryArr);
 
         $api->assertSuccessful();
     }
