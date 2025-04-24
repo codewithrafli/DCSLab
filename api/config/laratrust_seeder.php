@@ -39,6 +39,7 @@ return [
             'capital_addition' => 'c,r,ra,u,d',
             'capital_withdrawal' => 'c,r,ra,u,d',
             'non_capital_addition_category' => 'c,r,ra,u,d',
+            'non_capital_addition' => 'c,r,ra,u,d',
             'product_category' => 'c,r,ra,u,d',
             'brand' => 'c,r,ra,u,d',
             'unit' => 'c,r,ra,u,d',

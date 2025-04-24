@@ -28,7 +28,12 @@ class NonCapitalAdditionActions
         try {
             $nonCapitalAddition = new NonCapitalAddition();
             $nonCapitalAddition->company_id = $data['company_id'];
+            $nonCapitalAddition->branch_id = $data['branch_id'];
             $nonCapitalAddition->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
+            $nonCapitalAddition->date = $data['date'];
+            $nonCapitalAddition->category_id = $data['category_id'];
+            $nonCapitalAddition->cash_account_id = $data['cash_account_id'];
+            $nonCapitalAddition->amount = $data['amount'];
             $nonCapitalAddition->remarks = $data['remarks'];
             $nonCapitalAddition->save();
 
@@ -191,6 +196,10 @@ class NonCapitalAdditionActions
 
         try {
             $nonCapitalAddition->code = $this->generateUniqueCode($nonCapitalAddition->company_id, $data['code'], $nonCapitalAddition->id);
+            $nonCapitalAddition->date = $data['date'];
+            $nonCapitalAddition->category_id = $data['category_id'];
+            $nonCapitalAddition->cash_account_id = $data['cash_account_id'];
+            $nonCapitalAddition->amount = $data['amount'];
             $nonCapitalAddition->remarks = $data['remarks'];
             $nonCapitalAddition->save();
 

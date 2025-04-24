@@ -14,7 +14,12 @@ class NonCapitalAdditionResource extends JsonResource
             'id' => Hashids::encode($this->id),
             'ulid' => $this->ulid,
             'company' => new CompanyResource($this->company),
+            'branch' => new BranchResource($this->branch),
             'code' => $this->code,
+            'date' => $this->date,
+            'category' => new NonCapitalAdditionCategoryResource($this->category),
+            'cash_account' => new CashAccountResource($this->cash_account),
+            'amount' => $this->amount,
             'remarks' => $this->remarks,
         ];
     }

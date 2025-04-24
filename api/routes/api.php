@@ -1,43 +1,44 @@
 <?php
 
-use App\Http\Controllers\ApiAuthController;
-use App\Http\Controllers\BranchController;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\CapitalAdditionController;
-use App\Http\Controllers\CapitalWithdrawalController;
-use App\Http\Controllers\CashAccountController;
-use App\Http\Controllers\CommonController;
-use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\CustomerGroupController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\InvestorController;
-use App\Http\Controllers\NonCapitalAdditionCategoryController;
-use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PurchaseAdditionalCostCategoryController;
-use App\Http\Controllers\PurchaseAdditionalCostController;
-use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\PurchaseOrderController;
-use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
-use App\Http\Controllers\PurchaseOrderDownPaymentController;
-use App\Http\Controllers\PurchaseOrderProductUnitController;
-use App\Http\Controllers\PurchasePaymentController;
-use App\Http\Controllers\PurchaseProductUnitController;
-use App\Http\Controllers\PurchaseProductUnitSerialController;
-use App\Http\Controllers\PurchaseReceiptController;
-use App\Http\Controllers\PurchaseReturnAdditionalCostCategoryController;
-use App\Http\Controllers\PurchaseReturnAdditionalCostController;
-use App\Http\Controllers\PurchaseReturnProductUnitController;
-use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\CommonController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ApiAuthController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvestorController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WarehouseController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CashAccountController;
+use App\Http\Controllers\CustomerGroupController;
+use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\CapitalAdditionController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\PurchasePaymentController;
+use App\Http\Controllers\PurchaseReceiptController;
+use App\Http\Controllers\CapitalWithdrawalController;
+use App\Http\Controllers\NonCapitalAdditionController;
+use App\Http\Controllers\PurchaseProductUnitController;
+use App\Http\Controllers\PurchaseAdditionalCostController;
+use App\Http\Controllers\PurchaseOrderDownPaymentController;
+use App\Http\Controllers\PurchaseOrderProductUnitController;
+use App\Http\Controllers\PurchaseProductUnitSerialController;
+use App\Http\Controllers\PurchaseReturnProductUnitController;
+use App\Http\Controllers\NonCapitalAdditionCategoryController;
+use App\Http\Controllers\PurchaseReturnAdditionalCostController;
+use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
+use App\Http\Controllers\PurchaseAdditionalCostCategoryController;
+use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
+use App\Http\Controllers\PurchaseReturnAdditionalCostCategoryController;
 
 Route::post('auth', [ApiAuthController::class, 'auth', 'middleware' => ['guest', 'throttle:3,1']])->name('api.auth');
 
@@ -85,6 +86,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'non_capital_addition_category', 'as' => '.non_capital_addition_category'], function () {
                 Route::get('read', [NonCapitalAdditionCategoryController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{non_capital_addition_category:ulid}', [NonCapitalAdditionCategoryController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'non_capital_addition', 'as' => '.non_capital_addition'], function () {
+                Route::get('read', [NonCapitalAdditionController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{non_capital_addition:ulid}', [NonCapitalAdditionController::class, 'read'])->name('.read');
             });
         });
 
@@ -288,6 +293,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [NonCapitalAdditionCategoryController::class, 'store'])->name('.save');
                 Route::post('edit/{non_capital_addition_category:ulid}', [NonCapitalAdditionCategoryController::class, 'update'])->name('.edit');
                 Route::post('delete/{non_capital_addition_category:ulid}', [NonCapitalAdditionCategoryController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'non_capital_addition', 'as' => '.non_capital_addition'], function () {
+                Route::post('save', [NonCapitalAdditionController::class, 'store'])->name('.save');
+                Route::post('edit/{non_capital_addition:ulid}', [NonCapitalAdditionController::class, 'update'])->name('.edit');
+                Route::post('delete/{non_capital_addition:ulid}', [NonCapitalAdditionController::class, 'delete'])->name('.delete');
             });
         });
 
