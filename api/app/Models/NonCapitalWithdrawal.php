@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NonCapitalWithdrawalCategory extends Model
+class NonCapitalWithdrawal extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -15,8 +15,13 @@ class NonCapitalWithdrawalCategory extends Model
 
     protected $fillable = [
         'company_id',
+        'branch_id',
         'code',
-        'name',
+        'date',
+        'category_id',
+        'cash_account_id',
+        'amount',
+        'remarks',
     ];
 
     protected $casts = [
@@ -28,14 +33,24 @@ class NonCapitalWithdrawalCategory extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function nonCapitalWithdrawals()
+    public function branch()
     {
-        return $this->hasMany(NonCapitalWithdrawal::class);
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(NonCapitalWithdrawalCategory::class);
+    }
+
+    public function cashAccount()
+    {
+        return $this->belongsTo(CashAccount::class);
     }
 
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%');
+            ->orWhere('remarks', 'like', '%'.$search.'%');
     }
 }

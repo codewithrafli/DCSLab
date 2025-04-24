@@ -28,6 +28,7 @@ use App\Http\Controllers\PurchaseReceiptController;
 use App\Http\Controllers\CapitalWithdrawalController;
 use App\Http\Controllers\NonCapitalAdditionController;
 use App\Http\Controllers\PurchaseProductUnitController;
+use App\Http\Controllers\NonCapitalWithdrawalController;
 use App\Http\Controllers\PurchaseAdditionalCostController;
 use App\Http\Controllers\PurchaseOrderDownPaymentController;
 use App\Http\Controllers\PurchaseOrderProductUnitController;
@@ -95,6 +96,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'non_capital_withdrawal_category', 'as' => '.non_capital_withdrawal_category'], function () {
                 Route::get('read', [NonCapitalWithdrawalCategoryController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{non _capital_withdrawal_category:ulid}', [NonCapitalWithdrawalCategoryController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'non_capital_withdrawal', 'as' => '.non_capital_withdrawal'], function () {
+                Route::get('read', [NonCapitalWithdrawalController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{non _capital_withdrawal:ulid}', [NonCapitalWithdrawalController::class, 'read'])->name('.read');
             });
         });
 
@@ -308,6 +313,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [NonCapitalWithdrawalCategoryController::class, 'store'])->name('.save');
                 Route::post('edit/{non_capital_withdrawal_category:ulid}', [NonCapitalWithdrawalCategoryController::class, 'update'])->name('.edit');
                 Route::post('delete/{non_capital_withdrawal_category:ulid}', [NonCapitalWithdrawalCategoryController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'non_capital_withdrawal', 'as' => '.non_capital_withdrawal'], function () {
+                Route::post('save', [NonCapitalWithdrawalController::class, 'store'])->name('.save');
+                Route::post('edit/{non_capital_withdrawal:ulid}', [NonCapitalWithdrawalController::class, 'update'])->name('.edit');
+                Route::post('delete/{non_capital_withdrawal:ulid}', [NonCapitalWithdrawalController::class, 'delete'])->name('.delete');
             });
         });
 
