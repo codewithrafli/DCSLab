@@ -34,6 +34,7 @@ use App\Http\Controllers\PurchaseOrderProductUnitController;
 use App\Http\Controllers\PurchaseProductUnitSerialController;
 use App\Http\Controllers\PurchaseReturnProductUnitController;
 use App\Http\Controllers\NonCapitalAdditionCategoryController;
+use App\Http\Controllers\NonCapitalWithdrawalCategoryController;
 use App\Http\Controllers\PurchaseReturnAdditionalCostController;
 use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
 use App\Http\Controllers\PurchaseAdditionalCostCategoryController;
@@ -91,6 +92,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read', [NonCapitalAdditionController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{non_capital_addition:ulid}', [NonCapitalAdditionController::class, 'read'])->name('.read');
             });
+            Route::group(['prefix' => 'non_capital_withdrawal_category', 'as' => '.non_capital_withdrawal_category'], function () {
+                Route::get('read', [NonCapitalWithdrawalCategoryController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{non _capital_withdrawal_category:ulid}', [NonCapitalWithdrawalCategoryController::class, 'read'])->name('.read');
+            });
         });
 
         Route::group(['prefix' => 'product', 'as' => '.product'], function () {
@@ -137,9 +142,9 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read', [PurchaseOrderDownPaymentController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase_order_down_payment:ulid}', [PurchaseOrderDownPaymentController::class, 'read'])->name('.read');
             });
-            Route::group(['prefix' => 'purchase_order_down_apply', 'as' => '.purchase_order_down_apply'], function () {
+            Route::group(['prefix' => 'po_down_payment_apply', 'as' => '.po_down_payment_apply'], function () {
                 Route::get('read', [PurchaseOrderDownPaymentApplyController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{purchase_order_down_apply:ulid}', [PurchaseOrderDownPaymentApplyController::class, 'read'])->name('.read');
+                Route::get('read/{po_down_payment_apply:ulid}', [PurchaseOrderDownPaymentApplyController::class, 'read'])->name('.read');
             });
         });
 
@@ -298,6 +303,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [NonCapitalAdditionController::class, 'store'])->name('.save');
                 Route::post('edit/{non_capital_addition:ulid}', [NonCapitalAdditionController::class, 'update'])->name('.edit');
                 Route::post('delete/{non_capital_addition:ulid}', [NonCapitalAdditionController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'non_capital_withdrawal_category', 'as' => '.non_capital_withdrawal_category'], function () {
+                Route::post('save', [NonCapitalWithdrawalCategoryController::class, 'store'])->name('.save');
+                Route::post('edit/{non_capital_withdrawal_category:ulid}', [NonCapitalWithdrawalCategoryController::class, 'update'])->name('.edit');
+                Route::post('delete/{non_capital_withdrawal_category:ulid}', [NonCapitalWithdrawalCategoryController::class, 'delete'])->name('.delete');
             });
         });
 
