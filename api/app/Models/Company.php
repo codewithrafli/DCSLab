@@ -180,6 +180,11 @@ class Company extends Model
         return $this->hasMany(PurchaseReceiptProductUnitSerial::class);
     }
 
+    public function stockTransfers()
+    {
+        return $this->hasMany(StockTransfer::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

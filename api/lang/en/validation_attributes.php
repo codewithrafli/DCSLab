@@ -465,4 +465,14 @@ return [
         'purchase_receipt_product_unit_id' => 'Purchase Receipt Product Unit Id',
         'serial' => 'Serial',
     ],
+    'stock_transfer' => [
+        'company_id' => 'Company Id',
+        'branch_id' => 'Branch Id',
+        'code' => 'Code',
+        'date' => 'Date',
+        'source_warehouse_id' => 'Source Warehouse Id',
+        'destination_warehouse_id' => 'Destination Warehouse Id',
+        'remarks' => 'Remarks',
+        'is_posted' => 'Is Posted',
+    ],
 ];

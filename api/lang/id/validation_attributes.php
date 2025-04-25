@@ -471,4 +471,14 @@ return [
         'purchase_receipt_product_unit_id' => 'Satuan Pembelian',
         'serial' => 'Serial',
     ],
+    'stock_transfer' => [
+        'company_id' => 'Perusahaan',
+        'branch_id' => 'Cabang',
+        'code' => 'Kode',
+        'date' => 'Tanggal',
+        'source_warehouse_id' => 'Gudang Asal',
+        'destination_warehouse_id' => 'Gudang Tujuan',
+        'remarks' => 'Catatan',
+        'is_posted' => 'Diposting',
+    ],
 ];

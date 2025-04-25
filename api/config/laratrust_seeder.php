@@ -66,6 +66,7 @@ return [
             'purchase_receipt' => 'c,r,ra,u,d',
             'purchase_receipt_product_unit' => 'c,r,ra,u,d',
             'purchase_receipt_product_unit_serial' => 'c,r,ra,u,d',
+            'stock_transfer' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],

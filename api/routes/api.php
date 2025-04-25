@@ -41,6 +41,7 @@ use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
 use App\Http\Controllers\PurchaseAdditionalCostCategoryController;
 use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
 use App\Http\Controllers\PurchaseReturnAdditionalCostCategoryController;
+use App\Http\Controllers\StockTransferController;
 
 Route::post('auth', [ApiAuthController::class, 'auth', 'middleware' => ['guest', 'throttle:3,1']])->name('api.auth');
 
@@ -202,9 +203,16 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read', [PurchaseReturnProductUnitController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{purchase_receipt_product_unit:ulid}', [PurchaseReturnProductUnitController::class, 'read'])->name('.read');
             });
-            Route::group(['prefix' => 'receipt_unit_serials', 'as' => '.receipt_unit_serials'], function () {
+            Route::group(['prefix' => 'receipt_product_unit_serial', 'as' => '.receipt_product_unit_serial'], function () {
                 Route::get('read', [PurchaseReturnProductUnitSerialController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{receipt_unit_serials:ulid}', [PurchaseReturnProductUnitSerialController::class, 'read'])->name('.read');
+                Route::get('read/{receipt_product_unit_serial:ulid}', [PurchaseReturnProductUnitSerialController::class, 'read'])->name('.read');
+            });
+        });
+
+        Route::group(['prefix' => 'stock_transfer', 'as' => '.stock_transfer'], function () {
+            Route::group(['prefix' => 'stock_transfer', 'as' => '.stock_transfer'], function () {
+                Route::get('read', [StockTransferController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{stock_transfer:ulid}', [StockTransferController::class, 'read'])->name('.read');
             });
         });
 
@@ -445,6 +453,14 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [PurchaseReturnProductUnitSerialController::class, 'store'])->name('.save');
                 Route::post('edit/{receipt_product_unit_serial:ulid}', [PurchaseReturnProductUnitSerialController::class, 'update'])->name('.edit');
                 Route::post('delete/{receipt_product_unit_serial:ulid}', [PurchaseReturnProductUnitSerialController::class, 'delete'])->name('.delete');
+            });
+        });
+
+        Route::group(['prefix' => 'stock_transfer', 'middleware' => ['precognitive'], 'as' => '.stock_transfer'], function () {
+            Route::group(['prefix' => 'stock_transfer', 'as' => '.stock_transfer'], function () {
+                Route::post('save', [StockTransferController::class, 'store'])->name('.save');
+                Route::post('edit/{stock_transfer:ulid}', [StockTransferController::class, 'update'])->name('.edit');
+                Route::post('delete/{stock_transfer:ulid}', [StockTransferController::class, 'delete'])->name('.delete');
             });
         });
 
