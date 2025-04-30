@@ -42,6 +42,7 @@ use App\Http\Controllers\PurchaseAdditionalCostCategoryController;
 use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
 use App\Http\Controllers\PurchaseReturnAdditionalCostCategoryController;
 use App\Http\Controllers\StockTransferController;
+use App\Http\Controllers\StockTransferProductUnitController;
 
 Route::post('auth', [ApiAuthController::class, 'auth', 'middleware' => ['guest', 'throttle:3,1']])->name('api.auth');
 
@@ -213,6 +214,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'stock_transfer', 'as' => '.stock_transfer'], function () {
                 Route::get('read', [StockTransferController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{stock_transfer:ulid}', [StockTransferController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'stock_transfer_product_unit', 'as' => '.stock_transfer_product_unit'], function () {
+                Route::get('read', [StockTransferProductUnitController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{stock_transfer_product_unit:ulid}', [StockTransferProductUnitController::class, 'read'])->name('.read');
             });
         });
 
@@ -461,6 +466,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [StockTransferController::class, 'store'])->name('.save');
                 Route::post('edit/{stock_transfer:ulid}', [StockTransferController::class, 'update'])->name('.edit');
                 Route::post('delete/{stock_transfer:ulid}', [StockTransferController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'stock_transfer_product_unit', 'as' => '.stock_transfer_product_unit'], function () {
+                Route::post('save', [StockTransferProductUnitController::class, 'store'])->name('.save');
+                Route::post('edit/{stock_transfer_product_unit:ulid}', [StockTransferProductUnitController::class, 'update'])->name('.edit');
+                Route::post('delete/{stock_transfer_product_unit:ulid}', [StockTransferProductUnitController::class, 'delete'])->name('.delete');
             });
         });
 

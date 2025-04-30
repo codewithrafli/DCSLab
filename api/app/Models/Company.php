@@ -185,6 +185,11 @@ class Company extends Model
         return $this->hasMany(StockTransfer::class);
     }
 
+    public function stockTransferProductUnits()
+    {
+        return $this->hasMany(StockTransferProductUnit::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

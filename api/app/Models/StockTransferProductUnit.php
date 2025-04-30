@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class StockTransfer extends Model
+class StockTransferProductUnit extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -16,12 +16,13 @@ class StockTransfer extends Model
     protected $fillable = [
         'company_id',
         'branch_id',
-        'code',
-        'date',
-        'source_warehouse_id',
-        'destination_warehouse_id',
+        'stock_transfer_id',
+        'qty',
+        'product_id',
+        'product_unit_id',
+        'product_unit_amount_per_unit',
+        'product_unit_amount_total',
         'remarks',
-        'is_posted',
     ];
 
     protected $casts = [
@@ -38,19 +39,19 @@ class StockTransfer extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    public function sourceWarehouse()
+    public function stockTransfer()
     {
-        return $this->belongsTo(Warehouse::class, 'source_warehouse_id');
+        return $this->belongsTo(StockTransfer::class);
     }
 
-    public function destinationWarehouse()
+    public function product()
     {
-        return $this->belongsTo(Warehouse::class, 'destination_warehouse_id');
+        return $this->belongsTo(Product::class);
     }
 
-    public function stockTransferProductUnits()
+    public function productUnit()
     {
-        return $this->hasMany(StockTransferProductUnit::class);
+        return $this->belongsTo(ProductUnit::class);
     }
 
     public function scopeSearch($query, string $search)
