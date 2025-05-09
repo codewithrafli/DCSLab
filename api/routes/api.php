@@ -8,6 +8,7 @@ use App\Http\Controllers\CapitalWithdrawalController;
 use App\Http\Controllers\CashAccountController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerAddressController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\DashboardController;
@@ -135,6 +136,11 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'customer', 'as' => '.customer'], function () {
                 Route::get('read', [CustomerController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{customer:ulid}', [CustomerController::class, 'read'])->name('.read');
+            });
+
+            Route::group(['prefix' => 'customer_address', 'as' => '.customer_address'], function () {
+                Route::get('read', [CustomerAddressController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{customer_address:ulid}', [CustomerAddressController::class, 'read'])->name('.read');
             });
         });
 
@@ -380,6 +386,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [CustomerController::class, 'store'])->name('.save');
                 Route::post('edit/{customer:ulid}', [CustomerController::class, 'update'])->name('.edit');
                 Route::post('delete/{customer:ulid}', [CustomerController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'customer_address', 'as' => '.customer_address'], function () {
+                Route::post('save', [CustomerAddressController::class, 'store'])->name('.save');
+                Route::post('edit/{customer_address:ulid}', [CustomerAddressController::class, 'update'])->name('.edit');
+                Route::post('delete/{customer_address:ulid}', [CustomerAddressController::class, 'delete'])->name('.delete');
             });
         });
 
