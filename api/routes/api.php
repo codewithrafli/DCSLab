@@ -1,49 +1,50 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UnitController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\BranchController;
-use App\Http\Controllers\CommonController;
-use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ApiAuthController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CapitalAdditionController;
+use App\Http\Controllers\CapitalWithdrawalController;
+use App\Http\Controllers\CashAccountController;
+use App\Http\Controllers\CommonController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerGroupController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvestorController;
+use App\Http\Controllers\NonCapitalAdditionCategoryController;
+use App\Http\Controllers\NonCapitalAdditionController;
+use App\Http\Controllers\NonCapitalWithdrawalCategoryController;
+use App\Http\Controllers\NonCapitalWithdrawalController;
+use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\InvestorController;
-use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\WarehouseController;
-use App\Http\Controllers\CashAccountController;
-use App\Http\Controllers\CustomerGroupController;
-use App\Http\Controllers\PurchaseOrderController;
-use App\Http\Controllers\StockTransferController;
-use App\Http\Controllers\CapitalAdditionController;
-use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\PurchasePaymentController;
-use App\Http\Controllers\PurchaseReceiptController;
-use App\Http\Controllers\CapitalWithdrawalController;
-use App\Http\Controllers\NonCapitalAdditionController;
-use App\Http\Controllers\PurchaseProductUnitController;
-use App\Http\Controllers\NonCapitalWithdrawalController;
+use App\Http\Controllers\PurchaseAdditionalCostCategoryController;
 use App\Http\Controllers\PurchaseAdditionalCostController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
 use App\Http\Controllers\PurchaseOrderDownPaymentController;
 use App\Http\Controllers\PurchaseOrderProductUnitController;
-use App\Http\Controllers\StockTransferProductUnitController;
+use App\Http\Controllers\PurchasePaymentController;
+use App\Http\Controllers\PurchaseProductUnitController;
 use App\Http\Controllers\PurchaseProductUnitSerialController;
-use App\Http\Controllers\PurchaseReturnProductUnitController;
-use App\Http\Controllers\NonCapitalAdditionCategoryController;
-use App\Http\Controllers\NonCapitalWithdrawalCategoryController;
-use App\Http\Controllers\PurchaseReturnAdditionalCostController;
-use App\Http\Controllers\PurchaseOrderDownPaymentApplyController;
-use App\Http\Controllers\PurchaseAdditionalCostCategoryController;
-use App\Http\Controllers\StockTransferProductUnitSerialController;
-use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
+use App\Http\Controllers\PurchaseReceiptController;
 use App\Http\Controllers\PurchaseReturnAdditionalCostCategoryController;
+use App\Http\Controllers\PurchaseReturnAdditionalCostController;
+use App\Http\Controllers\PurchaseReturnProductUnitController;
+use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SalesOrderController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StockTransferController;
+use App\Http\Controllers\StockTransferProductUnitController;
+use App\Http\Controllers\StockTransferProductUnitSerialController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WarehouseController;
+use Illuminate\Support\Facades\Route;
 
 Route::post('auth', [ApiAuthController::class, 'auth', 'middleware' => ['guest', 'throttle:3,1']])->name('api.auth');
 
@@ -223,6 +224,13 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'stock_transfer_product_unit_serial', 'as' => '.stock_transfer_product_unit_serial'], function () {
                 Route::get('read', [StockTransferProductUnitSerialController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{stock_transfer_product_unit_serial:ulid}', [StockTransferProductUnitSerialController::class, 'read'])->name('.read');
+            });
+        });
+
+        Route::group(['prefix' => 'sales', 'as' => '.sales'], function () {
+            Route::group(['prefix' => 'sales_order', 'as' => '.sales_order'], function () {
+                Route::get('read', [SalesOrderController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sales_order:ulid}', [SalesOrderController::class, 'read'])->name('.read');
             });
         });
 
@@ -481,6 +489,14 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [StockTransferProductUnitSerialController::class, 'store'])->name('.save');
                 Route::post('edit/{stock_transfer_product_unit_serial:ulid}', [StockTransferProductUnitSerialController::class, 'update'])->name('.edit');
                 Route::post('delete/{stock_transfer_product_unit_serial:ulid}', [StockTransferProductUnitSerialController::class, 'delete'])->name('.delete');
+            });
+        });
+
+        Route::group(['prefix' => 'sales', 'middleware' => ['precognitive'], 'as' => '.sales'], function () {
+            Route::group(['prefix' => 'sales_order', 'as' => '.sales_order'], function () {
+                Route::post('save', [SalesOrderController::class, 'store'])->name('.save');
+                Route::post('edit/{sales_order:ulid}', [SalesOrderController::class, 'update'])->name('.edit');
+                Route::post('delete/{sales_order:ulid}', [SalesOrderController::class, 'delete'])->name('.delete');
             });
         });
 

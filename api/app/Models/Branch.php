@@ -129,6 +129,16 @@ class Branch extends Model
         return $this->hasMany(StockTransferProductUnit::class);
     }
 
+    public function stockTransferProductUnitSerials()
+    {
+        return $this->hasMany(StockTransferProductUnitSerial::class);
+    }
+
+    public function salesOrders()
+    {
+        return $this->hasMany(SalesOrder::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))

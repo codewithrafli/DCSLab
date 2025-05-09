@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Actions\StockTransferProductUnitSerial;
+namespace App\Actions\SalesOrder;
 
-use App\Models\StockTransferProductUnitSerial;
+use App\Models\Company;
+use App\Models\SalesOrder;
 use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
 use Exception;
@@ -10,7 +11,7 @@ use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class StockTransferProductUnitSerialActions
+class SalesOrderActions
 {
     use CacheHelper;
     use LoggerHelper;
@@ -19,25 +20,37 @@ class StockTransferProductUnitSerialActions
     {
     }
 
-    public function create(array $data): StockTransferProductUnitSerial
+    public function create(array $data): SalesOrder
     {
         DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
-            $stockTransferProductUnitSerial = new StockTransferProductUnitSerial();
-            $stockTransferProductUnitSerial->company_id = $data['company_id'];
-            $stockTransferProductUnitSerial->branch_id = $data['branch_id'];
-            $stockTransferProductUnitSerial->stock_transfer_id = $data['stock_transfer_id'];
-            $stockTransferProductUnitSerial->stock_transfer_product_unit_id = $data['stock_transfer_product_unit_id'];
-            $stockTransferProductUnitSerial->serial = $data['serial'];
-            $stockTransferProductUnitSerial->save();
+            $salesOrder = new SalesOrder();
+            $salesOrder->company_id = $data['company_id'];
+            $salesOrder->branch_id = $data['branch_id'];
+            $salesOrder->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
+            $salesOrder->customer_id = $data['customer_id'];
+            $salesOrder->customer_address_id = $data['customer_address_id'];
+            $salesOrder->remarks = $data['remarks'];
+            $salesOrder->is_has_invoice = $data['is_has_invoice'];
+            $salesOrder->is_sent = $data['is_sent'];
+            $salesOrder->total = $data['total'];
+            $salesOrder->global_discount_rate = $data['global_discount_rate'];
+            $salesOrder->global_discount_fixed = $data['global_discount_fixed'];
+            $salesOrder->grand_total = $data['grand_total'];
+            $salesOrder->down_payment = $data['down_payment'];
+            $salesOrder->down_payment_due_days = $data['down_payment_due_days'];
+            $salesOrder->down_payment_applied = $data['down_payment_applied'];
+            $salesOrder->down_payment_remaining = $data['down_payment_remaining'];
+            $salesOrder->is_down_payment_paid_off = $data['is_down_payment_paid_off'];
+            $salesOrder->save();
 
             DB::commit();
 
             $this->flushCache();
 
-            return $stockTransferProductUnitSerial;
+            return $salesOrder;
         } catch (Exception $e) {
             DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
@@ -56,7 +69,7 @@ class StockTransferProductUnitSerialActions
 
         ?int $limit
     ) {
-        $query = StockTransferProductUnitSerial::with('company')->withTrashed()
+        $query = SalesOrder::with('company')->withTrashed()
             ->withAggregate('company', 'name')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
@@ -135,12 +148,12 @@ class StockTransferProductUnitSerialActions
         }
     }
 
-    public function read(StockTransferProductUnitSerial $stockTransferProductUnitSerial): StockTransferProductUnitSerial
+    public function read(SalesOrder $salesOrder): SalesOrder
     {
-        return $stockTransferProductUnitSerial->with('company')->first();
+        return $salesOrder->with('company')->first();
     }
 
-    public function getAllActiveStockTransferProductUnitSerial(
+    public function getAllActiveSalesOrder(
         ?array $with,
         ?bool $withTrashed,
 
@@ -185,24 +198,35 @@ class StockTransferProductUnitSerialActions
         }
     }
 
-    public function update(StockTransferProductUnitSerial $stockTransferProductUnitSerial, array $data): StockTransferProductUnitSerial
+    public function update(SalesOrder $salesOrder, array $data): SalesOrder
     {
         DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
-            $stockTransferProductUnitSerial->company_id = $data['company_id'];
-            $stockTransferProductUnitSerial->branch_id = $data['branch_id'];
-            $stockTransferProductUnitSerial->stock_transfer_id = $data['stock_transfer_id'];
-            $stockTransferProductUnitSerial->stock_transfer_product_unit_id = $data['stock_transfer_product_unit_id'];
-            $stockTransferProductUnitSerial->serial = $data['serial'];
-            $stockTransferProductUnitSerial->save();
+            $salesOrder->code = $this->generateUniqueCode($salesOrder->company_id, $data['code'], $salesOrder->id);
+            $salesOrder->customer_id = $data['customer_id'];
+            $salesOrder->customer_address_id = $data['customer_address_id'];
+            $salesOrder->remarks = $data['remarks'];
+            $salesOrder->is_has_invoice = $data['is_has_invoice'];
+            $salesOrder->is_sent = $data['is_sent'];
+            $salesOrder->total = $data['total'];
+            $salesOrder->global_discount_rate = $data['global_discount_rate'];
+            $salesOrder->global_discount_fixed = $data['global_discount_fixed'];
+            $salesOrder->grand_total = $data['grand_total'];
+            $salesOrder->down_payment = $data['down_payment'];
+            $salesOrder->down_payment_due_days = $data['down_payment_due_days'];
+            $salesOrder->down_payment_applied = $data['down_payment_applied'];
+            $salesOrder->down_payment_remaining = $data['down_payment_remaining'];
+            $salesOrder->is_down_payment_paid_off = $data['is_down_payment_paid_off'];
+            $salesOrder->remarks = $data['remarks'];
+            $salesOrder->save();
 
             DB::commit();
 
             $this->flushCache();
 
-            return $stockTransferProductUnitSerial->refresh();
+            return $salesOrder->refresh();
         } catch (Exception $e) {
             DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
@@ -213,7 +237,7 @@ class StockTransferProductUnitSerialActions
         }
     }
 
-    public function delete(StockTransferProductUnitSerial $stockTransferProductUnitSerial): bool
+    public function delete(SalesOrder $salesOrder): bool
     {
         DB::beginTransaction();
         $timer_start = microtime(true);
@@ -221,7 +245,7 @@ class StockTransferProductUnitSerialActions
         $retval = false;
 
         try {
-            $retval = $stockTransferProductUnitSerial->delete();
+            $retval = $salesOrder->delete();
 
             DB::commit();
 
@@ -236,5 +260,34 @@ class StockTransferProductUnitSerialActions
             $execution_time = microtime(true) - $timer_start;
             $this->loggerPerformance(__METHOD__, $execution_time);
         }
+    }
+
+    public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
+    {
+        if ($code == config('dcslab.KEYWORDS.AUTO')) {
+            $company = Company::find($companyId);
+
+            $tryCount = 0;
+            do {
+                $count = $company->salesOrders()->withTrashed()->count() + 1 + $tryCount;
+                $code = 'WH'.str_pad($count, 3, '0', STR_PAD_LEFT);
+                $tryCount++;
+            } while (! $this->isUniqueCode($companyId, $code, $exceptId));
+
+            return $code;
+        } else {
+            return $code;
+        }
+    }
+
+    public function isUniqueCode(int $companyId, string $code, ?int $exceptId): bool
+    {
+        $result = SalesOrder::whereCompanyId($companyId)->where('code', '=', $code);
+
+        if ($exceptId) {
+            $result = $result->where('id', '<>', $exceptId);
+        }
+
+        return $result->count() == 0 ? true : false;
     }
 }

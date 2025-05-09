@@ -3,16 +3,14 @@
 namespace App\Http\Requests;
 
 use App\Enums\RecordStatus;
+use App\Helpers\HashidsHelper;
+use App\Models\StockTransferProductUnitSerial;
 use App\Rules\IsValidBranch;
 use App\Rules\IsValidCompany;
-use App\Helpers\HashidsHelper;
 use App\Rules\IsValidStockTransfer;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Http\FormRequest;
-use App\Models\StockTransferProductUnitSerial;
 use App\Rules\IsValidStockTransferProductUnit;
-use App\Rules\StockTransferProductUnitSerialStoreValidCode;
-use App\Rules\StockTransferProductUnitSerialUpdateValidCode;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StockTransferProductUnitSerialRequest extends FormRequest
 {

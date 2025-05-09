@@ -3,15 +3,15 @@
 namespace App\Http\Requests;
 
 use App\Enums\RecordStatus;
-use App\Rules\IsValidBranch;
-use App\Models\StockTransfer;
-use App\Rules\IsValidCompany;
 use App\Helpers\HashidsHelper;
+use App\Models\StockTransfer;
+use App\Rules\IsValidBranch;
+use App\Rules\IsValidCompany;
 use App\Rules\IsValidWarehouse;
-use Illuminate\Support\Facades\Auth;
 use App\Rules\StockTransferStoreValidCode;
 use App\Rules\StockTransferUpdateValidCode;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StockTransferRequest extends FormRequest
 {

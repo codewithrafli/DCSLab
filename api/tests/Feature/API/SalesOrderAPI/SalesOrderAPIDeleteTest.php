@@ -1,24 +1,24 @@
 <?php
 
-namespace Tests\Feature\API\StockTransferAPI;
+namespace Tests\Feature\API\SalesOrderAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
 use App\Models\Role;
-use App\Models\StockTransfer;
+use App\Models\SalesOrder;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Str;
 use Tests\APITestCase;
 
-class StockTransferAPIDeleteTest extends APITestCase
+class SalesOrderAPIDeleteTest extends APITestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
     }
 
-    public function test_stock_transfer_api_call_delete_without_authorization_expect_unauthorized_message()
+    public function test_sales_order_api_call_delete_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -26,14 +26,14 @@ class StockTransferAPIDeleteTest extends APITestCase
             ->create();
 
         $company = $user->companies()->inRandomOrder()->first();
-        $stockTransfer = StockTransfer::factory()->for($company)->create();
+        $salesOrder = SalesOrder::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', $stockTransfer->ulid));
+        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', $salesOrder->ulid));
 
         $api->assertStatus(401);
     }
 
-    public function test_stock_transfer_api_call_delete_without_access_right_expect_unauthorized_message()
+    public function test_sales_order_api_call_delete_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault())
@@ -42,14 +42,14 @@ class StockTransferAPIDeleteTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->inRandomOrder()->first();
-        $stockTransfer = StockTransfer::factory()->for($company)->create();
+        $salesOrder = SalesOrder::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', $stockTransfer->ulid));
+        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', $salesOrder->ulid));
 
         $api->assertStatus(403);
     }
 
-    public function test_stock_transfer_api_call_delete_expect_successful()
+    public function test_sales_order_api_call_delete_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -59,17 +59,17 @@ class StockTransferAPIDeleteTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->inRandomOrder()->first();
-        $stockTransfer = StockTransfer::factory()->for($company)->create();
+        $salesOrder = SalesOrder::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', $stockTransfer->ulid));
+        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', $salesOrder->ulid));
 
         $api->assertSuccessful();
-        $this->assertSoftDeleted('stock_transfers', [
-            'id' => $stockTransfer->id,
+        $this->assertSoftDeleted('sales_orders', [
+            'id' => $salesOrder->id,
         ]);
     }
 
-    public function test_stock_transfer_api_call_delete_of_nonexistance_ulid_expect_not_found()
+    public function test_sales_order_api_call_delete_of_nonexistance_ulid_expect_not_found()
     {
         $user = User::factory()->create();
 
@@ -77,18 +77,18 @@ class StockTransferAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', $ulid));
 
         $api->assertStatus(404);
     }
 
-    public function test_stock_transfer_api_call_delete_without_parameters_expect_failed()
+    public function test_sales_order_api_call_delete_without_parameters_expect_failed()
     {
         $this->expectException(Exception::class);
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', null));
+        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', null));
 
         $api->assertStatus(500);
     }

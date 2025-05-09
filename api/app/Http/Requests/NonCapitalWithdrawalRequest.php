@@ -3,16 +3,16 @@
 namespace App\Http\Requests;
 
 use App\Enums\RecordStatus;
-use App\Rules\IsValidBranch;
-use App\Rules\IsValidCompany;
 use App\Helpers\HashidsHelper;
-use App\Rules\IsValidCashAccount;
 use App\Models\NonCapitalWithdrawal;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Foundation\Http\FormRequest;
-use App\Rules\NonCapitalWithdrawalStoreValidCode;
+use App\Rules\IsValidBranch;
+use App\Rules\IsValidCashAccount;
+use App\Rules\IsValidCompany;
 use App\Rules\IsValidNonCapitalWithdrawalCategory;
+use App\Rules\NonCapitalWithdrawalStoreValidCode;
 use App\Rules\NonCapitalWithdrawalUpdateValidCode;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class NonCapitalWithdrawalRequest extends FormRequest
 {

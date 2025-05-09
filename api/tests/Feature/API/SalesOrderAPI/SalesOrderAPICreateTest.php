@@ -1,23 +1,23 @@
 <?php
 
-namespace Tests\Feature\API\StockTransferAPI;
+namespace Tests\Feature\API\SalesOrderAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
 use App\Models\Role;
-use App\Models\StockTransfer;
+use App\Models\SalesOrder;
 use App\Models\User;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
 
-class StockTransferAPICreateTest extends APITestCase
+class SalesOrderAPICreateTest extends APITestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
     }
 
-    public function test_stock_transfer_api_call_store_without_authorization_expect_unauthorized_message()
+    public function test_sales_order_api_call_store_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -26,16 +26,16 @@ class StockTransferAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $stockTransferArr = StockTransfer::factory()->make([
+        $salesOrderArr = SalesOrder::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.save'), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.product.sales_order.save'), $salesOrderArr);
 
         $api->assertUnauthorized();
     }
 
-    public function test_stock_transfer_api_call_store_without_access_right_expect_unauthorized_message()
+    public function test_sales_order_api_call_store_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault())
@@ -45,26 +45,26 @@ class StockTransferAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $stockTransferArr = StockTransfer::factory()->make([
+        $salesOrderArr = SalesOrder::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.save'), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.product.sales_order.save'), $salesOrderArr);
 
         $api->assertForbidden();
     }
 
-    public function test_stock_transfer_api_call_store_with_script_tags_in_payload_expect_stripped()
+    public function test_sales_order_api_call_store_with_script_tags_in_payload_expect_stripped()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    public function test_stock_transfer_api_call_store_with_script_tags_in_payload_expect_encoded()
+    public function test_sales_order_api_call_store_with_script_tags_in_payload_expect_encoded()
     {
         $this->markTestSkipped('Test under construction');
     }
 
-    public function test_stock_transfer_api_call_store_expect_successful()
+    public function test_sales_order_api_call_store_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -75,26 +75,26 @@ class StockTransferAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $stockTransferArr = StockTransfer::factory()->make([
+        $salesOrderArr = SalesOrder::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.save'), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.product.sales_order.save'), $salesOrderArr);
 
         $api->assertSuccessful();
-        $this->assertDatabaseHas('stock_transfers', [
+        $this->assertDatabaseHas('sales_orders', [
             'company_id' => $company->id,
-            'code' => $stockTransferArr['code'],
-            'name' => $stockTransferArr['name'],
+            'code' => $salesOrderArr['code'],
+            'name' => $salesOrderArr['name'],
         ]);
     }
 
-    public function test_stock_transfer_api_call_store_with_nonexistance_branch_id_expect_failed()
+    public function test_sales_order_api_call_store_with_nonexistance_branch_id_expect_failed()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    public function test_stock_transfer_api_call_store_with_existing_code_in_same_company_expect_failed()
+    public function test_sales_order_api_call_store_with_existing_code_in_same_company_expect_failed()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -106,16 +106,16 @@ class StockTransferAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        StockTransfer::factory()->for($company)->create([
+        SalesOrder::factory()->for($company)->create([
             'code' => 'test1',
         ]);
 
-        $stockTransferArr = StockTransfer::factory()->make([
+        $salesOrderArr = SalesOrder::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.save'), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.product.sales_order.save'), $salesOrderArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -123,7 +123,7 @@ class StockTransferAPICreateTest extends APITestCase
         ]);
     }
 
-    public function test_stock_transfer_api_call_store_with_existing_code_in_different_company_expect_successful()
+    public function test_sales_order_api_call_store_with_existing_code_in_different_company_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -139,26 +139,26 @@ class StockTransferAPICreateTest extends APITestCase
 
         $company_2 = $companies[1];
 
-        StockTransfer::factory()->for($company_1)->create([
+        SalesOrder::factory()->for($company_1)->create([
             'code' => 'test1',
         ]);
 
-        $stockTransferArr = StockTransfer::factory()->make([
+        $salesOrderArr = SalesOrder::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.save'), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.product.sales_order.save'), $salesOrderArr);
 
         $api->assertSuccessful();
-        $this->assertDatabaseHas('stock_transfers', [
+        $this->assertDatabaseHas('sales_orders', [
             'company_id' => $company_2->id,
-            'code' => $stockTransferArr['code'],
-            'name' => $stockTransferArr['name'],
+            'code' => $salesOrderArr['code'],
+            'name' => $salesOrderArr['name'],
         ]);
     }
 
-    public function test_stock_transfer_api_call_store_with_empty_string_parameters_expect_validation_error()
+    public function test_sales_order_api_call_store_with_empty_string_parameters_expect_validation_error()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -167,9 +167,9 @@ class StockTransferAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $stockTransferArr = [];
+        $salesOrderArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.save'), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.product.sales_order.save'), $salesOrderArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }
