@@ -63,6 +63,11 @@ class CashAccount extends Model
         return $this->hasMany(NonCapitalWithdrawal::class);
     }
 
+    public function saleOrderDownPayments()
+    {
+        return $this->hasMany(SaleOrderDownPayment::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

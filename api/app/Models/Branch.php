@@ -144,6 +144,11 @@ class Branch extends Model
         return $this->hasMany(SaleOrderProductUnit::class);
     }
 
+    public function saleOrderDownPayments()
+    {
+        return $this->hasMany(SaleOrderDownPayment::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))
