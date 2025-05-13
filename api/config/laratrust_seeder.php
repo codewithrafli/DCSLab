@@ -71,6 +71,7 @@ return [
             'stock_transfer_product_unit' => 'c,r,ra,u,d',
             'stock_transfer_product_unit_serial' => 'c,r,ra,u,d',
             'sales_order' => 'c,r,ra,u,d',
+            'sales_order_product_unit' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],

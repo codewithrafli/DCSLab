@@ -200,6 +200,11 @@ class Company extends Model
         return $this->hasMany(SalesOrder::class);
     }
 
+    public function saleOrderProductUnits()
+    {
+        return $this->hasMany(SaleOrderProductUnit::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
