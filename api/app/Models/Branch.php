@@ -114,6 +114,41 @@ class Branch extends Model
         return $this->hasMany(NonCapitalAddition::class);
     }
 
+    public function nonCapitalWithdrawals()
+    {
+        return $this->hasMany(NonCapitalWithdrawal::class);
+    }
+
+    public function stockTransfers()
+    {
+        return $this->hasMany(StockTransfer::class);
+    }
+
+    public function stockTransferProductUnits()
+    {
+        return $this->hasMany(StockTransferProductUnit::class);
+    }
+
+    public function stockTransferProductUnitSerials()
+    {
+        return $this->hasMany(StockTransferProductUnitSerial::class);
+    }
+
+    public function salesOrders()
+    {
+        return $this->hasMany(SalesOrder::class);
+    }
+
+    public function saleOrderProductUnits()
+    {
+        return $this->hasMany(SaleOrderProductUnit::class);
+    }
+
+    public function saleOrderDownPayments()
+    {
+        return $this->hasMany(SaleOrderDownPayment::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))

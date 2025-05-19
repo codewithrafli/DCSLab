@@ -5,7 +5,10 @@ namespace App\Http\Requests;
 use App\Enums\RecordStatus;
 use App\Helpers\HashidsHelper;
 use App\Models\NonCapitalAddition;
+use App\Rules\IsValidBranch;
+use App\Rules\IsValidCashAccount;
 use App\Rules\IsValidCompany;
+use App\Rules\IsValidNonCapitalAdditionCategory;
 use App\Rules\NonCapitalAdditionStoreValidCode;
 use App\Rules\NonCapitalAdditionUpdateValidCode;
 use Illuminate\Foundation\Http\FormRequest;
@@ -68,13 +71,23 @@ class NonCapitalAdditionRequest extends FormRequest
             case 'store':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+                    'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
                     'code' => ['required', 'string', 'max:255', new NonCapitalAdditionStoreValidCode($this->company_id)],
+                    'date' => ['required', 'date'],
+                    'category_id' => ['required', 'integer', new IsValidNonCapitalAdditionCategory($this->company_id)],
+                    'cash_account_id' => ['required', 'integer', new IsValidCashAccount($this->company_id)],
+                    'amount' => ['required', 'numeric', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'update':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+                    'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
                     'code' => ['required', 'string', 'max:255', new NonCapitalAdditionUpdateValidCode($this->company_id, $this->route('non_capital_addition'))],
+                    'date' => ['required', 'date'],
+                    'category_id' => ['required', 'integer', new IsValidNonCapitalAdditionCategory($this->company_id)],
+                    'cash_account_id' => ['required', 'integer', new IsValidCashAccount($this->company_id)],
+                    'amount' => ['required', 'numeric', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'delete':

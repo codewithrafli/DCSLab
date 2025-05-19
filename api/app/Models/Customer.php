@@ -51,9 +51,19 @@ class Customer extends Model
         return $this->belongsTo(User::class)->withTrashed();
     }
 
-    public function customer()
+    public function customerGroup()
     {
-        return $this->belongsTo(Customer::class)->withTrashed();
+        return $this->belongsTo(CustomerGroup::class)->withTrashed();
+    }
+
+    public function customerAddresses()
+    {
+        return $this->hasMany(CustomerAddress::class);
+    }
+
+    public function salesOrders()
+    {
+        return $this->hasMany(SalesOrder::class);
     }
 
     public function scopeSearch($query, string $search)

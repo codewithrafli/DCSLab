@@ -110,6 +110,11 @@ class Company extends Model
         return $this->hasMany(NonCapitalAddition::class);
     }
 
+    public function nonCapitalWithdrawalCategories()
+    {
+        return $this->hasMany(NonCapitalWithdrawalCategory::class);
+    }
+
     public function purchaseOrders()
     {
         return $this->hasMany(PurchaseOrder::class);
@@ -173,6 +178,36 @@ class Company extends Model
     public function purchaseReceiptProductUnitSerials()
     {
         return $this->hasMany(PurchaseReceiptProductUnitSerial::class);
+    }
+
+    public function stockTransfers()
+    {
+        return $this->hasMany(StockTransfer::class);
+    }
+
+    public function stockTransferProductUnits()
+    {
+        return $this->hasMany(StockTransferProductUnit::class);
+    }
+
+    public function stockTransferProductUnitSerials()
+    {
+        return $this->hasMany(StockTransferProductUnitSerial::class);
+    }
+
+    public function salesOrders()
+    {
+        return $this->hasMany(SalesOrder::class);
+    }
+
+    public function saleOrderProductUnits()
+    {
+        return $this->hasMany(SaleOrderProductUnit::class);
+    }
+
+    public function saleOrderDownPayments()
+    {
+        return $this->hasMany(SaleOrderDownPayment::class);
     }
 
     public function scopeSearch($query, string $search)
