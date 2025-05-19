@@ -4,8 +4,8 @@ namespace Tests\Feature\API\SaleOrderProductUnitAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
-use App\Models\SaleOrderProductUnit;
 use App\Models\Role;
+use App\Models\SaleOrderProductUnit;
 use App\Models\User;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;

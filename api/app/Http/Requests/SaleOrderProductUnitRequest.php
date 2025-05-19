@@ -3,17 +3,15 @@
 namespace App\Http\Requests;
 
 use App\Enums\RecordStatus;
+use App\Helpers\HashidsHelper;
+use App\Models\SaleOrderProductUnit;
 use App\Rules\IsValidBranch;
 use App\Rules\IsValidCompany;
 use App\Rules\IsValidProduct;
-use App\Helpers\HashidsHelper;
-use App\Rules\IsValidSaleOrder;
 use App\Rules\IsValidProductUnit;
-use App\Models\SaleOrderProductUnit;
-use Illuminate\Support\Facades\Auth;
+use App\Rules\IsValidSaleOrder;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Rules\SaleOrderProductUnitStoreValidCode;
-use App\Rules\SaleOrderProductUnitUpdateValidCode;
+use Illuminate\Support\Facades\Auth;
 
 class SaleOrderProductUnitRequest extends FormRequest
 {

@@ -4,8 +4,8 @@ namespace Tests\Feature\API\SaleOrderDownPaymentAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
-use App\Models\SaleOrderDownPayment;
 use App\Models\Role;
+use App\Models\SaleOrderDownPayment;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Str;
