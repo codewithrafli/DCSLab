@@ -12,6 +12,7 @@ use App\Rules\CustomerGroupUpdateValidCode;
 use App\Rules\IsValidCompany;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Enum;
 
 class CustomerGroupRequest extends FormRequest
 {
@@ -73,18 +74,18 @@ class CustomerGroupRequest extends FormRequest
                     'code' => ['required', 'string', 'max:255', new CustomerGroupStoreValidCode($this->company_id)],
                     'name' => ['required', 'string', 'max:255'],
                     'max_open_invoice' => ['required', 'integer', 'min:0'],
-                    'max_outstanding_invoice' => ['required', 'integer', 'min:0'],
+                    'max_outstanding_invoice' => ['required', 'numeric', 'min:0'],
                     'max_invoice_age' => ['required', 'integer', 'min:0'],
                     'payment_term_type' => ['required', 'string', 'in:'.implode(',', PaymentTermType::toArrayValue())],
                     'payment_term' => ['required', 'integer', 'min:0'],
                     'selling_point' => ['required', 'integer', 'max:255'],
-                    'selling_point_multiple' => ['required', 'integer', 'min:0'],
+                    'selling_point_multiple' => ['required', 'numeric', 'min:0'],
                     'sell_at_cost' => ['required', 'boolean'],
-                    'price_markup_percent' => ['required', 'integer', 'min:0'],
-                    'price_markup_nominal' => ['required', 'integer', 'min:0'],
-                    'price_markdown_percent' => ['required', 'integer', 'min:0'],
-                    'price_markdown_nominal' => ['required', 'integer', 'min:0'],
-                    'round_on' => ['required', 'string', 'in:'.implode(',', RoundOn::toArrayValue())],
+                    'price_markup_percent' => ['required', 'numeric', 'min:0'],
+                    'price_markup_nominal' => ['required', 'numeric', 'min:0'],
+                    'price_markdown_percent' => ['required', 'numeric', 'min:0'],
+                    'price_markdown_nominal' => ['required', 'numeric', 'min:0'],
+                    'round_on' => [new Enum(RoundOn::class)],
                     'round_digit' => ['required', 'integer', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
@@ -94,18 +95,18 @@ class CustomerGroupRequest extends FormRequest
                     'code' => ['required', 'string', 'max:255', new CustomerGroupUpdateValidCode($this->company_id, $this->route('customer_group'))],
                     'name' => ['required', 'string', 'max:255'],
                     'max_open_invoice' => ['required', 'integer', 'min:0'],
-                    'max_outstanding_invoice' => ['required', 'integer', 'min:0'],
+                    'max_outstanding_invoice' => ['required', 'numeric', 'min:0'],
                     'max_invoice_age' => ['required', 'integer', 'min:0'],
                     'payment_term_type' => ['required', 'string', 'in:'.implode(',', PaymentTermType::toArrayValue())],
                     'payment_term' => ['required', 'integer', 'min:0'],
-                    'selling_point' => ['required', 'string', 'max:255'],
-                    'selling_point_multiple' => ['required', 'integer', 'min:0'],
+                    'selling_point' => ['required', 'integer', 'max:255'],
+                    'selling_point_multiple' => ['required', 'numeric', 'min:0'],
                     'sell_at_cost' => ['required', 'boolean'],
-                    'price_markup_percent' => ['required', 'integer', 'min:0'],
-                    'price_markup_nominal' => ['required', 'integer', 'min:0'],
-                    'price_markdown_percent' => ['required', 'integer', 'min:0'],
-                    'price_markdown_nominal' => ['required', 'integer', 'min:0'],
-                    'round_on' => ['required', 'string', 'in:'.implode(',', RoundOn::toArrayValue())],
+                    'price_markup_percent' => ['required', 'numeric', 'min:0'],
+                    'price_markup_nominal' => ['required', 'numeric', 'min:0'],
+                    'price_markdown_percent' => ['required', 'numeric', 'min:0'],
+                    'price_markdown_nominal' => ['required', 'numeric', 'min:0'],
+                    'round_on' => [new Enum(RoundOn::class)],
                     'round_digit' => ['required', 'integer', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];

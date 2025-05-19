@@ -15,9 +15,9 @@ return new class extends Migration
             $table->foreignId('company_id')->references('id')->on('companies');
             $table->foreignId('branch_id')->references('id')->on('branches');
             $table->foreignId('stock_transfer_id')->references('id')->on('stock_transfers');
-            $table->foreignId('stock_transfer_product_unit_id')->references('id')->on('stock_transfer_product_units');
+            $table->foreignId('stock_transfer_product_unit_id');
+            $table->foreign('stock_transfer_product_unit_id', 'fk_stpu_serials_stpu_id')->references('id')->on('stock_transfer_product_units');
             $table->string('serial');
-
             $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('updated_by')->default(0);
             $table->unsignedBigInteger('deleted_by')->default(0);

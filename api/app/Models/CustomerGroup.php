@@ -36,7 +36,7 @@ class CustomerGroup extends Model
 
     protected $casts = [
         'max_outstanding_invoice' => 'decimal:8',
-        'selling_point' => 'decimal:8',
+        'selling_point' => 'integer',
         'selling_point_multiple' => 'decimal:8',
         'price_markup_percent' => 'decimal:8',
         'price_markup_nominal' => 'decimal:8',

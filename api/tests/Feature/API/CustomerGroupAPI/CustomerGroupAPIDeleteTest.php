@@ -28,7 +28,7 @@ class CustomerGroupAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customerGroup = CustomerGroup::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.delete', $customerGroup->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.delete', $customerGroup->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class CustomerGroupAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customerGroup = CustomerGroup::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.delete', $customerGroup->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.delete', $customerGroup->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class CustomerGroupAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customerGroup = CustomerGroup::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.delete', $customerGroup->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.delete', $customerGroup->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('customer_groups', [
@@ -77,7 +77,7 @@ class CustomerGroupAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class CustomerGroupAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.customer_group.delete', null));
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.delete', null));
 
         $api->assertStatus(500);
     }
