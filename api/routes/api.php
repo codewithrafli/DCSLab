@@ -36,6 +36,7 @@ use App\Http\Controllers\PurchaseReturnAdditionalCostController;
 use App\Http\Controllers\PurchaseReturnProductUnitController;
 use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SaleOrderDownPaymentApplyController;
 use App\Http\Controllers\SaleOrderDownPaymentController;
 use App\Http\Controllers\SaleOrderProductUnitController;
 use App\Http\Controllers\SalesOrderController;
@@ -247,6 +248,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'sale_order_down_payment', 'as' => '.sale_order_down_payment'], function () {
                 Route::get('read', [SaleOrderDownPaymentController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{sale_order_down_payment:ulid}', [SaleOrderDownPaymentController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_order_down_payment_apply', 'as' => '.sale_order_down_payment_apply'], function () {
+                Route::get('read', [SaleOrderDownPaymentApplyController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'read'])->name('.read');
             });
         });
 
@@ -528,6 +533,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [SaleOrderDownPaymentController::class, 'store'])->name('.save');
                 Route::post('edit/{sale_order_down_payment:ulid}', [SaleOrderDownPaymentController::class, 'update'])->name('.edit');
                 Route::post('delete/{sale_order_down_payment:ulid}', [SaleOrderDownPaymentController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_order_down_payment_apply', 'as' => '.sale_order_down_payment_apply'], function () {
+                Route::post('save', [SaleOrderDownPaymentApplyController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'delete'])->name('.delete');
             });
         });
 

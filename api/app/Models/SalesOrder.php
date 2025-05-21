@@ -69,6 +69,11 @@ class SalesOrder extends Model
         return $this->hasMany(SaleOrderDownPayment::class);
     }
 
+    public function saleOrderDownPaymentApplies()
+    {
+        return $this->hasMany(SaleOrderDownPaymentApply::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

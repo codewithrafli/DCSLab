@@ -73,6 +73,7 @@ return [
             'sales_order' => 'c,r,ra,u,d',
             'sales_order_product_unit' => 'c,r,ra,u,d',
             'sales_order_down_payment' => 'c,r,ra,u,d',
+            'sales_order_down_payment_apply' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],
