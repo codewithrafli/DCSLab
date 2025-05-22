@@ -215,6 +215,11 @@ class Company extends Model
         return $this->hasMany(SaleOrderDownPaymentApply::class);
     }
 
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

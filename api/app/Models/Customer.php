@@ -66,6 +66,11 @@ class Customer extends Model
         return $this->hasMany(SalesOrder::class);
     }
 
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

@@ -36,6 +36,7 @@ use App\Http\Controllers\PurchaseReturnAdditionalCostController;
 use App\Http\Controllers\PurchaseReturnProductUnitController;
 use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SaleOrderDownPaymentApplyController;
 use App\Http\Controllers\SaleOrderDownPaymentController;
 use App\Http\Controllers\SaleOrderProductUnitController;
@@ -252,6 +253,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'sale_order_down_payment_apply', 'as' => '.sale_order_down_payment_apply'], function () {
                 Route::get('read', [SaleOrderDownPaymentApplyController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale', 'as' => '.sale'], function () {
+                Route::get('read', [SaleController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale:ulid}', [SaleController::class, 'read'])->name('.read');
             });
         });
 
@@ -538,6 +543,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [SaleOrderDownPaymentApplyController::class, 'store'])->name('.save');
                 Route::post('edit/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'update'])->name('.edit');
                 Route::post('delete/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale', 'as' => '.sale'], function () {
+                Route::post('save', [SaleController::class, 'store'])->name('.save');
+                Route::post('edit/{sale:ulid}', [SaleController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale:ulid}', [SaleController::class, 'delete'])->name('.delete');
             });
         });
 

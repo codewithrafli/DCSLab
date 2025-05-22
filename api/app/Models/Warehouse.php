@@ -55,6 +55,11 @@ class Warehouse extends Model
         return $this->hasMany(StockTransfer::class, 'destination_warehouse_id');
     }
 
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))
