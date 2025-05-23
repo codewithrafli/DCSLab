@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SaleReceipt extends Model
+class SaleReceiptProductUnit extends Model
 {
     use BootableModel;
     use HasFactory;
@@ -16,9 +16,13 @@ class SaleReceipt extends Model
     protected $fillable = [
         'company_id',
         'branch_id',
-        'code',
-        'sale_id',
-        'warehouse_id',
+        'sale_receipt_id',
+        'qty',
+        'product_id',
+        'product_unit_id',
+        'product_unit_amount_per_unit',
+        'product_unit_amount_total',
+        'is_has_sale',
     ];
 
     protected $casts = [
@@ -35,23 +39,24 @@ class SaleReceipt extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    public function sale()
+    public function saleReceipt()
     {
-        return $this->belongsTo(Sale::class);
+        return $this->belongsTo(SaleReceipt::class);
     }
 
-    public function warehouse()
+    public function product()
     {
-        return $this->belongsTo(Warehouse::class);
+        return $this->belongsTo(Product::class);
     }
 
-    public function saleReceiptProductUnits()
+    public function productUnit()
     {
-        return $this->hasMany(SaleReceiptProductUnit::class);
+        return $this->belongsTo(ProductUnit::class);
     }
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%');
+        return $query->where('code', 'like', '%'.$search.'%')
+            ->orWhere('remarks', 'like', '%'.$search.'%');
     }
 }

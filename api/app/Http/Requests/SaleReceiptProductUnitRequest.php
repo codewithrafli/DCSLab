@@ -4,17 +4,16 @@ namespace App\Http\Requests;
 
 use App\Enums\RecordStatus;
 use App\Helpers\HashidsHelper;
-use App\Models\SaleReceipt;
+use App\Models\SaleReceiptProductUnit;
 use App\Rules\IsValidBranch;
 use App\Rules\IsValidCompany;
-use App\Rules\IsValidSale;
-use App\Rules\IsValidWarehouse;
-use App\Rules\SaleReceiptStoreValidCode;
-use App\Rules\SaleReceiptUpdateValidCode;
+use App\Rules\IsValidProduct;
+use App\Rules\IsValidProductUnit;
+use App\Rules\IsValidSaleReceipt;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class SaleReceiptRequest extends FormRequest
+class SaleReceiptProductUnitRequest extends FormRequest
 {
     public function authorize()
     {
@@ -24,20 +23,20 @@ class SaleReceiptRequest extends FormRequest
 
         /** @var \App\User */
         $user = Auth::user();
-        $saleReceipt = $this->route('sale_receipt');
+        $saleReceiptProductUnit = $this->route('sale_receipt_product_unit');
 
         $currentRouteMethod = $this->route()->getActionMethod();
         switch ($currentRouteMethod) {
             case 'readAny':
-                return $user->can('viewAny', SaleReceipt::class) ? true : false;
+                return $user->can('viewAny', SaleReceiptProductUnit::class) ? true : false;
             case 'read':
-                return $user->can('view', SaleReceipt::class, $saleReceipt) ? true : false;
+                return $user->can('view', SaleReceiptProductUnit::class, $saleReceiptProductUnit) ? true : false;
             case 'store':
-                return $user->can('create', SaleReceipt::class) ? true : false;
+                return $user->can('create', SaleReceiptProductUnit::class) ? true : false;
             case 'update':
-                return $user->can('update', SaleReceipt::class, $saleReceipt) ? true : false;
+                return $user->can('update', SaleReceiptProductUnit::class, $saleReceiptProductUnit) ? true : false;
             case 'delete':
-                return $user->can('delete', SaleReceipt::class, $saleReceipt) ? true : false;
+                return $user->can('delete', SaleReceiptProductUnit::class, $saleReceiptProductUnit) ? true : false;
             default:
                 return false;
         }
@@ -72,17 +71,25 @@ class SaleReceiptRequest extends FormRequest
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
                     'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
-                    'code' => ['required', 'string', 'max:255', new SaleReceiptStoreValidCode($this->company_id)],
-                    'sale_id' => ['required', 'integer', new IsValidSale($this->company_id)],
-                    'warehouse_id' => ['required', 'integer', new IsValidWarehouse($this->company_id, true)],
+                    'sale_receipt_id' => ['required', 'integer', new IsValidSaleReceipt($this->company_id)],
+                    'qty' => ['required', 'integer', 'min:1'],
+                    'product_id' => ['required', 'integer', new IsValidProduct($this->company_id)],
+                    'product_unit_id' => ['required', 'integer', new IsValidProductUnit($this->company_id)],
+                    'product_unit_amount_per_unit' => ['required', 'numeric', 'min:0'],
+                    'product_unit_total_amount' => ['required', 'numeric', 'min:0'],
+                    'it_has_sale' => ['required', 'boolean'],
                 ];
             case 'update':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
                     'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
-                    'code' => ['required', 'string', 'max:255', new SaleReceiptUpdateValidCode($this->company_id, $this->route('sale_receipt'))],
-                    'sale_id' => ['required', 'integer', new IsValidSale($this->company_id)],
-                    'warehouse_id' => ['required', 'integer', new IsValidWarehouse($this->company_id, true)],
+                    'sale_receipt_id' => ['required', 'integer', new IsValidSaleReceipt($this->company_id)],
+                    'qty' => ['required', 'integer', 'min:1'],
+                    'product_id' => ['required', 'integer', new IsValidProduct($this->company_id)],
+                    'product_unit_id' => ['required', 'integer', new IsValidProductUnit($this->company_id)],
+                    'product_unit_amount_per_unit' => ['required', 'numeric', 'min:0'],
+                    'product_unit_total_amount' => ['required', 'numeric', 'min:0'],
+                    'it_has_sale' => ['required', 'boolean'],
                 ];
             case 'delete':
                 return [
@@ -98,9 +105,15 @@ class SaleReceiptRequest extends FormRequest
     public function attributes()
     {
         return [
-            'company_id' => trans('validation_attributes.sale_receipt.company'),
-            'code' => trans('validation_attributes.sale_receipt.code'),
-            'remarks' => trans('validation_attributes.sale_receipt.remarks'),
+            'company_id' => trans('validation_attributes.sale_receipt_product_unit.company'),
+            'branch_id' => trans('validation_attributes.sale_receipt_product_unit.branch'),
+            'sale_receipt_id' => trans('validation_attributes.sale_receipt_product_unit.sale_receipt'),
+            'qty' => trans('validation_attributes.sale_receipt_product_unit.qty'),
+            'product_id' => trans('validation_attributes.sale_receipt_product_unit.product'),
+            'product_unit_id' => trans('validation_attributes.sale_receipt_product_unit.product_unit'),
+            'product_unit_amount_per_unit' => trans('validation_attributes.sale_receipt_product_unit.product_unit_amount_per_unit'),
+            'product_unit_total_amount' => trans('validation_attributes.sale_receipt_product_unit.product_unit_total_amount'),
+            'it_has_sale' => trans('validation_attributes.sale_receipt_product_unit.it_has_sale'),
         ];
     }
 
@@ -134,7 +147,6 @@ class SaleReceiptRequest extends FormRequest
             case 'update':
                 $this->merge([
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
-                    'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
                 break;
             default:

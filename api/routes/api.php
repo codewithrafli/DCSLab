@@ -44,6 +44,7 @@ use App\Http\Controllers\SalePaymentController;
 use App\Http\Controllers\SaleProductUnitController;
 use App\Http\Controllers\SaleProductUnitSerialController;
 use App\Http\Controllers\SaleReceiptController;
+use App\Http\Controllers\SaleReceiptProductUnitController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StockTransferController;
@@ -277,6 +278,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'sale_receipt', 'as' => '.sale_receipt'], function () {
                 Route::get('read', [SaleReceiptController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{sale_receipt:ulid}', [SaleReceiptController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_receipt_product_unit', 'as' => '.sale_receipt_product_unit'], function () {
+                Route::get('read', [SaleReceiptProductUnitController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_receipt_product_unit:ulid}', [SaleReceiptProductUnitController::class, 'read'])->name('.read');
             });
         });
 
@@ -588,6 +593,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [SaleReceiptController::class, 'store'])->name('.save');
                 Route::post('edit/{sale_receipt:ulid}', [SaleReceiptController::class, 'update'])->name('.edit');
                 Route::post('delete/{sale_receipt:ulid}', [SaleReceiptController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_receipt_product_unit', 'as' => '.sale_receipt_product_unit'], function () {
+                Route::post('save', [SaleReceiptProductUnitController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_receipt_product_unit:ulid}', [SaleReceiptProductUnitController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_receipt_product_unit:ulid}', [SaleReceiptProductUnitController::class, 'delete'])->name('.delete');
             });
         });
 

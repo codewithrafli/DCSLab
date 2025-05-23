@@ -179,6 +179,11 @@ class Branch extends Model
         return $this->hasMany(SaleReceipt::class);
     }
 
+    public function saleReceiptProductUnits()
+    {
+        return $this->hasMany(SaleReceiptProductUnit::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))

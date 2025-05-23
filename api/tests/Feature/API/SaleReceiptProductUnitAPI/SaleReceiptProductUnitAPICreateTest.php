@@ -1,23 +1,23 @@
 <?php
 
-namespace Tests\Feature\API\SaleReceiptAPI;
+namespace Tests\Feature\API\SaleReceiptProductUnitAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
 use App\Models\Role;
-use App\Models\SaleReceipt;
+use App\Models\SaleReceiptProductUnit;
 use App\Models\User;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
 
-class SaleReceiptAPICreateTest extends APITestCase
+class SaleReceiptProductUnitAPICreateTest extends APITestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
     }
 
-    public function test_sale_receipt_api_call_store_without_authorization_expect_unauthorized_message()
+    public function test_sale_receipt_product_unit_api_call_store_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -26,16 +26,16 @@ class SaleReceiptAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $saleReceiptArr = SaleReceipt::factory()->make([
+        $saleReceiptProductUnitArr = SaleReceiptProductUnit::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_receipt.save'), $saleReceiptArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_receipt_product_unit.save'), $saleReceiptProductUnitArr);
 
         $api->assertUnauthorized();
     }
 
-    public function test_sale_receipt_api_call_store_without_access_right_expect_unauthorized_message()
+    public function test_sale_receipt_product_unit_api_call_store_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault())
@@ -45,26 +45,26 @@ class SaleReceiptAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $saleReceiptArr = SaleReceipt::factory()->make([
+        $saleReceiptProductUnitArr = SaleReceiptProductUnit::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_receipt.save'), $saleReceiptArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_receipt_product_unit.save'), $saleReceiptProductUnitArr);
 
         $api->assertForbidden();
     }
 
-    public function test_sale_receipt_api_call_store_with_script_tags_in_payload_expect_stripped()
+    public function test_sale_receipt_product_unit_api_call_store_with_script_tags_in_payload_expect_stripped()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    public function test_sale_receipt_api_call_store_with_script_tags_in_payload_expect_encoded()
+    public function test_sale_receipt_product_unit_api_call_store_with_script_tags_in_payload_expect_encoded()
     {
         $this->markTestSkipped('Test under construction');
     }
 
-    public function test_sale_receipt_api_call_store_expect_successful()
+    public function test_sale_receipt_product_unit_api_call_store_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -75,26 +75,26 @@ class SaleReceiptAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $saleReceiptArr = SaleReceipt::factory()->make([
+        $saleReceiptProductUnitArr = SaleReceiptProductUnit::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_receipt.save'), $saleReceiptArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_receipt_product_unit.save'), $saleReceiptProductUnitArr);
 
         $api->assertSuccessful();
-        $this->assertDatabaseHas('sale_receipts', [
+        $this->assertDatabaseHas('sale_receipt_product_units', [
             'company_id' => $company->id,
-            'code' => $saleReceiptArr['code'],
-            'name' => $saleReceiptArr['name'],
+            'code' => $saleReceiptProductUnitArr['code'],
+            'name' => $saleReceiptProductUnitArr['name'],
         ]);
     }
 
-    public function test_sale_receipt_api_call_store_with_nonexistance_branch_id_expect_failed()
+    public function test_sale_receipt_product_unit_api_call_store_with_nonexistance_branch_id_expect_failed()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    public function test_sale_receipt_api_call_store_with_existing_code_in_same_company_expect_failed()
+    public function test_sale_receipt_product_unit_api_call_store_with_existing_code_in_same_company_expect_failed()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -106,16 +106,16 @@ class SaleReceiptAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        SaleReceipt::factory()->for($company)->create([
+        SaleReceiptProductUnit::factory()->for($company)->create([
             'code' => 'test1',
         ]);
 
-        $saleReceiptArr = SaleReceipt::factory()->make([
+        $saleReceiptProductUnitArr = SaleReceiptProductUnit::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_receipt.save'), $saleReceiptArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_receipt_product_unit.save'), $saleReceiptProductUnitArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -123,7 +123,7 @@ class SaleReceiptAPICreateTest extends APITestCase
         ]);
     }
 
-    public function test_sale_receipt_api_call_store_with_existing_code_in_different_company_expect_successful()
+    public function test_sale_receipt_product_unit_api_call_store_with_existing_code_in_different_company_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -139,26 +139,26 @@ class SaleReceiptAPICreateTest extends APITestCase
 
         $company_2 = $companies[1];
 
-        SaleReceipt::factory()->for($company_1)->create([
+        SaleReceiptProductUnit::factory()->for($company_1)->create([
             'code' => 'test1',
         ]);
 
-        $saleReceiptArr = SaleReceipt::factory()->make([
+        $saleReceiptProductUnitArr = SaleReceiptProductUnit::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_receipt.save'), $saleReceiptArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_receipt_product_unit.save'), $saleReceiptProductUnitArr);
 
         $api->assertSuccessful();
-        $this->assertDatabaseHas('sale_receipts', [
+        $this->assertDatabaseHas('sale_receipt_product_units', [
             'company_id' => $company_2->id,
-            'code' => $saleReceiptArr['code'],
-            'name' => $saleReceiptArr['name'],
+            'code' => $saleReceiptProductUnitArr['code'],
+            'name' => $saleReceiptProductUnitArr['name'],
         ]);
     }
 
-    public function test_sale_receipt_api_call_store_with_empty_string_parameters_expect_validation_error()
+    public function test_sale_receipt_product_unit_api_call_store_with_empty_string_parameters_expect_validation_error()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -167,9 +167,9 @@ class SaleReceiptAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $saleReceiptArr = [];
+        $saleReceiptProductUnitArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.sale_receipt.save'), $saleReceiptArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_receipt_product_unit.save'), $saleReceiptProductUnitArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

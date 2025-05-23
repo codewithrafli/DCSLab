@@ -4,8 +4,8 @@ namespace Tests\Feature\API\SaleReceiptAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
-use App\Models\SaleReceipt;
 use App\Models\Role;
+use App\Models\SaleReceipt;
 use App\Models\User;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
