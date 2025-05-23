@@ -258,6 +258,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read', [SaleController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{sale:ulid}', [SaleController::class, 'read'])->name('.read');
             });
+            Route::group(['prefix' => 'sale_product_unit', 'as' => '.sale_product_unit'], function () {
+                Route::get('read', [SaleController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_product_unit:ulid}', [SaleController::class, 'read'])->name('.read');
+            });
         });
 
         Route::group(['prefix' => 'supplier', 'as' => '.supplier'], function () {
@@ -548,6 +552,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [SaleController::class, 'store'])->name('.save');
                 Route::post('edit/{sale:ulid}', [SaleController::class, 'update'])->name('.edit');
                 Route::post('delete/{sale:ulid}', [SaleController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_product_unit', 'as' => '.sale_product_unit'], function () {
+                Route::post('save', [SaleController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_product_unit:ulid}', [SaleController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_product_unit:ulid}', [SaleController::class, 'delete'])->name('.delete');
             });
         });
 

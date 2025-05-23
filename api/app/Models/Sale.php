@@ -83,6 +83,11 @@ class Sale extends Model
         return $this->belongsTo(Customer::class);
     }
 
+    public function saleProductUnits()
+    {
+        return $this->hasMany(SaleProductUnit::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

@@ -60,6 +60,11 @@ class Warehouse extends Model
         return $this->hasMany(Sale::class);
     }
 
+    public function saleProductUnits()
+    {
+        return $this->hasMany(SaleProductUnit::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))
