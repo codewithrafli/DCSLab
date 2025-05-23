@@ -43,6 +43,7 @@ use App\Http\Controllers\SaleOrderProductUnitController;
 use App\Http\Controllers\SalePaymentController;
 use App\Http\Controllers\SaleProductUnitController;
 use App\Http\Controllers\SaleProductUnitSerialController;
+use App\Http\Controllers\SaleReceiptController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StockTransferController;
@@ -272,6 +273,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'sale_payment', 'as' => '.sale_payment'], function () {
                 Route::get('read', [SalePaymentController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{sale_payment:ulid}', [SalePaymentController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_receipt', 'as' => '.sale_receipt'], function () {
+                Route::get('read', [SaleReceiptController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_receipt:ulid}', [SaleReceiptController::class, 'read'])->name('.read');
             });
         });
 
@@ -578,6 +583,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [SalePaymentController::class, 'store'])->name('.save');
                 Route::post('edit/{sale_payment:ulid}', [SalePaymentController::class, 'update'])->name('.edit');
                 Route::post('delete/{sale_payment:ulid}', [SalePaymentController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_receipt', 'as' => '.sale_receipt'], function () {
+                Route::post('save', [SaleReceiptController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_receipt:ulid}', [SaleReceiptController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_receipt:ulid}', [SaleReceiptController::class, 'delete'])->name('.delete');
             });
         });
 

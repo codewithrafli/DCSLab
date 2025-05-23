@@ -98,6 +98,11 @@ class Sale extends Model
         return $this->hasMany(SalePayment::class);
     }
 
+    public function saleReceipts()
+    {
+        return $this->hasMany(SaleReceipt::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
