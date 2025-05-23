@@ -245,6 +245,11 @@ class Company extends Model
         return $this->hasMany(SaleReceiptProductUnit::class);
     }
 
+    public function saleReceiptProductUnitSerials()
+    {
+        return $this->hasMany(SaleReceiptProductUnitSerial::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
