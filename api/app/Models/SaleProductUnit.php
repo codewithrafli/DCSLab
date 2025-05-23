@@ -87,6 +87,11 @@ class SaleProductUnit extends Model
         return $this->belongsTo(ProductUnit::class);
     }
 
+    public function saleProductUnitSerials()
+    {
+        return $this->hasMany(SaleProductUnitSerial::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')
