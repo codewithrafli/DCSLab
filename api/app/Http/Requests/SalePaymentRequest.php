@@ -4,15 +4,17 @@ namespace App\Http\Requests;
 
 use App\Enums\RecordStatus;
 use App\Helpers\HashidsHelper;
-use App\Models\SaleProductUnitSerial;
+use App\Models\SalePayment;
 use App\Rules\IsValidBranch;
+use App\Rules\IsValidCashAccount;
 use App\Rules\IsValidCompany;
 use App\Rules\IsValidSale;
-use App\Rules\IsValidSaleProductUnit;
+use App\Rules\SalePaymentStoreValidCode;
+use App\Rules\SalePaymentUpdateValidCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class SaleProductUnitSerialRequest extends FormRequest
+class SalePaymentRequest extends FormRequest
 {
     public function authorize()
     {
@@ -22,20 +24,20 @@ class SaleProductUnitSerialRequest extends FormRequest
 
         /** @var \App\User */
         $user = Auth::user();
-        $saleProductUnitSerial = $this->route('sale_product_unit_serial');
+        $salePayment = $this->route('sale_payment');
 
         $currentRouteMethod = $this->route()->getActionMethod();
         switch ($currentRouteMethod) {
             case 'readAny':
-                return $user->can('viewAny', SaleProductUnitSerial::class) ? true : false;
+                return $user->can('viewAny', SalePayment::class) ? true : false;
             case 'read':
-                return $user->can('view', SaleProductUnitSerial::class, $saleProductUnitSerial) ? true : false;
+                return $user->can('view', SalePayment::class, $salePayment) ? true : false;
             case 'store':
-                return $user->can('create', SaleProductUnitSerial::class) ? true : false;
+                return $user->can('create', SalePayment::class) ? true : false;
             case 'update':
-                return $user->can('update', SaleProductUnitSerial::class, $saleProductUnitSerial) ? true : false;
+                return $user->can('update', SalePayment::class, $salePayment) ? true : false;
             case 'delete':
-                return $user->can('delete', SaleProductUnitSerial::class, $saleProductUnitSerial) ? true : false;
+                return $user->can('delete', SalePayment::class, $salePayment) ? true : false;
             default:
                 return false;
         }
@@ -69,18 +71,24 @@ class SaleProductUnitSerialRequest extends FormRequest
             case 'store':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
-                    'sale_id' => ['required', 'integer', new IsValidSale($this->company_id)],
-                    'sale_product_unit_id' => ['required', 'integer', 'bail', new IsValidSaleProductUnit($this->company_id)],
-                    'serial' => ['required', 'string', 'max:255'],
+                    'branch_id' => ['required', 'integer', 'bail', new IsValidBranch($this->company_id, true)],
+                    'sale_id' => ['required', 'integer', 'bail', new IsValidSale($this->company_id)],
+                    'code' => ['required', 'string', 'max:255', new SalePaymentStoreValidCode($this->company_id)],
+                    'date' => ['required', 'date'],
+                    'cash_account_id' => ['required', 'integer', 'bail', new IsValidCashAccount($this->company_id)],
+                    'amount' => ['required', 'numeric', 'min:0'],
+                    'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'update':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
-                    'sale_id' => ['required', 'integer', new IsValidSale($this->company_id)],
-                    'sale_product_unit_id' => ['required', 'integer', 'bail', new IsValidSaleProductUnit($this->company_id)],
-                    'serial' => ['required', 'string', 'max:255'],
+                    'branch_id' => ['required', 'integer', 'bail', new IsValidBranch($this->company_id, true)],
+                    'sale_id' => ['required', 'integer', 'bail', new IsValidSale($this->company_id)],
+                    'code' => ['required', 'string', 'max:255', new SalePaymentUpdateValidCode($this->company_id, $this->route('sale_payment'))],
+                    'date' => ['required', 'date'],
+                    'cash_account_id' => ['required', 'integer', 'bail', new IsValidCashAccount($this->company_id)],
+                    'amount' => ['required', 'numeric', 'min:0'],
+                    'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'delete':
                 return [
@@ -96,11 +104,14 @@ class SaleProductUnitSerialRequest extends FormRequest
     public function attributes()
     {
         return [
-            'company_id' => trans('validation_attributes.sale_product_unit_serial.company'),
-            'branch_id' => trans('validation_attributes.sale_product_unit_serial.branch'),
-            'sale_id' => trans('validation_attributes.sale_product_unit_serial.sale'),
-            'sale_product_unit_id' => trans('validation_attributes.sale_product_unit_serial.sale_product_unit'),
-            'serial' => trans('validation_attributes.sale_product_unit_serial.serial'),
+            'company_id' => trans('validation_attributes.sale_payment.company'),
+            'branch_id' => trans('validation_attributes.sale_payment.branch'),
+            'sale_id' => trans('validation_attributes.sale_payment.sale'),
+            'code' => trans('validation_attributes.sale_payment.code'),
+            'date' => trans('validation_attributes.sale_payment.date'),
+            'cash_account_id' => trans('validation_attributes.sale_payment.cash_account'),
+            'amount' => trans('validation_attributes.sale_payment.amount'),
+            'remarks' => trans('validation_attributes.sale_payment.remarks'),
         ];
     }
 
@@ -134,6 +145,7 @@ class SaleProductUnitSerialRequest extends FormRequest
             case 'update':
                 $this->merge([
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
+                    'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
                 break;
             default:

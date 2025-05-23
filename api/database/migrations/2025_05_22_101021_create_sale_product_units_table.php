@@ -38,7 +38,7 @@ return new class extends Migration
             $table->decimal('product_unit_subtotal_discount_rate', 30, 8);
             $table->decimal('product_unit_subtotal_discount_fixed', 30, 8);
             $table->decimal('product_unit_total', 30, 8);
-            
+
             $table->boolean('product_is_taxable')->default(false);
             $table->decimal('product_vat_rate', 30, 8);
             $table->boolean('product_price_include_vat')->default(false);
@@ -46,7 +46,7 @@ return new class extends Migration
             $table->decimal('product_vat', 30, 8);
 
             $table->decimal('product_unit_final_price', 30, 8);
-            
+
             $table->boolean('is_received')->default(false);
             $table->boolean('is_valid')->default(false);
 

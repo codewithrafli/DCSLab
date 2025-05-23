@@ -254,7 +254,7 @@ class SaleProductUnitActions
             $saleProductUnit->product_unit_final_price = $data['product_unit_final_price'];
             $saleProductUnit->is_received = $data['is_received'];
             $saleProductUnit->is_valid = $data['is_valid'];
-            
+
             $saleProductUnit->save();
 
             DB::commit();

@@ -1,24 +1,24 @@
 <?php
 
-namespace Tests\Feature\API\SaleProductUnitAPI;
+namespace Tests\Feature\API\SalePaymentAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
 use App\Models\Role;
-use App\Models\SaleProductUnit;
+use App\Models\SalePayment;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Str;
 use Tests\APITestCase;
 
-class SaleProductUnitAPIDeleteTest extends APITestCase
+class SalePaymentAPIDeleteTest extends APITestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
     }
 
-    public function test_sale_product_unit_api_call_delete_without_authorization_expect_unauthorized_message()
+    public function test_sale_payment_api_call_delete_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -26,14 +26,14 @@ class SaleProductUnitAPIDeleteTest extends APITestCase
             ->create();
 
         $company = $user->companies()->inRandomOrder()->first();
-        $saleProductUnit = SaleProductUnit::factory()->for($company)->create();
+        $salePayment = SalePayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.delete', $saleProductUnit->ulid));
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.delete', $salePayment->ulid));
 
         $api->assertStatus(401);
     }
 
-    public function test_sale_product_unit_api_call_delete_without_access_right_expect_unauthorized_message()
+    public function test_sale_payment_api_call_delete_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault())
@@ -42,14 +42,14 @@ class SaleProductUnitAPIDeleteTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->inRandomOrder()->first();
-        $saleProductUnit = SaleProductUnit::factory()->for($company)->create();
+        $salePayment = SalePayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.delete', $saleProductUnit->ulid));
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.delete', $salePayment->ulid));
 
         $api->assertStatus(403);
     }
 
-    public function test_sale_product_unit_api_call_delete_expect_successful()
+    public function test_sale_payment_api_call_delete_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -59,17 +59,17 @@ class SaleProductUnitAPIDeleteTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->inRandomOrder()->first();
-        $saleProductUnit = SaleProductUnit::factory()->for($company)->create();
+        $salePayment = SalePayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.delete', $saleProductUnit->ulid));
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.delete', $salePayment->ulid));
 
         $api->assertSuccessful();
-        $this->assertSoftDeleted('sale_product_units', [
-            'id' => $saleProductUnit->id,
+        $this->assertSoftDeleted('sale_payments', [
+            'id' => $salePayment->id,
         ]);
     }
 
-    public function test_sale_product_unit_api_call_delete_of_nonexistance_ulid_expect_not_found()
+    public function test_sale_payment_api_call_delete_of_nonexistance_ulid_expect_not_found()
     {
         $user = User::factory()->create();
 
@@ -77,18 +77,18 @@ class SaleProductUnitAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.delete', $ulid));
 
         $api->assertStatus(404);
     }
 
-    public function test_sale_product_unit_api_call_delete_without_parameters_expect_failed()
+    public function test_sale_payment_api_call_delete_without_parameters_expect_failed()
     {
         $this->expectException(Exception::class);
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.delete', null));
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.delete', null));
 
         $api->assertStatus(500);
     }

@@ -39,7 +39,7 @@ class SaleProductUnitResource extends JsonResource
             'product_unit_subtotal_discount_rate' => $this->product_unit_subtotal_discount_rate,
             'product_unit_subtotal_discount_fixed' => $this->product_unit_subtotal_discount_fixed,
             'product_unit_total' => $this->product_unit_total,
-            
+
             'product_is_taxable' => $this->product_is_taxable,
             'product_vat_rate' => $this->product_vat_rate,
             'product_price_include_vat' => $this->product_price_include_vat,
@@ -47,7 +47,7 @@ class SaleProductUnitResource extends JsonResource
             'product_vat' => $this->product_vat,
 
             'product_unit_final_price' => $this->product_unit_final_price,
-            
+
             'is_received' => $this->is_received,
             'is_valid' => $this->is_valid,
         ];

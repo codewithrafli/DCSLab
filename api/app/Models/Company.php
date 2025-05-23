@@ -230,6 +230,11 @@ class Company extends Model
         return $this->hasMany(SaleProductUnitSerial::class);
     }
 
+    public function salePayments()
+    {
+        return $this->hasMany(SalePayment::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

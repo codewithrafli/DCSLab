@@ -77,6 +77,7 @@ return [
             'sale' => 'c,r,ra,u,d',
             'sale_product_unit' => 'c,r,ra,u,d',
             'sale_product_unit_serial' => 'c,r,ra,u,d',
+            'sale_payment' => 'c,r,ra,u,d',
         ],
         /* #endregion */
     ],

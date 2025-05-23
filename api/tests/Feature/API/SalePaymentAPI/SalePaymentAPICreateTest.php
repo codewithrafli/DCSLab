@@ -1,23 +1,23 @@
 <?php
 
-namespace Tests\Feature\API\SaleProductUnitSerialAPI;
+namespace Tests\Feature\API\SalePaymentAPI;
 
 use App\Enums\UserRoles;
 use App\Models\Company;
 use App\Models\Role;
-use App\Models\SaleProductUnitSerial;
+use App\Models\SalePayment;
 use App\Models\User;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
 
-class SaleProductUnitSerialAPICreateTest extends APITestCase
+class SalePaymentAPICreateTest extends APITestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
     }
 
-    public function test_sale_product_unit_serial_api_call_store_without_authorization_expect_unauthorized_message()
+    public function test_sale_payment_api_call_store_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -26,16 +26,16 @@ class SaleProductUnitSerialAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $saleProductUnitSerialArr = SaleProductUnitSerial::factory()->make([
+        $salePaymentArr = SalePayment::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.save'), $saleProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
 
         $api->assertUnauthorized();
     }
 
-    public function test_sale_product_unit_serial_api_call_store_without_access_right_expect_unauthorized_message()
+    public function test_sale_payment_api_call_store_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault())
@@ -45,26 +45,26 @@ class SaleProductUnitSerialAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $saleProductUnitSerialArr = SaleProductUnitSerial::factory()->make([
+        $salePaymentArr = SalePayment::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.save'), $saleProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
 
         $api->assertForbidden();
     }
 
-    public function test_sale_product_unit_serial_api_call_store_with_script_tags_in_payload_expect_stripped()
+    public function test_sale_payment_api_call_store_with_script_tags_in_payload_expect_stripped()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    public function test_sale_product_unit_serial_api_call_store_with_script_tags_in_payload_expect_encoded()
+    public function test_sale_payment_api_call_store_with_script_tags_in_payload_expect_encoded()
     {
         $this->markTestSkipped('Test under construction');
     }
 
-    public function test_sale_product_unit_serial_api_call_store_expect_successful()
+    public function test_sale_payment_api_call_store_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -75,26 +75,26 @@ class SaleProductUnitSerialAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $saleProductUnitSerialArr = SaleProductUnitSerial::factory()->make([
+        $salePaymentArr = SalePayment::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.save'), $saleProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
 
         $api->assertSuccessful();
-        $this->assertDatabaseHas('sale_product_unit_serials', [
+        $this->assertDatabaseHas('sale_payments', [
             'company_id' => $company->id,
-            'code' => $saleProductUnitSerialArr['code'],
-            'name' => $saleProductUnitSerialArr['name'],
+            'code' => $salePaymentArr['code'],
+            'name' => $salePaymentArr['name'],
         ]);
     }
 
-    public function test_sale_product_unit_serial_api_call_store_with_nonexistance_branch_id_expect_failed()
+    public function test_sale_payment_api_call_store_with_nonexistance_branch_id_expect_failed()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    public function test_sale_product_unit_serial_api_call_store_with_existing_code_in_same_company_expect_failed()
+    public function test_sale_payment_api_call_store_with_existing_code_in_same_company_expect_failed()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -106,16 +106,16 @@ class SaleProductUnitSerialAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        SaleProductUnitSerial::factory()->for($company)->create([
+        SalePayment::factory()->for($company)->create([
             'code' => 'test1',
         ]);
 
-        $saleProductUnitSerialArr = SaleProductUnitSerial::factory()->make([
+        $salePaymentArr = SalePayment::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.save'), $saleProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -123,7 +123,7 @@ class SaleProductUnitSerialAPICreateTest extends APITestCase
         ]);
     }
 
-    public function test_sale_product_unit_serial_api_call_store_with_existing_code_in_different_company_expect_successful()
+    public function test_sale_payment_api_call_store_with_existing_code_in_different_company_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -139,26 +139,26 @@ class SaleProductUnitSerialAPICreateTest extends APITestCase
 
         $company_2 = $companies[1];
 
-        SaleProductUnitSerial::factory()->for($company_1)->create([
+        SalePayment::factory()->for($company_1)->create([
             'code' => 'test1',
         ]);
 
-        $saleProductUnitSerialArr = SaleProductUnitSerial::factory()->make([
+        $salePaymentArr = SalePayment::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.save'), $saleProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
 
         $api->assertSuccessful();
-        $this->assertDatabaseHas('sale_product_unit_serials', [
+        $this->assertDatabaseHas('sale_payments', [
             'company_id' => $company_2->id,
-            'code' => $saleProductUnitSerialArr['code'],
-            'name' => $saleProductUnitSerialArr['name'],
+            'code' => $salePaymentArr['code'],
+            'name' => $salePaymentArr['name'],
         ]);
     }
 
-    public function test_sale_product_unit_serial_api_call_store_with_empty_string_parameters_expect_validation_error()
+    public function test_sale_payment_api_call_store_with_empty_string_parameters_expect_validation_error()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
@@ -167,9 +167,9 @@ class SaleProductUnitSerialAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $saleProductUnitSerialArr = [];
+        $salePaymentArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.save'), $saleProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

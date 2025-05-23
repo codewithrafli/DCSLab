@@ -2,19 +2,17 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\IsValidSale;
 use App\Enums\RecordStatus;
-use App\Rules\IsValidBranch;
-use App\Rules\IsValidCompany;
 use App\Helpers\HashidsHelper;
 use App\Models\SaleProductUnit;
+use App\Rules\IsValidBranch;
+use App\Rules\IsValidCompany;
 use App\Rules\IsValidProduct;
 use App\Rules\IsValidProductUnit;
+use App\Rules\IsValidSale;
 use App\Rules\IsValidWarehouse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Rules\SaleProductUnitStoreValidCode;
-use App\Rules\SaleProductUnitUpdateValidCode;
+use Illuminate\Support\Facades\Auth;
 
 class SaleProductUnitRequest extends FormRequest
 {
@@ -98,7 +96,7 @@ class SaleProductUnitRequest extends FormRequest
                     'product_unit_subtotal_discount_rate' => ['required', 'numeric', 'min:0'],
                     'product_unit_subtotal_discount_fixed' => ['required', 'numeric', 'min:0'],
                     'product_unit_total' => ['required', 'numeric', 'min:0'],
-                    
+
                     'product_is_taxable' => ['required', 'boolean'],
                     'product_vat_rate' => ['required', 'numeric', 'min:0'],
                     'product_price_include_vat' => ['required', 'boolean'],
@@ -106,7 +104,7 @@ class SaleProductUnitRequest extends FormRequest
                     'product_vat' => ['required', 'numeric', 'min:0'],
 
                     'product_unit_final_price' => ['required', 'numeric', 'min:0'],
-                    
+
                     'is_received' => ['required', 'boolean'],
                     'is_valid' => ['required', 'boolean'],
                 ];
@@ -138,7 +136,7 @@ class SaleProductUnitRequest extends FormRequest
                     'product_unit_subtotal_discount_rate' => ['required', 'numeric', 'min:0'],
                     'product_unit_subtotal_discount_fixed' => ['required', 'numeric', 'min:0'],
                     'product_unit_total' => ['required', 'numeric', 'min:0'],
-                    
+
                     'product_is_taxable' => ['required', 'boolean'],
                     'product_vat_rate' => ['required', 'numeric', 'min:0'],
                     'product_price_include_vat' => ['required', 'boolean'],
@@ -146,7 +144,7 @@ class SaleProductUnitRequest extends FormRequest
                     'product_vat' => ['required', 'numeric', 'min:0'],
 
                     'product_unit_final_price' => ['required', 'numeric', 'min:0'],
-                    
+
                     'is_received' => ['required', 'boolean'],
                     'is_valid' => ['required', 'boolean'],
                 ];

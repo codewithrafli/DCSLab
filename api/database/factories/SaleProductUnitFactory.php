@@ -28,7 +28,7 @@ class SaleProductUnitFactory extends Factory
             'product_unit_subtotal_discount_rate' => fake()->randomNumber(0, 10000),
             'product_unit_subtotal_discount_fixed' => fake()->randomNumber(0, 10000),
             'product_unit_total' => fake()->randomNumber(0, 10000),
-            
+
             'product_is_taxable' => fake()->boolean(),
             'product_vat_rate' => fake()->randomNumber(0, 10000),
             'product_price_include_vat' => fake()->boolean(),
@@ -36,7 +36,7 @@ class SaleProductUnitFactory extends Factory
             'product_vat' => fake()->randomNumber(0, 10000),
 
             'product_unit_final_price' => fake()->randomNumber(0, 10000),
-            
+
             'is_received' => fake()->boolean(),
             'is_valid' => fake()->boolean(),
         ];

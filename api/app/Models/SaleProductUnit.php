@@ -40,7 +40,7 @@ class SaleProductUnit extends Model
         'product_unit_subtotal_discount_rate',
         'product_unit_subtotal_discount_fixed',
         'product_unit_total',
-        
+
         'product_is_taxable',
         'product_vat_rate',
         'product_price_include_vat',
@@ -48,7 +48,7 @@ class SaleProductUnit extends Model
         'product_vat',
 
         'product_unit_final_price',
-        
+
         'is_received',
         'is_valid',
     ];
