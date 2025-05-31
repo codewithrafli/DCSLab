@@ -17,11 +17,11 @@ class Customer extends Model
 
     protected $fillable = [
         'company_id',
-        'customer_group_id',
         'user_id',
         'code',
         'is_member',
         'name',
+        'group_id',
         'zone',
         'max_open_invoice',
         'max_outstanding_invoice',
@@ -48,15 +48,15 @@ class Customer extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class)->withTrashed();
+        return $this->belongsTo(User::class);
     }
 
-    public function customerGroup()
+    public function group()
     {
-        return $this->belongsTo(CustomerGroup::class)->withTrashed();
+        return $this->belongsTo(CustomerGroup::class, 'group_id')->withTrashed();
     }
 
-    public function customerAddresses()
+    public function addresses()
     {
         return $this->hasMany(CustomerAddress::class);
     }
@@ -68,9 +68,9 @@ class Customer extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
-            ->orWhere('zone', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('customers.code', 'like', '%'.$search.'%')
+            ->orWhere('customers.name', 'like', '%'.$search.'%')
+            ->orWhere('customers.zone', 'like', '%'.$search.'%')
+            ->orWhere('customers.remarks', 'like', '%'.$search.'%');
     }
 }

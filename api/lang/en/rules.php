@@ -7,6 +7,8 @@ return [
     'valid_company' => 'Invalid company value',
     'valid_branch' => 'Invalid branch value',
     'valid_warehouse' => 'Invalid warehouse value',
+    'valid_customer_group' => 'Invalid customer group value',
+    'valid_customer' => 'Invalid customer value',
     'too_many_tokens' => 'Too many token request',
     'must_reset_password' => 'Require to reset the password',
     'inactive_user' => 'Your profile status is inactive',

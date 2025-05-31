@@ -28,7 +28,7 @@ class CustomerAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customer = Customer::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.delete', $customer->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer.delete', $customer->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class CustomerAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customer = Customer::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.delete', $customer->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer.delete', $customer->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class CustomerAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customer = Customer::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.delete', $customer->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer.delete', $customer->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('customers', [
@@ -77,7 +77,7 @@ class CustomerAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class CustomerAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.customer.delete', null));
+        $api = $this->json('POST', route('api.post.db.customer.customer.delete', null));
 
         $api->assertStatus(500);
     }

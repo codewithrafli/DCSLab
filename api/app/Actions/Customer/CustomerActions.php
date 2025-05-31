@@ -28,11 +28,10 @@ class CustomerActions
         try {
             $customer = new Customer();
             $customer->company_id = $data['company_id'];
-            $customer->customer_group_id = $data['customer_group_id'];
-            $customer->user_id = $data['user_id'];
             $customer->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $customer->is_member = $data['is_member'];
             $customer->name = $data['name'];
+            $customer->group_id = $data['group_id'];
             $customer->zone = $data['zone'];
             $customer->max_open_invoice = $data['max_open_invoice'];
             $customer->max_outstanding_invoice = $data['max_outstanding_invoice'];
@@ -44,6 +43,8 @@ class CustomerActions
             $customer->status = $data['status'];
             $customer->remarks = $data['remarks'];
             $customer->save();
+
+            // save user (not yet implemented)
 
             DB::commit();
 
@@ -68,13 +69,14 @@ class CustomerActions
 
         ?int $limit
     ) {
-        $query = Customer::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = Customer::select('customers.*')->withTrashed()
+            ->with(['company', 'user', 'group'])
+            ->join('companies', 'companies.id', '=', 'customers.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -84,8 +86,8 @@ class CustomerActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('customers.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -149,11 +151,10 @@ class CustomerActions
 
     public function read(Customer $customer): Customer
     {
-        return $customer->with('company', 'user', 'customer')->first();
+        return $customer->load('company', 'user', 'group')->first();
     }
 
-    public function getAllActiveCustomer(
-        ?array $with,
+    public function getAllActive(
         ?bool $withTrashed,
 
         ?string $search,
@@ -206,6 +207,7 @@ class CustomerActions
             $customer->code = $this->generateUniqueCode($customer->company_id, $data['code'], $customer->id);
             $customer->is_member = $data['is_member'];
             $customer->name = $data['name'];
+            $customer->group_id = $data['group_id'];
             $customer->zone = $data['zone'];
             $customer->max_open_invoice = $data['max_open_invoice'];
             $customer->max_outstanding_invoice = $data['max_outstanding_invoice'];
@@ -266,7 +268,7 @@ class CustomerActions
             $tryCount = 0;
             do {
                 $count = $company->customers()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'WH'.str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'C'.str_pad($count, 3, '0', STR_PAD_LEFT);
                 $tryCount++;
             } while (! $this->isUniqueCode($companyId, $code, $exceptId));
 
