@@ -76,7 +76,7 @@ class CustomerGroupRequest extends FormRequest
                     'max_open_invoice' => ['required', 'integer', 'min:0'],
                     'max_outstanding_invoice' => ['required', 'numeric', 'min:0'],
                     'max_invoice_age' => ['required', 'integer', 'min:0'],
-                    'payment_term_type' => ['required', 'string', 'in:'.implode(',', PaymentTermType::toArrayValue())],
+                    'payment_term_type' => [new Enum(PaymentTermType::class)],
                     'payment_term' => ['required', 'integer', 'min:0'],
                     'selling_point' => ['required', 'integer', 'max:255'],
                     'selling_point_multiple' => ['required', 'numeric', 'min:0'],
@@ -97,7 +97,7 @@ class CustomerGroupRequest extends FormRequest
                     'max_open_invoice' => ['required', 'integer', 'min:0'],
                     'max_outstanding_invoice' => ['required', 'numeric', 'min:0'],
                     'max_invoice_age' => ['required', 'integer', 'min:0'],
-                    'payment_term_type' => ['required', 'string', 'in:'.implode(',', PaymentTermType::toArrayValue())],
+                    'payment_term_type' => [new Enum(PaymentTermType::class)],
                     'payment_term' => ['required', 'integer', 'min:0'],
                     'selling_point' => ['required', 'integer', 'max:255'],
                     'selling_point_multiple' => ['required', 'numeric', 'min:0'],
@@ -175,6 +175,8 @@ class CustomerGroupRequest extends FormRequest
             case 'update':
                 $this->merge([
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
+                    'payment_term_type' => PaymentTermType::isValid($this->payment_term_type) ? PaymentTermType::resolveToEnum($this->payment_term_type)->value : null,
+                    'round_on' => RoundOn::isValid($this->round_on) ? RoundOn::resolveToEnum($this->round_on)->value : null,
                     'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
                 break;

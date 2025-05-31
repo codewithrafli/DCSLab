@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentTermType;
+use App\Enums\RoundOn;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,12 +38,14 @@ class CustomerGroup extends Model
 
     protected $casts = [
         'max_outstanding_invoice' => 'decimal:8',
+        'payment_term_type' => PaymentTermType::class,
         'selling_point' => 'integer',
         'selling_point_multiple' => 'decimal:8',
         'price_markup_percent' => 'decimal:8',
         'price_markup_nominal' => 'decimal:8',
         'price_markdown_percent' => 'decimal:8',
         'price_markdown_nominal' => 'decimal:8',
+        'round_on' => RoundOn::class,
     ];
 
     public function company()
