@@ -31,7 +31,7 @@ class CustomerAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.edit', $customer->ulid), $customerArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer.edit', $customer->ulid), $customerArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class CustomerAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.edit', $customer->ulid), $customerArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer.edit', $customer->ulid), $customerArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class CustomerAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.edit', $customer->ulid), $customerArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer.edit', $customer->ulid), $customerArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('customers', [
@@ -119,7 +119,7 @@ class CustomerAPIEditTest extends APITestCase
             'code' => $customer_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.edit', $customer_2->ulid), $customerArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer.edit', $customer_2->ulid), $customerArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class CustomerAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer.edit', $customer_2->ulid), $customerArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer.edit', $customer_2->ulid), $customerArr);
 
         $api->assertSuccessful();
     }

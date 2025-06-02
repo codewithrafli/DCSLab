@@ -21,9 +21,25 @@ class CustomerFactory extends Factory
             'payment_term_type' => fake()->randomElement(PaymentTermType::toArrayEnum()),
             'payment_term' => fake()->randomNumber(),
             'taxable_enterprise' => fake()->boolean(),
-            'tax_id' => fake()->numberBetween(0, 100) * 10000,
+            'tax_id' => (string) fake()->numberBetween(100000000000, 999999999999),
             'status' => fake()->randomElement(RecordStatus::toArrayEnum()),
             'remarks' => fake()->sentence(),
         ];
+    }
+
+    public function insertStringInName(string $str)
+    {
+        return $this->state(function (array $attributes) use ($str) {
+            return [
+                'name' => $this->craftName($str),
+            ];
+        });
+    }
+
+    private function craftName(string $str)
+    {
+        $text = fake()->company();
+
+        return substr_replace($text, $str, random_int(0, strlen($text) - 1), 0);
     }
 }

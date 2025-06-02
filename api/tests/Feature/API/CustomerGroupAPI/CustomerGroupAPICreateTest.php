@@ -30,7 +30,7 @@ class CustomerGroupAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.save'), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.save'), $customerGroupArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class CustomerGroupAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.save'), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.save'), $customerGroupArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class CustomerGroupAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.save'), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.save'), $customerGroupArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('customer_groups', [
@@ -115,7 +115,7 @@ class CustomerGroupAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.save'), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.save'), $customerGroupArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class CustomerGroupAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.save'), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.save'), $customerGroupArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('customer_groups', [
@@ -169,7 +169,7 @@ class CustomerGroupAPICreateTest extends APITestCase
 
         $customerGroupArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.customer_group.save'), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_group.save'), $customerGroupArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

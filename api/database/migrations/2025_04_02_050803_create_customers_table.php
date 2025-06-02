@@ -13,11 +13,11 @@ return new class extends Migration
             $table->ulid();
 
             $table->foreignId('company_id')->references('id')->on('companies');
-            $table->foreignId('customer_group_id')->references('id')->on('customer_groups');
-            $table->foreignId('user_id')->references('id')->on('users');
+            $table->foreignId('user_id')->nullable()->references('id')->on('users');
             $table->string('code');
             $table->boolean('is_member');
             $table->string('name');
+            $table->foreignId('group_id')->nullable()->references('id')->on('customer_groups');
             $table->string('zone');
             $table->integer('max_open_invoice')->default(0);
             $table->decimal('max_outstanding_invoice', 30, 8)->default(0);

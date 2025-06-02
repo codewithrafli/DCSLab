@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use App\Traits\EnumHelper;
 
-enum PaymentTermType: int
+enum PaymentTermType: string
 {
     use EnumHelper;
 
