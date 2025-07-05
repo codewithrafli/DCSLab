@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use App\Traits\EnumHelper;
 
-enum UnitType: int
+enum UnitTypeEnum: int
 {
     use EnumHelper;
 

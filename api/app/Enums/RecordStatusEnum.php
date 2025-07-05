@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use App\Traits\EnumHelper;
 
-enum RecordStatus: int
+enum RecordStatusEnum: int
 {
     use EnumHelper;
 

@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use App\Traits\EnumHelper;
 
-enum ProductType: int
+enum ProductTypeEnum: int
 {
     use EnumHelper;
 

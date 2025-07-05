@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use App\Traits\EnumHelper;
 
-enum UserRoles: string
+enum UserRolesEnum: string
 {
     use EnumHelper;
 

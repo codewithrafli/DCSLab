@@ -4,10 +4,10 @@ namespace App\Enums;
 
 use App\Traits\EnumHelper;
 
-enum ProductCategoryType: int
+enum RoundOnEnum: int
 {
     use EnumHelper;
 
-    case PRODUCT = 1;
-    case SERVICE = 2;
+    case UP = 1;
+    case DOWN = 2;
 }
