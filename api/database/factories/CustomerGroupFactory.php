@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\PaymentTermType;
+use App\Enums\PaymentTermTypeEnum;
 use App\Enums\RoundOn;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -17,7 +17,7 @@ class CustomerGroupFactory extends Factory
             'max_open_invoice' => fake()->numberBetween(1, 100),
             'max_outstanding_invoice' => fake()->numberBetween(0, 100) * 10000,
             'max_invoice_age' => fake()->numberBetween(1, 100),
-            'payment_term_type' => fake()->randomElement(PaymentTermType::toArrayEnum()),
+            'payment_term_type' => fake()->randomElement(PaymentTermTypeEnum::toArrayEnum()),
             'payment_term' => fake()->numberBetween(1, 100),
             'selling_point' => fake()->numberBetween(0, 5),
             'selling_point_multiple' => fake()->numberBetween(0, 100) * 10000,

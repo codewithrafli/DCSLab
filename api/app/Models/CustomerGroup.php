@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\PaymentTermType;
+use App\Enums\PaymentTermTypeEnum;
 use App\Enums\RoundOn;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -38,7 +38,7 @@ class CustomerGroup extends Model
 
     protected $casts = [
         'max_outstanding_invoice' => 'decimal:8',
-        'payment_term_type' => PaymentTermType::class,
+        'payment_term_type' => PaymentTermTypeEnum::class,
         'selling_point' => 'integer',
         'selling_point_multiple' => 'decimal:8',
         'price_markup_percent' => 'decimal:8',
