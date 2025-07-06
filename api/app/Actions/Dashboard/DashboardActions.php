@@ -2,7 +2,7 @@
 
 namespace App\Actions\Dashboard;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Traits\CacheHelper;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,13 +32,13 @@ class DashboardActions
 
         $usrRoles = $usr->roles;
 
-        $hasUserRole = $usrRoles->where('name', UserRoles::USER->value)->isNotEmpty() ? true : false;
-        $hasOnlyUserRole = $usrRoles->where('name', UserRoles::USER->value)->isNotEmpty() && $usrRoles->count() == 1 ? true : false;
+        $hasUserRole = $usrRoles->where('name', UserRolesEnum::USER->value)->isNotEmpty() ? true : false;
+        $hasOnlyUserRole = $usrRoles->where('name', UserRolesEnum::USER->value)->isNotEmpty() && $usrRoles->count() == 1 ? true : false;
 
-        $hasAdminRole = $usrRoles->where('name', UserRoles::ADMINISTRATOR->value)->isNotEmpty() ? true : false;
-        $hasOnlyAdminRole = $usrRoles->where('name', UserRoles::ADMINISTRATOR->value)->isNotEmpty() && $usrRoles->count() == 1 ? true : false;
+        $hasAdminRole = $usrRoles->where('name', UserRolesEnum::ADMINISTRATOR->value)->isNotEmpty() ? true : false;
+        $hasOnlyAdminRole = $usrRoles->where('name', UserRolesEnum::ADMINISTRATOR->value)->isNotEmpty() && $usrRoles->count() == 1 ? true : false;
 
-        $hasDevRole = $usrRoles->where('name', UserRoles::DEVELOPER->value)->isNotEmpty() ? true : false;
+        $hasDevRole = $usrRoles->where('name', UserRolesEnum::DEVELOPER->value)->isNotEmpty() ? true : false;
 
         $hasCompany = $usr->companies->count() != 0 ? true : false;
 

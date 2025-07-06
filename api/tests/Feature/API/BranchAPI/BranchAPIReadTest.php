@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\BranchAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Role;
@@ -26,7 +26,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -89,7 +89,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -115,7 +115,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -300,7 +300,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -353,7 +353,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -403,7 +403,7 @@ class BranchAPIReadTest extends APITestCase
         $testName = Branch::factory()->insertStringInName('testing')->make()->name;
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -451,7 +451,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -479,7 +479,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -521,7 +521,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -554,7 +554,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -584,7 +584,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -606,7 +606,7 @@ class BranchAPIReadTest extends APITestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(

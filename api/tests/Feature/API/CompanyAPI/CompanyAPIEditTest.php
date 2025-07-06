@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\CompanyAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\User;
@@ -19,7 +19,7 @@ class CompanyAPIEditTest extends APITestCase
     public function test_company_api_call_update_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -62,7 +62,7 @@ class CompanyAPIEditTest extends APITestCase
     public function test_company_api_call_update_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -91,7 +91,7 @@ class CompanyAPIEditTest extends APITestCase
         $idxDefaultCompany = random_int(0, $companyCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->count($companyCount)
                 ->state(new Sequence(
                     fn (Sequence $sequence) => [

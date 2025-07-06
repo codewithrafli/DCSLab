@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\CompanyAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\User;
@@ -18,7 +18,7 @@ class CompanyAPICreateTest extends APITestCase
     public function test_company_api_call_store_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $companyArr = Company::factory()->setStatusActive()->setIsDefault()
@@ -57,7 +57,7 @@ class CompanyAPICreateTest extends APITestCase
     public function test_company_api_call_store_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -80,7 +80,7 @@ class CompanyAPICreateTest extends APITestCase
     public function test_company_api_call_store_with_empty_string_parameters_expect_validation_error()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
