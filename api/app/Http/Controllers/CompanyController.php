@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Company\CompanyActions;
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Http\Requests\CompanyRequest;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
@@ -30,7 +30,7 @@ class CompanyController extends BaseController
         $errorMsg = '';
 
         try {
-            $request['status'] = RecordStatus::resolveToEnum($request['status'])->value;
+            $request['status'] = RecordStatusEnum::resolveToEnum($request['status'])->value;
 
             $result = $this->companyActions->create(
                 user: Auth::user(),
@@ -59,7 +59,7 @@ class CompanyController extends BaseController
 
                 search: $request['search'],
                 default: $request['default'],
-                status: $request['status'] ? RecordStatus::resolveToEnum($request['status'])->value : null,
+                status: $request['status'] ? RecordStatusEnum::resolveToEnum($request['status'])->value : null,
 
                 paginate: $request['paginate'],
                 page: $request['page'],
@@ -138,7 +138,7 @@ class CompanyController extends BaseController
         $errorMsg = '';
 
         try {
-            $request['status'] = RecordStatus::resolveToEnum($request['status'])->value;
+            $request['status'] = RecordStatusEnum::resolveToEnum($request['status'])->value;
 
             $result = $this->companyActions->update(
                 user: Auth::user(),

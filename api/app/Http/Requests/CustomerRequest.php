@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\PaymentTermType;
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\Customer;
 use App\Rules\CustomerStoreValidCode;
@@ -60,7 +60,7 @@ class CustomerRequest extends FormRequest
 
                     'search' => ['nullable', 'string'],
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],
@@ -84,7 +84,7 @@ class CustomerRequest extends FormRequest
                     'payment_term' => ['required', 'integer', 'min:0'],
                     'taxable_enterprise' => ['required', 'boolean'],
                     'tax_id' => ['nullable', 'string', 'max:255'],
-                    'status' => ['required', new Enum(RecordStatus::class)],
+                    'status' => ['required', new Enum(RecordStatusEnum::class)],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'update':
@@ -102,7 +102,7 @@ class CustomerRequest extends FormRequest
                     'payment_term' => ['required', 'integer', 'min:0'],
                     'taxable_enterprise' => ['required', 'boolean'],
                     'tax_id' => ['required', 'string', 'max:255'],
-                    'status' => ['required', new Enum(RecordStatus::class)],
+                    'status' => ['required', new Enum(RecordStatusEnum::class)],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'delete':
@@ -170,7 +170,7 @@ class CustomerRequest extends FormRequest
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
                     'group_id' => $this->has('group_id') && $this->group_id ? HashidsHelper::decodeId($this->group_id) : null,
                     'payment_term_type' => PaymentTermType::isValid($this->payment_term_type) ? PaymentTermType::resolveToEnum($this->payment_term_type)->value : null,
-                    'status' => RecordStatus::isValid($this->status) ? RecordStatus::resolveToEnum($this->status)->value : null,
+                    'status' => RecordStatusEnum::isValid($this->status) ? RecordStatusEnum::resolveToEnum($this->status)->value : null,
                     'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
 

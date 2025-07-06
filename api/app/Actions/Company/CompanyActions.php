@@ -2,7 +2,7 @@
 
 namespace App\Actions\Company;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Models\Company;
 use App\Models\User;
 use App\Traits\CacheHelper;
@@ -186,7 +186,7 @@ class CompanyActions
                 withTrashed: false,
                 search: $search,
                 default: null,
-                status: RecordStatus::ACTIVE->value,
+                status: RecordStatusEnum::ACTIVE->value,
                 limit: $limit
             );
 

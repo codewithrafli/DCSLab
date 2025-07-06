@@ -2,7 +2,7 @@
 
 namespace App\Actions\Warehouse;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Models\Company;
 use App\Models\Warehouse;
 use App\Traits\CacheHelper;
@@ -193,7 +193,7 @@ class WarehouseActions
                 search: $search,
                 companyId: $companyId,
                 branchId: $branchId,
-                status: RecordStatus::ACTIVE->value,
+                status: RecordStatusEnum::ACTIVE->value,
 
                 limit: $limit
             );

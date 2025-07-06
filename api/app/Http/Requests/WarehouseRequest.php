@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\Warehouse;
 use App\Rules\IsValidBranch;
@@ -68,7 +68,7 @@ class WarehouseRequest extends FormRequest
                     'search' => ['nullable', 'string'],
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
                     'branch_id' => ['nullable', 'integer', 'bail', new IsValidBranch($this->company_id, false)],
-                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],
@@ -87,7 +87,7 @@ class WarehouseRequest extends FormRequest
                     'city' => ['nullable', 'string', 'max:255'],
                     'contact' => ['nullable', 'string', 'max:255'],
                     'remarks' => ['nullable', 'string', 'max:255'],
-                    'status' => ['required', new Enum(RecordStatus::class), new WarehouseStoreValidStatus($this->input('default'))],
+                    'status' => ['required', new Enum(RecordStatusEnum::class), new WarehouseStoreValidStatus($this->input('default'))],
 
                 ];
             case 'update':
@@ -100,7 +100,7 @@ class WarehouseRequest extends FormRequest
                     'city' => ['nullable', 'string', 'max:255'],
                     'contact' => ['nullable', 'string', 'max:255'],
                     'remarks' => ['nullable', 'string', 'max:255'],
-                    'status' => ['required', new Enum(RecordStatus::class), new WarehouseUpdateValidStatus($this->input('default'))],
+                    'status' => ['required', new Enum(RecordStatusEnum::class), new WarehouseUpdateValidStatus($this->input('default'))],
 
                 ];
             case 'delete':
@@ -163,7 +163,7 @@ class WarehouseRequest extends FormRequest
                     'city' => $this->has('city') ? $this['city'] : null,
                     'contact' => $this->has('contact') ? $this['contact'] : null,
                     'remarks' => $this->has('remarks') ? $this['remarks'] : null,
-                    'status' => RecordStatus::isValid($this->status) ? RecordStatus::resolveToEnum($this->status)->value : null,
+                    'status' => RecordStatusEnum::isValid($this->status) ? RecordStatusEnum::resolveToEnum($this->status)->value : null,
                 ]);
                 break;
             case 'update':
@@ -174,7 +174,7 @@ class WarehouseRequest extends FormRequest
                     'city' => $this->has('city') ? $this['city'] : null,
                     'contact' => $this->has('contact') ? $this['contact'] : null,
                     'remarks' => $this->has('remarks') ? $this['remarks'] : null,
-                    'status' => RecordStatus::isValid($this->status) ? RecordStatus::resolveToEnum($this->status)->value : null,
+                    'status' => RecordStatusEnum::isValid($this->status) ? RecordStatusEnum::resolveToEnum($this->status)->value : null,
                 ]);
                 break;
             default:

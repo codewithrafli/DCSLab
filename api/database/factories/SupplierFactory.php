@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SupplierFactory extends Factory
@@ -18,7 +18,7 @@ class SupplierFactory extends Factory
             'payment_term' => fake()->numberBetween(1, 30),
             'taxable_enterprise' => fake()->boolean(),
             'tax_id' => fake()->numberBetween(100000000000, 999999999999),
-            'status' => fake()->randomElement(RecordStatus::toArrayEnum()),
+            'status' => fake()->randomElement(RecordStatusEnum::toArrayEnum()),
             'remarks' => fake()->sentence(),
         ];
     }

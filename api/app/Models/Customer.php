@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PaymentTermType;
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,7 +38,7 @@ class Customer extends Model
         'is_member' => 'boolean',
         'payment_term_type' => PaymentTermType::class,
         'taxable_enterprise' => 'boolean',
-        'status' => RecordStatus::class,
+        'status' => RecordStatusEnum::class,
     ];
 
     public function company()

@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\PaymentTermType;
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Enums\RoundOn;
 use App\Helpers\HashidsHelper;
 use App\Models\CustomerGroup;
@@ -59,7 +59,7 @@ class CustomerGroupRequest extends FormRequest
 
                     'search' => ['nullable', 'string'],
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],
