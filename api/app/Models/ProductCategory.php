@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\ProductCategoryType;
+use App\Enums\ProductCategoryTypeEnum;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +24,7 @@ class ProductCategory extends Model
     protected function casts(): array
     {
         return [
-            'type' => ProductCategoryType::class,
+            'type' => ProductCategoryTypeEnum::class,
         ];
     }
 

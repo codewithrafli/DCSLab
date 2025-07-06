@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,7 +26,7 @@ class Company extends Model
     {
         return [
             'default' => 'boolean',
-            'status' => RecordStatus::class,
+            'status' => RecordStatusEnum::class,
         ];
     }
 
