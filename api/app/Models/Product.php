@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use App\Enums\ProductType;
-use App\Enums\RecordStatus;
+use App\Enums\ProductTypeEnum;
+use App\Enums\RecordStatusEnum;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -44,9 +45,29 @@ class Product extends Model
             'is_use_serial_number' => 'boolean',
             'is_expirable' => 'boolean',
             'has_expiry_date' => 'boolean',
-            'type' => ProductType::class,
-            'status' => RecordStatus::class,
+            'type' => ProductTypeEnum::class,
+            'status' => RecordStatusEnum::class,
         ];
+    }
+
+    public function getCalculatedSlugAttribute(): string
+    {
+        if ($this->slug == 'AUTO') {
+            $slug = $this->name.'-'.$this->code;
+
+            return Str::slug($slug);
+        }
+
+        return $this->slug;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            $model->slug = $model->getCalculatedSlugAttribute();
+        });
     }
 
     public function company()
