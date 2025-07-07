@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ProductType;
+use App\Enums\ProductTypeEnum;
 use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\Product;
@@ -84,7 +84,7 @@ class ProductRequest extends FormRequest
                     'is_expirable' => ['required', 'boolean'],
                     'point' => ['required', 'integer'],
                     'remarks' => ['nullable', 'string', 'max:255'],
-                    'type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
+                    'type' => ['required', 'integer', 'in:'.implode(',', ProductTypeEnum::toArrayValue())],
                     'status' => ['required', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'product_units' => 'required|array',
@@ -111,7 +111,7 @@ class ProductRequest extends FormRequest
                     'is_expirable' => ['required', 'boolean'],
                     'point' => ['required', 'integer'],
                     'remarks' => ['nullable', 'string', 'max:255'],
-                    'type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
+                    'type' => ['required', 'integer', 'in:'.implode(',', ProductTypeEnum::toArrayValue())],
                     'status' => ['required', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'delete_product_unit_ids' => 'nullable|array',

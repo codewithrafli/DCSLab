@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\PaymentTermTypeEnum;
-use App\Enums\RoundOn;
+use App\Enums\RoundOnEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -26,7 +26,7 @@ class CustomerGroupFactory extends Factory
             'price_markup_nominal' => fake()->numberBetween(0, 100) * 10000,
             'price_markdown_percent' => fake()->numberBetween(0, 100),
             'price_markdown_nominal' => fake()->numberBetween(0, 100) * 10000,
-            'round_on' => fake()->randomElement(RoundOn::toArrayEnum()),
+            'round_on' => fake()->randomElement(RoundOnEnum::toArrayEnum()),
             'round_digit' => fake()->numberBetween(0, 100),
             'remarks' => fake()->sentence(),
         ];

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PaymentTermTypeEnum;
-use App\Enums\RoundOn;
+use App\Enums\RoundOnEnum;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -45,7 +45,7 @@ class CustomerGroup extends Model
         'price_markup_nominal' => 'decimal:8',
         'price_markdown_percent' => 'decimal:8',
         'price_markdown_nominal' => 'decimal:8',
-        'round_on' => RoundOn::class,
+        'round_on' => RoundOnEnum::class,
     ];
 
     public function company()

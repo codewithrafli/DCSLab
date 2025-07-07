@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\PaymentTermTypeEnum;
 use App\Enums\RecordStatusEnum;
-use App\Enums\RoundOn;
+use App\Enums\RoundOnEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\CustomerGroup;
 use App\Rules\CustomerGroupStoreValidCode;
@@ -85,7 +85,7 @@ class CustomerGroupRequest extends FormRequest
                     'price_markup_nominal' => ['required', 'numeric', 'min:0'],
                     'price_markdown_percent' => ['required', 'numeric', 'min:0'],
                     'price_markdown_nominal' => ['required', 'numeric', 'min:0'],
-                    'round_on' => [new Enum(RoundOn::class)],
+                    'round_on' => [new Enum(RoundOnEnum::class)],
                     'round_digit' => ['required', 'integer', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
@@ -106,7 +106,7 @@ class CustomerGroupRequest extends FormRequest
                     'price_markup_nominal' => ['required', 'numeric', 'min:0'],
                     'price_markdown_percent' => ['required', 'numeric', 'min:0'],
                     'price_markdown_nominal' => ['required', 'numeric', 'min:0'],
-                    'round_on' => [new Enum(RoundOn::class)],
+                    'round_on' => [new Enum(RoundOnEnum::class)],
                     'round_digit' => ['required', 'integer', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
@@ -176,7 +176,7 @@ class CustomerGroupRequest extends FormRequest
                 $this->merge([
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
                     'payment_term_type' => PaymentTermTypeEnum::isValid($this->payment_term_type) ? PaymentTermTypeEnum::resolveToEnum($this->payment_term_type)->value : null,
-                    'round_on' => RoundOn::isValid($this->round_on) ? RoundOn::resolveToEnum($this->round_on)->value : null,
+                    'round_on' => RoundOnEnum::isValid($this->round_on) ? RoundOnEnum::resolveToEnum($this->round_on)->value : null,
                     'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
                 break;
