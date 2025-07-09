@@ -10,15 +10,13 @@ class DashboardActions
 {
     use CacheHelper;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function createUserMenu(bool $useCache = true): array
     {
         $cacheKey = '';
         if ($useCache) {
-            $cacheKey = 'menu_'.Auth::id();
+            $cacheKey = 'menu_' . Auth::id();
             $cacheResult = $this->readFromCache($cacheKey);
 
             if (! is_null($cacheResult)) {
@@ -46,6 +44,7 @@ class DashboardActions
 
         $menu = $this->createMenu_Dashboard($menu, $showDemoMenu);
         $menu = $this->createMenu_Company($menu, $hasOnlyUserRole, $hasOnlyAdminRole, $hasCompany, $hasDevRole);
+        $menu = $this->createMenu_Customer($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Administrator($menu, $hasAdminRole, $hasDevRole);
         $menu = $this->createMenu_DevTool($menu, $hasDevRole);
 
@@ -123,6 +122,31 @@ class DashboardActions
             array_push($root_array['subMenu'], $company);
         }
 
+        array_push($menu, $root_array);
+
+        return $menu;
+    }
+
+    private function createMenu_Customer(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
+    {
+        if ($hasOnlyUserRole || $hasOnlyAdminRole) {
+            return $menu;
+        }
+
+        $customerGroup = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-customer-group',
+            'title' => 'components.menu.customer-group',
+        ];
+
+        $root_array = [
+            'icon' => 'Users',
+            'pageName' => 'side-menu-customer',
+            'title' => 'components.menu.customer-management',
+            'subMenu' => [],
+        ];
+
+        array_push($root_array['subMenu'], $customerGroup);
         array_push($menu, $root_array);
 
         return $menu;
