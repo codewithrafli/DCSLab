@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 
 class CustomerGroupTableSeeder extends Seeder
 {
-    public function run(?int $companyId, ?int $qtyPerCompany)
+    public function run(?int $companyId = null, ?int $qtyPerCompany = null)
     {
         $query = Company::query();
         if ($companyId) $query->where('id', '=', $companyId);
