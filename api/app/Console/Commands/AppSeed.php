@@ -9,6 +9,7 @@ use Database\Seeders\CustomerGroupTableSeeder;
 use Database\Seeders\ProductCategoryTableSeeder;
 use Database\Seeders\ProductTableSeeder;
 use Database\Seeders\RoleTableSeeder;
+use Database\Seeders\SupplierTableSeeder;
 use Database\Seeders\UnitTableSeeder;
 use Database\Seeders\UserTableSeeder;
 use Database\Seeders\WarehouseTableSeeder;
@@ -110,14 +111,14 @@ class AppSeed extends Command
                 case 'producttableseeder':
                     $this->runProductTableSeederInteractive();
                     break;
+                case 'supplier':
+                case 'suppliertableseeder':
+                    $this->runSupplierTableSeederInteractive();
+                    break;
                 case 'customergroup':
                 case 'customergrouptableseeder':
                     $this->runCustomerTableSeederInteractive();
                     break;
-                    // case 'supplier':
-                    // case 'suppliertableseeder':
-                    //     $this->runSupplierTableSeederInteractive();
-                    //     break;
                 default:
                     $this->info('Cannot find seeder for '.$args);
                     break;
@@ -279,15 +280,15 @@ class AppSeed extends Command
         $seeder->callWith(ProductTableSeeder::class, [$productPerCompanies, $onlyThisCompanyId]);
     }
 
+    private function runSupplierTableSeeder($supplierPerCompanies, $onlyThisCompanyId)
+    {
+        $seeder = new SupplierTableSeeder();
+        $seeder->callWith(SupplierTableSeeder::class, [$supplierPerCompanies, $onlyThisCompanyId]);
+    }
+
     private function runCustomerGroupTableSeeder($customerGroupPerCompanies, $onlyThisCompanyId)
     {
         $seeder = new CustomerGroupTableSeeder();
         $seeder->callWith(CustomerGroupTableSeeder::class, [$customerGroupPerCompanies, $onlyThisCompanyId]);
     }
-
-    // private function runSupplierTableSeeder($supplierPerCompanies, $onlyThisCompanyId)
-    // {
-    //     $seeder = new SupplierTableSeeder();
-    //     $seeder->callWith(SupplierTableSeeder::class, [$supplierPerCompanies, $onlyThisCompanyId]);
-    // }
 }
