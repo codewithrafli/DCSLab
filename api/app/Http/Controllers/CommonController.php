@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\PaymentTermTypeEnum;
 use App\Enums\RecordStatusEnum;
+use App\Enums\RoundOnEnum;
 
 class CommonController extends BaseController
 {
@@ -28,7 +29,7 @@ class CommonController extends BaseController
         ];
     }
 
-    public function getPaymentTermType()
+    public function getPaymentTermTypes()
     {
         return [
             ['name' => 'components.dropdown.values.paymentTermTypeDDL.pia', 'code' => PaymentTermTypeEnum::PAYMENT_IN_ADVANCE->name],
@@ -37,6 +38,23 @@ class CommonController extends BaseController
             ['name' => 'components.dropdown.values.paymentTermTypeDDL.cod', 'code' => PaymentTermTypeEnum::CASH_ON_DELIVERY->name],
             ['name' => 'components.dropdown.values.paymentTermTypeDDL.cnd', 'code' => PaymentTermTypeEnum::CASH_ON_NEXT_DELIVERY->name],
             ['name' => 'components.dropdown.values.paymentTermTypeDDL.cbs', 'code' => PaymentTermTypeEnum::CASH_BEFORE_SHIPMENT->name],
+        ];
+    }
+
+    public function getRoundingTypes()
+    {
+        return [
+            ['name' => 'components.dropdown.values.roundOnDDL.up', 'code' => RoundOnEnum::UP->name],
+            ['name' => 'components.dropdown.values.roundOnDDL.down', 'code' => RoundOnEnum::DOWN->name],
+        ];
+    }
+
+    public function getRecordStatuses()
+    {
+        return [
+            ['name' => 'components.dropdown.values.statusDDL.active', 'code' => RecordStatusEnum::ACTIVE->name],
+            ['name' => 'components.dropdown.values.statusDDL.inactive', 'code' => RecordStatusEnum::INACTIVE->name],
+            ['name' => 'components.dropdown.values.statusDDL.deleted', 'code' => RecordStatusEnum::DELETED->name],
         ];
     }
 }
