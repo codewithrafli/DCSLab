@@ -2,28 +2,24 @@
     "dashboard": "Dashboard",
     "main-dashboard": "Dashboard Utama",
     "main-demo": "Demonstrasi",
-
-    "company-management": "Manajement Perusahaan",    
+    "company-management": "Manajement Perusahaan",
     "company": "Perusahaan",
     "branch": "Cabang",
     "employee": "Karyawan",
     "warehouse": "Gudang",
-
+    "customer-management": "Manajement Pelanggan",
+    "customer-group": "Grup Pelanggan",
     "product-management": "Manajement Produk",
     "product-category": "Kategori Produk",
     "brand": "Merk",
     "unit": "Satuan",
     "product": "Produk",
     "service": "Layanan",
-
     "supplier": "Pemasok",
-
     "purchase-management": "Manajement Pembelian",
     "purchase-order": "Pesanan Pembelian",
-
     "administrator": "Administrator",
     "administrator-user": "Pengguna",
-
     "devtool": "Dev Tool",
     "devtool-devtool": "Dev Tool",
     "devtool-playground": "Playground",
