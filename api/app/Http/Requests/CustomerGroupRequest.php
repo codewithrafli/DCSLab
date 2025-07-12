@@ -92,7 +92,7 @@ class CustomerGroupRequest extends FormRequest
             case 'update':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'code' => ['required', 'string', 'max:255', new CustomerGroupUpdateValidCode($this->company_id, $this->route('customer_group'))],
+                    'code' => ['required', 'string', 'max:255', new CustomerGroupUpdateValidCode($this->company_id, $this->id)],
                     'name' => ['required', 'string', 'max:255'],
                     'max_open_invoice' => ['required', 'integer', 'min:0'],
                     'max_outstanding_invoice' => ['required', 'numeric', 'min:0'],
@@ -172,8 +172,16 @@ class CustomerGroupRequest extends FormRequest
                 $this->merge([]);
                 break;
             case 'store':
+                $this->merge([
+                    'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
+                    'payment_term_type' => PaymentTermTypeEnum::isValid($this->payment_term_type) ? PaymentTermTypeEnum::resolveToEnum($this->payment_term_type)->value : null,
+                    'round_on' => RoundingTypeEnum::isValid($this->round_on) ? RoundingTypeEnum::resolveToEnum($this->round_on)->value : null,
+                    'remarks' => $this->has('remarks') ? $this['remarks'] : null,
+                ]);
+                break;
             case 'update':
                 $this->merge([
+                    'id' => $this->has('id') ? HashidsHelper::decodeId($this->route('customer_group')) : null,
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
                     'payment_term_type' => PaymentTermTypeEnum::isValid($this->payment_term_type) ? PaymentTermTypeEnum::resolveToEnum($this->payment_term_type)->value : null,
                     'round_on' => RoundingTypeEnum::isValid($this->round_on) ? RoundingTypeEnum::resolveToEnum($this->round_on)->value : null,
