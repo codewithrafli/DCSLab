@@ -3,7 +3,7 @@
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
-import CustomerGroupService from "@/services/CustomerGroupService"; // DIUBAH
+import CustomerGroupService from "@/services/CustomerGroupService";
 import DashboardService from "@/services/DashboardService";
 import CacheService from "@/services/CacheService";
 import { TwoColumnsLayout } from "@/components/Base/Form/FormLayout";
@@ -24,7 +24,7 @@ import { ViewMode } from "@/types/enums/ViewMode";
 import Button from "@/components/Base/Button";
 import { debounce } from "lodash";
 import Lucide from "@/components/Base/Lucide";
-import { CustomerGroup } from "@/types/models/CustomerGroup"; // DIUBAH
+import { CustomerGroup } from "@/types/models/CustomerGroup";
 import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
 // #endregion
 
@@ -36,7 +36,7 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
-const customerGroupServices = new CustomerGroupService(); // DIUBAH
+const customerGroupServices = new CustomerGroupService();
 const dashboardServices = new DashboardService();
 const cacheServices = new CacheService();
 // #endregion
@@ -46,7 +46,6 @@ const emits = defineEmits(['mode-state', 'loading-state', 'update-profile', 'sho
 // #endregion
 
 // #region Refs
-// --- PERUBAHAN: Menyesuaikan kartu agar cocok dengan form create ---
 const cards = ref<Array<TwoColumnsLayoutCards>>([
     { title: 'views.customer_group.field_groups.general_information', state: CardState.Expanded },
     { title: 'views.customer_group.field_groups.credit_limit', state: CardState.Expanded },
@@ -55,12 +54,11 @@ const cards = ref<Array<TwoColumnsLayoutCards>>([
     { title: '', state: CardState.Hidden, id: 'button' }
 ]);
 
-// --- PERUBAHAN: Menambahkan ref untuk DDL baru ---
 const statusDDL = ref<Array<DropDownOption> | null>(null);
 const paymentTermTypeDDL = ref<Array<DropDownOption> | null>(null);
 const roundOnDDL = ref<Array<DropDownOption> | null>(null);
 
-const customerGroupForm = customerGroupServices.useCustomerGroupEditForm(route.params.ulid as string); // DIUBAH
+const customerGroupForm = customerGroupServices.useCustomerGroupEditForm(route.params.ulid as string);
 // #endregion
 
 // #region Computed
@@ -77,11 +75,11 @@ onMounted(async () => {
 // #region Methods
 const loadData = async (ulid: string) => {
     emits('loading-state', true);
-    let response: ServiceResponse<CustomerGroup | null> = await customerGroupServices.read(ulid); // DIUBAH
+    let response: ServiceResponse<CustomerGroup | null> = await customerGroupServices.read(ulid);
 
-    // --- PERUBAHAN: Menyesuaikan setData dengan semua field CustomerGroup ---
     if (response && response.data) {
         customerGroupForm.setData({
+            company_id: response.data.company.id,
             code: response.data.code,
             name: response.data.name,
             remarks: response.data.remarks,
@@ -104,7 +102,6 @@ const loadData = async (ulid: string) => {
     emits('loading-state', false);
 }
 
-// --- PERUBAHAN: Mengambil DDL tambahan ---
 const getDDL = (): void => {
     dashboardServices.getStatusDDL().then((result: Array<DropDownOption> | null) => {
         statusDDL.value = result;
@@ -132,14 +129,14 @@ const scrollToError = (id: string): void => {
 }
 
 const onSubmit = async () => {
-    if (customerGroupForm.hasErrors) { // DIUBAH
+    if (customerGroupForm.hasErrors) {
         scrollToError(Object.keys(customerGroupForm.errors)[0]);
     }
 
     emits('loading-state', true);
-    await customerGroupForm.submit().then(() => { // DIUBAH
+    await customerGroupForm.submit().then(() => {
         emits('update-profile');
-        router.push({ name: 'side-menu-customer-group-list' }); // DIUBAH
+        router.push({ name: 'side-menu-customer-group-list' });
     }).catch(error => {
         let errorList: Record<string, Array<string>> = convertErrorTypeToAlertListType(error as Error);
         showAlertPlaceholder('danger', '', errorList);
@@ -149,17 +146,17 @@ const onSubmit = async () => {
 };
 
 const resetForm = async () => {
-    customerGroupForm.reset(); // DIUBAH
-    customerGroupForm.setErrors({}); // DIUBAH
+    customerGroupForm.reset();
+    customerGroupForm.setErrors({});
     await loadData(route.params.ulid as string);
 };
 
 const setCode = () => {
-    customerGroupForm.forgetError('code'); // DIUBAH
-    if (customerGroupForm.code == '_AUTO_') { // DIUBAH
-        customerGroupForm.setData({ code: '' }); // DIUBAH
+    customerGroupForm.forgetError('code');
+    if (customerGroupForm.code == '_AUTO_') {
+        customerGroupForm.setData({ code: '' });
     } else {
-        customerGroupForm.setData({ code: '_AUTO_' }); // DIUBAH
+        customerGroupForm.setData({ code: '_AUTO_' });
     }
 };
 
@@ -181,10 +178,10 @@ const convertErrorTypeToAlertListType = (error: Error) => {
 
 // #region Watchers
 watch(
-    customerGroupForm, // DIUBAH
+    customerGroupForm,
     debounce((newValue): void => {
-        cacheServices.setLastEntity('CUSTOMER_GROUP_EDIT', newValue.data()) // DIUBAH
-        if (customerGroupForm.hasErrors) { // DIUBAH
+        cacheServices.setLastEntity('CUSTOMER_GROUP_EDIT', newValue.data())
+        if (customerGroupForm.hasErrors) {
         }
     }, 500),
     { deep: true }

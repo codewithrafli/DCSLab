@@ -6,8 +6,8 @@ import { useI18n } from "vue-i18n";
 import Button from "@/components/Base/Button";
 import Lucide from "@/components/Base/Lucide";
 import Table from "@/components/Base/Table";
-import CustomerGroupService from "@/services/CustomerGroupService"; // Diubah dari CompanyService
-import { CustomerGroup } from "@/types/models/CustomerGroup"; // Diubah dari Company
+import CustomerGroupService from "@/services/CustomerGroupService";
+import { CustomerGroup } from "@/types/models/CustomerGroup";
 import { Collection } from "@/types/resources/Collection";
 import { DataListEmittedData } from "@/components/DataList/DataList.vue";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
@@ -40,7 +40,7 @@ const emits = defineEmits(['mode-state', 'loading-state', 'update-profile', 'sho
 const deleteUlid = ref<string>('');
 const deleteModalShow = ref<boolean>(false);
 const expandDetail = ref<number | null>(null);
-const customerGroupLists = ref<Collection<Array<CustomerGroup>> | null>({ // Diubah dari companyLists
+const customerGroupLists = ref<Collection<Array<CustomerGroup>> | null>({
     data: [],
     meta: {
         current_page: 0,
@@ -73,12 +73,12 @@ onMounted(async () => {
         router.push({ name: 'side-menu-error-code', params: { code: ErrorCode.USERLOCATION_REQUIRED } });
     }
 
-    await getCustomerGroups('', true, true, 1, 10); // Diubah dari getCompanies
+    await getCustomerGroups('', true, true, 1, 10);
 });
 // #endregion
 
 // #region Methods
-const getCustomerGroups = async (search: string, refresh: boolean, paginate: boolean, page: number, per_page: number) => { // Diubah dari getCompanies
+const getCustomerGroups = async (search: string, refresh: boolean, paginate: boolean, page: number, per_page: number) => {
     emits('loading-state', true);
 
     let company_id = selectedUserLocation.value.company.id;
@@ -93,10 +93,10 @@ const getCustomerGroups = async (search: string, refresh: boolean, paginate: boo
         with_trashed: false,
     };
 
-    let result: ServiceResponse<Collection<Array<CustomerGroup>> | Resource<Array<CustomerGroup>> | null> = await customerGroupServices.readAny(searchReq); // Diubah dari companyServices
+    let result: ServiceResponse<Collection<Array<CustomerGroup>> | Resource<Array<CustomerGroup>> | null> = await customerGroupServices.readAny(searchReq);
 
     if (result.success && result.data) {
-        customerGroupLists.value = result.data as Collection<Array<CustomerGroup>>; // Diubah dari companyLists
+        customerGroupLists.value = result.data as Collection<Array<CustomerGroup>>;
     } else {
         showAlertPlaceholder('danger', '', result.errors as Record<string, Array<string>>);
     }
@@ -105,7 +105,7 @@ const getCustomerGroups = async (search: string, refresh: boolean, paginate: boo
 };
 
 const onDataListChanged = async (data: DataListEmittedData) => {
-    await getCustomerGroups(data.search.text, false, true, data.pagination.page, data.pagination.per_page); // Diubah dari getCompanies
+    await getCustomerGroups(data.search.text, false, true, data.pagination.page, data.pagination.per_page);
 };
 
 const viewSelected = (idx: number) => {
@@ -117,16 +117,16 @@ const viewSelected = (idx: number) => {
 };
 
 const editSelected = (itemIdx: number) => {
-    if (!customerGroupLists.value) return; // Diubah dari companyLists
+    if (!customerGroupLists.value) return;
 
-    let ulid = customerGroupLists.value.data[itemIdx].ulid; // Diubah dari companyLists
-    router.push({ name: 'side-menu-customer-group-edit', params: { ulid: ulid } }); // Diubah dari side-menu-company-company-edit
+    let ulid = customerGroupLists.value.data[itemIdx].ulid;
+    router.push({ name: 'side-menu-customer-group-edit', params: { ulid: ulid } });
 };
 
 const deleteSelected = (itemIdx: number) => {
-    if (!customerGroupLists.value) return; // Diubah dari companyLists
+    if (!customerGroupLists.value) return;
 
-    let itemUlid = customerGroupLists.value.data[itemIdx].ulid; // Diubah dari companyLists
+    let itemUlid = customerGroupLists.value.data[itemIdx].ulid;
 
     deleteUlid.value = itemUlid;
     deleteModalShow.value = true;

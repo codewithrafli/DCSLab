@@ -1,7 +1,9 @@
+import { Company } from "./Company";
 
 export interface CustomerGroup {
     id: string,
     ulid: string,
+    company: Company,
     code: string,
     name: string,
     max_open_invoice: number,

@@ -27,8 +27,8 @@ import WarehouseIndex from "@/pages/warehouse/WarehouseIndex.vue";
 import WarehouseList from "@/pages/warehouse/WarehouseList.vue";
 import WarehouseCreate from "@/pages/warehouse/WarehouseCreate.vue";
 import WarehouseEdit from "@/pages/warehouse/WarehouseEdit.vue";
-import CustomerGroupIndex from "@/pages/customer-group/CostumerGroupIndex.vue";
-import CustomerGroupList from "@/pages/customer-group/CustomerGropList.vue";
+import CustomerGroupIndex from "@/pages/customer-group/CustomerGroupIndex.vue";
+import CustomerGroupList from "@/pages/customer-group/CustomerGroupList.vue";
 import CustomerGroupCreate from "@/pages/customer-group/CustomerGroupCreate.vue";
 import CustomerGroupEdit from "@/pages/customer-group/CustomerGroupEdit.vue";
 
