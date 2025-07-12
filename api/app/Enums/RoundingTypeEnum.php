@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use App\Traits\EnumHelper;
 
-enum RoundOnEnum: int
+enum RoundingTypeEnum: int
 {
     use EnumHelper;
 

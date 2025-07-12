@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\PaymentTermTypeEnum;
 use App\Enums\RecordStatusEnum;
-use App\Enums\RoundOnEnum;
+use App\Enums\RoundingTypeEnum;
 
 class CommonController extends BaseController
 {
@@ -26,6 +26,7 @@ class CommonController extends BaseController
         return [
             ['name' => 'components.dropdown.values.statusDDL.active', 'code' => RecordStatusEnum::ACTIVE->name],
             ['name' => 'components.dropdown.values.statusDDL.inactive', 'code' => RecordStatusEnum::INACTIVE->name],
+            ['name' => 'components.dropdown.values.statusDDL.deleted', 'code' => RecordStatusEnum::DELETED->name],
         ];
     }
 
@@ -44,17 +45,8 @@ class CommonController extends BaseController
     public function getRoundingTypes()
     {
         return [
-            ['name' => 'components.dropdown.values.roundOnDDL.up', 'code' => RoundOnEnum::UP->name],
-            ['name' => 'components.dropdown.values.roundOnDDL.down', 'code' => RoundOnEnum::DOWN->name],
-        ];
-    }
-
-    public function getRecordStatuses()
-    {
-        return [
-            ['name' => 'components.dropdown.values.statusDDL.active', 'code' => RecordStatusEnum::ACTIVE->name],
-            ['name' => 'components.dropdown.values.statusDDL.inactive', 'code' => RecordStatusEnum::INACTIVE->name],
-            ['name' => 'components.dropdown.values.statusDDL.deleted', 'code' => RecordStatusEnum::DELETED->name],
+            ['name' => 'components.dropdown.values.roundingTypeDDL.up', 'code' => RoundingTypeEnum::UP->name],
+            ['name' => 'components.dropdown.values.roundingTypeDDL.down', 'code' => RoundingTypeEnum::DOWN->name],
         ];
     }
 }
