@@ -2,28 +2,24 @@
     "dashboard": "Dashboard",
     "main-dashboard": "Main Dashboard",
     "main-demo": "Demo",
-
-    "company-management": "Company Management",    
+    "company-management": "Company Management",
     "company": "Company",
     "branch": "Branch",
     "employee": "Employee",
     "warehouse": "Warehouse",
-    
+    "customer-management": "Customer Management",
+    "customer-group": "Customer Group",
     "product-management": "Product Management",
     "product-category": "Product Category",
     "brand": "Brand",
     "unit": "Unit",
     "product": "Product",
     "service": "Service",
-
     "supplier": "Supplier",
-
     "purchase-management": "Purchase Management",
     "purchase-order": "Purchase Order",
-
     "administrator": "Administrator",
     "administrator-user": "User",
-    
     "devtool": "Dev Tool",
     "devtool-devtool": "Dev Tool",
     "devtool-playground": "Playground",

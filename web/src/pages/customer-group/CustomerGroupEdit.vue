@@ -1,0 +1,364 @@
+<script setup lang="ts">
+// #region Imports
+import { onMounted, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
+import CustomerGroupService from "@/services/CustomerGroupService"; // DIUBAH
+import DashboardService from "@/services/DashboardService";
+import CacheService from "@/services/CacheService";
+import { TwoColumnsLayout } from "@/components/Base/Form/FormLayout";
+import {
+    FormInput,
+    FormLabel,
+    FormTextarea,
+    FormSelect,
+    FormSwitch,
+    FormInputCode,
+    FormErrorMessages,
+} from "@/components/Base/Form";
+import { TwoColumnsLayoutCards } from "@/components/Base/Form/FormLayout/TwoColumnsLayout.vue";
+import { CardState } from "@/types/enums/CardState";
+import { DropDownOption } from "@/types/models/DropDownOption";
+import { ServiceResponse } from "@/types/services/ServiceResponse";
+import { ViewMode } from "@/types/enums/ViewMode";
+import Button from "@/components/Base/Button";
+import { debounce } from "lodash";
+import Lucide from "@/components/Base/Lucide";
+import { CustomerGroup } from "@/types/models/CustomerGroup"; // DIUBAH
+import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
+// #endregion
+
+// #region Interfaces
+// #endregion
+
+// #region Declarations
+const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+
+const customerGroupServices = new CustomerGroupService(); // DIUBAH
+const dashboardServices = new DashboardService();
+const cacheServices = new CacheService();
+// #endregion
+
+// #region Props, Emits
+const emits = defineEmits(['mode-state', 'loading-state', 'update-profile', 'show-alertplaceholder']);
+// #endregion
+
+// #region Refs
+// --- PERUBAHAN: Menyesuaikan kartu agar cocok dengan form create ---
+const cards = ref<Array<TwoColumnsLayoutCards>>([
+    { title: 'views.customer_group.field_groups.general_information', state: CardState.Expanded },
+    { title: 'views.customer_group.field_groups.credit_limit', state: CardState.Expanded },
+    { title: 'views.customer_group.field_groups.pricing_and_points', state: CardState.Expanded },
+    { title: 'views.customer_group.field_groups.rounding_rules', state: CardState.Expanded },
+    { title: '', state: CardState.Hidden, id: 'button' }
+]);
+
+// --- PERUBAHAN: Menambahkan ref untuk DDL baru ---
+const statusDDL = ref<Array<DropDownOption> | null>(null);
+const paymentTermTypeDDL = ref<Array<DropDownOption> | null>(null);
+const roundOnDDL = ref<Array<DropDownOption> | null>(null);
+
+const customerGroupForm = customerGroupServices.useCustomerGroupEditForm(route.params.ulid as string); // DIUBAH
+// #endregion
+
+// #region Computed
+// #endregion
+
+// #region Lifecycle Hooks
+onMounted(async () => {
+    emits('mode-state', ViewMode.FORM_EDIT);
+    getDDL();
+    await loadData(route.params.ulid as string);
+});
+// #endregion
+
+// #region Methods
+const loadData = async (ulid: string) => {
+    emits('loading-state', true);
+    let response: ServiceResponse<CustomerGroup | null> = await customerGroupServices.read(ulid); // DIUBAH
+
+    // --- PERUBAHAN: Menyesuaikan setData dengan semua field CustomerGroup ---
+    if (response && response.data) {
+        customerGroupForm.setData({
+            code: response.data.code,
+            name: response.data.name,
+            remarks: response.data.remarks,
+            max_open_invoice: response.data.max_open_invoice,
+            max_outstanding_invoice: response.data.max_outstanding_invoice,
+            max_invoice_age: response.data.max_invoice_age,
+            payment_term_type: response.data.payment_term_type,
+            payment_term: response.data.payment_term,
+            selling_point: response.data.selling_point,
+            selling_point_multiple: response.data.selling_point_multiple,
+            sell_at_cost: response.data.sell_at_cost,
+            price_markup_percent: response.data.price_markup_percent,
+            price_markup_nominal: response.data.price_markup_nominal,
+            price_markdown_percent: response.data.price_markdown_percent,
+            price_markdown_nominal: response.data.price_markdown_nominal,
+            round_on: response.data.round_on,
+            round_digit: response.data.round_digit,
+        });
+    }
+    emits('loading-state', false);
+}
+
+// --- PERUBAHAN: Mengambil DDL tambahan ---
+const getDDL = (): void => {
+    dashboardServices.getStatusDDL().then((result: Array<DropDownOption> | null) => {
+        statusDDL.value = result;
+    });
+    dashboardServices.getPaymentTermTypesDDL().then((result: Array<DropDownOption> | null) => {
+        paymentTermTypeDDL.value = result;
+    });
+    dashboardServices.getRoundingTypesDDL().then((result: Array<DropDownOption> | null) => {
+        roundOnDDL.value = result;
+    });
+}
+
+const handleExpandCard = (index: number) => {
+    if (cards.value[index].state === CardState.Collapsed) {
+        cards.value[index].state = CardState.Expanded
+    } else if (cards.value[index].state === CardState.Expanded) {
+        cards.value[index].state = CardState.Collapsed
+    }
+}
+
+const scrollToError = (id: string): void => {
+    let el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+const onSubmit = async () => {
+    if (customerGroupForm.hasErrors) { // DIUBAH
+        scrollToError(Object.keys(customerGroupForm.errors)[0]);
+    }
+
+    emits('loading-state', true);
+    await customerGroupForm.submit().then(() => { // DIUBAH
+        emits('update-profile');
+        router.push({ name: 'side-menu-customer-group-list' }); // DIUBAH
+    }).catch(error => {
+        let errorList: Record<string, Array<string>> = convertErrorTypeToAlertListType(error as Error);
+        showAlertPlaceholder('danger', '', errorList);
+    }).finally(() => {
+        emits('loading-state', false);
+    });
+};
+
+const resetForm = async () => {
+    customerGroupForm.reset(); // DIUBAH
+    customerGroupForm.setErrors({}); // DIUBAH
+    await loadData(route.params.ulid as string);
+};
+
+const setCode = () => {
+    customerGroupForm.forgetError('code'); // DIUBAH
+    if (customerGroupForm.code == '_AUTO_') { // DIUBAH
+        customerGroupForm.setData({ code: '' }); // DIUBAH
+    } else {
+        customerGroupForm.setData({ code: '_AUTO_' }); // DIUBAH
+    }
+};
+
+const showAlertPlaceholder = (pAlertType: 'hidden' | 'danger' | 'success' | 'warning' | 'pending' | 'dark', pTitle: string, pAlertList: Record<string, Array<string>> | null) => {
+    let ap: AlertPlaceholderProps = {
+        alertType: pAlertType,
+        title: pTitle,
+        alertList: pAlertList,
+    };
+    emits('show-alertplaceholder', ap);
+};
+
+const convertErrorTypeToAlertListType = (error: Error) => {
+    const record: Record<string, Array<string>> = {};
+    record.error = [error.message];
+    return record;
+};
+// #endregion
+
+// #region Watchers
+watch(
+    customerGroupForm, // DIUBAH
+    debounce((newValue): void => {
+        cacheServices.setLastEntity('CUSTOMER_GROUP_EDIT', newValue.data()) // DIUBAH
+        if (customerGroupForm.hasErrors) { // DIUBAH
+        }
+    }, 500),
+    { deep: true }
+);
+// #endregion
+</script>
+
+<template>
+    <form id="customerGroupForm" @submit.prevent="onSubmit">
+        <TwoColumnsLayout :cards="cards" :using-side-tab="false" @handle-expand-card="handleExpandCard">
+            <template #card-items-0>
+                <div class="p-5">
+                    <div class="pb-4">
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('code') }">
+                            {{ t('views.customer_group.fields.code') }}
+                        </FormLabel>
+                        <FormInputCode v-model="customerGroupForm.code"
+                            :class="{ 'border-danger': customerGroupForm.invalid('code') }"
+                            :placeholder="t('views.customer_group.fields.code')" @set-auto="setCode"
+                            @change="customerGroupForm.validate('code')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.code" />
+                    </div>
+                    <div class="pb-4">
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('name') }">
+                            {{ t('views.customer_group.fields.name') }}
+                        </FormLabel>
+                        <FormInput v-model="customerGroupForm.name" type="text"
+                            :class="{ 'border-danger': customerGroupForm.invalid('name') }"
+                            :placeholder="t('views.customer_group.fields.name')"
+                            @change="customerGroupForm.validate('name')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.name" />
+                    </div>
+                    <div class="pb-4">
+                        <FormLabel>{{ t('views.customer_group.fields.remarks') }}</FormLabel>
+                        <FormTextarea v-model="customerGroupForm.remarks"
+                            :placeholder="t('views.customer_group.fields.remarks')"
+                            @change="customerGroupForm.validate('remarks')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.remarks" />
+                    </div>
+                </div>
+            </template>
+
+            <template #card-items-1>
+                <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('max_open_invoice') }">
+                            {{ t('views.customer_group.fields.max_open_invoice') }}
+                        </FormLabel>
+                        <FormInput v-model="customerGroupForm.max_open_invoice" type="number"
+                            @change="customerGroupForm.validate('max_open_invoice')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.max_open_invoice" />
+                    </div>
+                    <div>
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('max_outstanding_invoice') }">
+                            {{ t('views.customer_group.fields.max_outstanding_invoice') }}
+                        </FormLabel>
+                        <FormInput v-model="customerGroupForm.max_outstanding_invoice" type="number"
+                            @change="customerGroupForm.validate('max_outstanding_invoice')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.max_outstanding_invoice" />
+                    </div>
+                    <div>
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('max_invoice_age') }">
+                            {{ t('views.customer_group.fields.max_invoice_age') }}
+                        </FormLabel>
+                        <FormInput v-model="customerGroupForm.max_invoice_age" type="number"
+                            @change="customerGroupForm.validate('max_invoice_age')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.max_invoice_age" />
+                    </div>
+                    <div>
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('payment_term_type') }">
+                            {{ t('views.customer_group.fields.payment_term_type') }}
+                        </FormLabel>
+                        <FormSelect v-model="customerGroupForm.payment_term_type"
+                            @change="customerGroupForm.validate('payment_term_type')">
+                            <option value="">{{ t('components.dropdown.placeholder') }}</option>
+                            <option v-for="pt in paymentTermTypeDDL" :key="pt.code" :value="pt.code">{{ t(pt.name) }}
+                            </option>
+                        </FormSelect>
+                        <FormErrorMessages :messages="customerGroupForm.errors.payment_term_type" />
+                    </div>
+                    <div class="col-span-1 md:col-span-2">
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('payment_term') }">
+                            {{ t('views.customer_group.fields.payment_term') }}
+                        </FormLabel>
+                        <FormInput v-model="customerGroupForm.payment_term" type="number"
+                            @change="customerGroupForm.validate('payment_term')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.payment_term" />
+                    </div>
+                </div>
+            </template>
+
+            <template #card-items-2>
+                <div class="p-5">
+                    <div class="pb-4">
+                        <FormLabel>{{ t('views.customer_group.fields.sell_at_cost') }}</FormLabel>
+                        <FormSwitch class="mt-2">
+                            <FormSwitch.Input v-model="customerGroupForm.sell_at_cost" type="checkbox" />
+                        </FormSwitch>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('price_markup_percent') }">
+                                {{ t('views.customer_group.fields.price_markup_percent') }}
+                            </FormLabel>
+                            <FormInput v-model="customerGroupForm.price_markup_percent" type="number"
+                                @change="customerGroupForm.validate('price_markup_percent')" />
+                            <FormErrorMessages :messages="customerGroupForm.errors.price_markup_percent" />
+                        </div>
+                        <div>
+                            <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('price_markup_nominal') }">
+                                {{ t('views.customer_group.fields.price_markup_nominal') }}
+                            </FormLabel>
+                            <FormInput v-model="customerGroupForm.price_markup_nominal" type="number"
+                                @change="customerGroupForm.validate('price_markup_nominal')" />
+                            <FormErrorMessages :messages="customerGroupForm.errors.price_markup_nominal" />
+                        </div>
+                        <div>
+                            <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('price_markdown_percent') }">
+                                {{ t('views.customer_group.fields.price_markdown_percent') }}
+                            </FormLabel>
+                            <FormInput v-model="customerGroupForm.price_markdown_percent" type="number"
+                                @change="customerGroupForm.validate('price_markdown_percent')" />
+                            <FormErrorMessages :messages="customerGroupForm.errors.price_markdown_percent" />
+                        </div>
+                        <div>
+                            <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('price_markdown_nominal') }">
+                                {{ t('views.customer_group.fields.price_markdown_nominal') }}
+                            </FormLabel>
+                            <FormInput v-model="customerGroupForm.price_markdown_nominal" type="number"
+                                @change="customerGroupForm.validate('price_markdown_nominal')" />
+                            <FormErrorMessages :messages="customerGroupForm.errors.price_markdown_nominal" />
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <template #card-items-3>
+                <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('round_on') }">
+                            {{ t('views.customer_group.fields.round_on') }}
+                        </FormLabel>
+                        <FormSelect v-model="customerGroupForm.round_on"
+                            @change="customerGroupForm.validate('round_on')">
+                            <option value="">{{ t('components.dropdown.placeholder') }}</option>
+                            <option v-for="ro in roundOnDDL" :key="ro.code" :value="ro.code">{{ t(ro.name) }}</option>
+                        </FormSelect>
+                        <FormErrorMessages :messages="customerGroupForm.errors.round_on" />
+                    </div>
+                    <div>
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('round_digit') }">
+                            {{ t('views.customer_group.fields.round_digit') }}
+                        </FormLabel>
+                        <FormInput v-model="customerGroupForm.round_digit" type="number"
+                            @change="customerGroupForm.validate('round_digit')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.round_digit" />
+                    </div>
+                </div>
+            </template>
+
+            <template #card-items-button>
+                <div class="flex gap-4">
+                    <Button type="submit" href="#" variant="primary" class="w-28 shadow-md"
+                        :disabled="customerGroupForm.validating || customerGroupForm.hasErrors">
+                        <Lucide v-if="customerGroupForm.validating" icon="Loader" class="animate-spin" />
+                        <template v-else>
+                            {{ t("components.buttons.submit") }}
+                        </template>
+                    </Button>
+                    <Button type="button" href="#" variant="soft-secondary" class="w-28 shadow-md" @click="resetForm">
+                        {{ t("components.buttons.reset") }}
+                    </Button>
+                </div>
+            </template>
+        </TwoColumnsLayout>
+    </form>
+</template>

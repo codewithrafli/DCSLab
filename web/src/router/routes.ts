@@ -27,6 +27,10 @@ import WarehouseIndex from "@/pages/warehouse/WarehouseIndex.vue";
 import WarehouseList from "@/pages/warehouse/WarehouseList.vue";
 import WarehouseCreate from "@/pages/warehouse/WarehouseCreate.vue";
 import WarehouseEdit from "@/pages/warehouse/WarehouseEdit.vue";
+import CustomerGroupIndex from "@/pages/customer-group/CostumerGroupIndex.vue";
+import CustomerGroupList from "@/pages/customer-group/CustomerGropList.vue";
+import CustomerGroupCreate from "@/pages/customer-group/CustomerGroupCreate.vue";
+import CustomerGroupEdit from "@/pages/customer-group/CustomerGroupEdit.vue";
 
 export default [
     {
@@ -183,6 +187,43 @@ export default [
                         ]
 
                     }
+                ]
+            },
+            {
+                path: "/dashboard/customer",
+                children: [
+                    {
+                        path: "/dashboard/customer/customer-group",
+                        name: "side-menu-customer-group",
+                        redirect: "/dashboard/customer/customer-group/list",
+                        component: CustomerGroupIndex,
+                        children: [
+                            {
+                                path: "/dashboard/customer/customer-group/list",
+                                name: "side-menu-customer-group-list",
+                                component: CustomerGroupList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/customer/customer-group/create",
+                                name: "side-menu-customer-group-create",
+                                component: CustomerGroupCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/customer/customer-group/edit/:ulid",
+                                name: "side-menu-customer-group-edit",
+                                component: CustomerGroupEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
+                        ]
+                    },
                 ]
             },
             {
