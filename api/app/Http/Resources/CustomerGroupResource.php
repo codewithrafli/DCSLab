@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Enums\PaymentTermTypeEnum;
-use App\Enums\RoundingTypeEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Vinkla\Hashids\Facades\Hashids;
@@ -22,8 +20,8 @@ class CustomerGroupResource extends JsonResource
             'max_outstanding_invoice' => (float) (string) $this->max_outstanding_invoice,
             'max_invoice_age' => (int) $this->max_invoice_age,
             'payment_term_type' => [
-                'value' => PaymentTermTypeEnum::from($this->payment_term_type)->value,
-                'name' => PaymentTermTypeEnum::from($this->payment_term_type)->name,
+                'value' => $this->payment_term_type->value,
+                'name' => $this->payment_term_type->name,
             ],
             'payment_term' => (int) $this->payment_term,
             'selling_point' => (int) $this->selling_point,
@@ -34,8 +32,8 @@ class CustomerGroupResource extends JsonResource
             'price_markdown_percent' => (float) (string) $this->price_markdown_percent,
             'price_markdown_nominal' => (float) (string) $this->price_markdown_nominal,
             'round_on' => [
-                'value' => RoundingTypeEnum::from($this->round_on)->value,
-                'name' => RoundingTypeEnum::from($this->round_on)->name,
+                'value' => $this->round_on->value,
+                'name' => $this->round_on->name,
             ],
             'round_digit' => (int) $this->round_digit,
             'remarks' => $this->remarks,
