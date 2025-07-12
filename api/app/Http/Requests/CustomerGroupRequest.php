@@ -10,6 +10,7 @@ use App\Models\CustomerGroup;
 use App\Rules\CustomerGroupStoreValidCode;
 use App\Rules\CustomerGroupUpdateValidCode;
 use App\Rules\IsValidCompany;
+use Hashids\Hashids;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;
@@ -181,7 +182,7 @@ class CustomerGroupRequest extends FormRequest
                 break;
             case 'update':
                 $this->merge([
-                    'id' => $this->route('customer_group'),
+                    'id' => HashidsHelper::decodeId($this->route('customer_group')),
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
                     'payment_term_type' => PaymentTermTypeEnum::isValid($this->payment_term_type) ? PaymentTermTypeEnum::resolveToEnum($this->payment_term_type)->value : null,
                     'round_on' => RoundingTypeEnum::isValid($this->round_on) ? RoundingTypeEnum::resolveToEnum($this->round_on)->value : null,
