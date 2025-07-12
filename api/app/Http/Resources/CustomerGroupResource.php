@@ -19,10 +19,7 @@ class CustomerGroupResource extends JsonResource
             'max_open_invoice' => (int) $this->max_open_invoice,
             'max_outstanding_invoice' => (float) (string) $this->max_outstanding_invoice,
             'max_invoice_age' => (int) $this->max_invoice_age,
-            'payment_term_type' => [
-                'value' => $this->payment_term_type->value,
-                'name' => $this->payment_term_type->name,
-            ],
+            'payment_term_type' => $this->payment_term_type->name,
             'payment_term' => (int) $this->payment_term,
             'selling_point' => (int) $this->selling_point,
             'selling_point_multiple' => (float) (string) $this->selling_point_multiple,
@@ -31,10 +28,7 @@ class CustomerGroupResource extends JsonResource
             'price_markup_nominal' => (float) (string) $this->price_markup_nominal,
             'price_markdown_percent' => (float) (string) $this->price_markdown_percent,
             'price_markdown_nominal' => (float) (string) $this->price_markdown_nominal,
-            'round_on' => [
-                'value' => $this->round_on->value,
-                'name' => $this->round_on->name,
-            ],
+            'round_on' => $this->round_on->name,
             'round_digit' => (int) $this->round_digit,
             'remarks' => $this->remarks,
         ];
