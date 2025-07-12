@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\PaymentTermTypeEnum;
+use App\Enums\RoundingTypeEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Vinkla\Hashids\Facades\Hashids;
@@ -16,20 +18,26 @@ class CustomerGroupResource extends JsonResource
             'company' => new CompanyResource($this->company),
             'code' => $this->code,
             'name' => $this->name,
-            'max_open_invoice' => $this->max_open_invoice,
-            'max_outstanding_invoice' => $this->max_outstanding_invoice,
-            'max_invoice_age' => $this->max_invoice_age,
-            'payment_term_type' => $this->payment_term_type,
-            'payment_term' => $this->payment_term,
-            'selling_point' => $this->selling_point,
-            'selling_point_multiple' => $this->selling_point_multiple,
+            'max_open_invoice' => (int) $this->max_open_invoice,
+            'max_outstanding_invoice' => (float) (string) $this->max_outstanding_invoice,
+            'max_invoice_age' => (int) $this->max_invoice_age,
+            'payment_term_type' => [
+                'value' => PaymentTermTypeEnum::from($this->payment_term_type)->value,
+                'name' => PaymentTermTypeEnum::from($this->payment_term_type)->name,
+            ],
+            'payment_term' => (int) $this->payment_term,
+            'selling_point' => (int) $this->selling_point,
+            'selling_point_multiple' => (float) (string) $this->selling_point_multiple,
             'sell_at_cost' => $this->sell_at_cost,
-            'price_markup_percent' => $this->price_markup_percent,
-            'price_markup_nominal' => $this->price_markup_nominal,
-            'price_markdown_percent' => $this->price_markdown_percent,
-            'price_markdown_nominal' => $this->price_markdown_nominal,
-            'round_on' => $this->round_on,
-            'round_digit' => $this->round_digit,
+            'price_markup_percent' => (float) (string) $this->price_markup_percent,
+            'price_markup_nominal' => (float) (string) $this->price_markup_nominal,
+            'price_markdown_percent' => (float) (string) $this->price_markdown_percent,
+            'price_markdown_nominal' => (float) (string) $this->price_markdown_nominal,
+            'round_on' => [
+                'value' => RoundingTypeEnum::from($this->round_on)->value,
+                'name' => RoundingTypeEnum::from($this->round_on)->name,
+            ],
+            'round_digit' => (int) $this->round_digit,
             'remarks' => $this->remarks,
         ];
     }
