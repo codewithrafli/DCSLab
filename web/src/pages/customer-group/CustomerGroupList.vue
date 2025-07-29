@@ -305,13 +305,13 @@ const showAlertPlaceholder = (pAlertType: 'hidden' | 'danger' | 'success' | 'war
                                 <div class="w-full border-b my-3"></div>
                                 <div class="flex flex-row mt-1">
                                     <div class="ml-5 w-48 text-right pr-5 font-medium">{{
-                                        t('views.customer_group.fields.round_on') }}</div>
-                                    <div class="flex-1">{{ item.round_on }}</div>
+                                        t('views.customer_group.fields.rounding_type') }}</div>
+                                    <div class="flex-1">{{ item.rounding_type }}</div>
                                 </div>
                                 <div class="flex flex-row mt-1">
                                     <div class="ml-5 w-48 text-right pr-5 font-medium">{{
-                                        t('views.customer_group.fields.round_digit') }}</div>
-                                    <div class="flex-1">{{ item.round_digit }}</div>
+                                        t('views.customer_group.fields.rounding_digit') }}</div>
+                                    <div class="flex-1">{{ item.rounding_digit }}</div>
                                 </div>
                             </Table.Td>
                         </Table.Tr>

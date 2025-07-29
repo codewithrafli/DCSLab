@@ -28,8 +28,8 @@ class CustomerGroupResource extends JsonResource
             'price_markup_nominal' => (float) (string) $this->price_markup_nominal,
             'price_markdown_percent' => (float) (string) $this->price_markdown_percent,
             'price_markdown_nominal' => (float) (string) $this->price_markdown_nominal,
-            'round_on' => $this->round_on->name,
-            'round_digit' => (int) $this->round_digit,
+            'rounding_type' => $this->rounding_type->name,
+            'rounding_digit' => (int) $this->rounding_digit,
             'remarks' => $this->remarks,
         ];
     }

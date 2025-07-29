@@ -342,25 +342,25 @@ watch(
             <template #card-items-3>
                 <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="pb-4">
-                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('round_on') }">
-                            {{ t('views.customer_group.fields.round_on') }}
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('rounding_type') }">
+                            {{ t('views.customer_group.fields.rounding_type') }}
                         </FormLabel>
-                        <FormSelect v-model="customerGroupForm.round_on"
-                            :class="{ 'border-danger': customerGroupForm.invalid('round_on') }"
-                            @change="customerGroupForm.validate('round_on')">
+                        <FormSelect v-model="customerGroupForm.rounding_type"
+                            :class="{ 'border-danger': customerGroupForm.invalid('rounding_type') }"
+                            @change="customerGroupForm.validate('rounding_type')">
                             <option value="">{{ t('components.dropdown.placeholder') }}</option>
                             <option v-for="c in roundOnDDL" :key="c.code" :value="c.code">{{ t(c.name) }}</option>
                         </FormSelect>
-                        <FormErrorMessages :messages="customerGroupForm.errors.round_on" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.rounding_type" />
                     </div>
                     <div class="pb-4">
-                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('round_digit') }">
-                            {{ t('views.customer_group.fields.round_digit') }}
+                        <FormLabel :class="{ 'text-danger': customerGroupForm.invalid('rounding_digit') }">
+                            {{ t('views.customer_group.fields.rounding_digit') }}
                         </FormLabel>
-                        <FormInput v-model="customerGroupForm.round_digit" type="number"
-                            :class="{ 'border-danger': customerGroupForm.invalid('round_digit') }"
-                            @change="customerGroupForm.validate('round_digit')" />
-                        <FormErrorMessages :messages="customerGroupForm.errors.round_digit" />
+                        <FormInput v-model="customerGroupForm.rounding_digit" type="number"
+                            :class="{ 'border-danger': customerGroupForm.invalid('rounding_digit') }"
+                            @change="customerGroupForm.validate('rounding_digit')" />
+                        <FormErrorMessages :messages="customerGroupForm.errors.rounding_digit" />
                     </div>
                 </div>
             </template>

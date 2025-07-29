@@ -85,8 +85,8 @@ class CustomerGroupRequest extends FormRequest
                     'price_markup_nominal' => ['required', 'numeric', 'min:0'],
                     'price_markdown_percent' => ['required', 'numeric', 'min:0'],
                     'price_markdown_nominal' => ['required', 'numeric', 'min:0'],
-                    'round_on' => [new Enum(RoundingTypeEnum::class)],
-                    'round_digit' => ['required', 'integer', 'min:0'],
+                    'rounding_type' => [new Enum(RoundingTypeEnum::class)],
+                    'rounding_digit' => ['required', 'integer', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'update':
@@ -106,8 +106,8 @@ class CustomerGroupRequest extends FormRequest
                     'price_markup_nominal' => ['required', 'numeric', 'min:0'],
                     'price_markdown_percent' => ['required', 'numeric', 'min:0'],
                     'price_markdown_nominal' => ['required', 'numeric', 'min:0'],
-                    'round_on' => [new Enum(RoundingTypeEnum::class)],
-                    'round_digit' => ['required', 'integer', 'min:0'],
+                    'rounding_type' => [new Enum(RoundingTypeEnum::class)],
+                    'rounding_digit' => ['required', 'integer', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'delete':
@@ -139,8 +139,8 @@ class CustomerGroupRequest extends FormRequest
             'price_markup_nominal' => trans('validation_attributes.customer_group.price_markup_nominal'),
             'price_markdown_percent' => trans('validation_attributes.customer_group.price_markdown_percent'),
             'price_markdown_nominal' => trans('validation_attributes.customer_group.price_markdown_nominal'),
-            'round_on' => trans('validation_attributes.customer_group.round_on'),
-            'round_digit' => trans('validation_attributes.customer_group.round_digit'),
+            'rounding_type' => trans('validation_attributes.customer_group.rounding_type'),
+            'rounding_digit' => trans('validation_attributes.customer_group.rounding_digit'),
             'remarks' => trans('validation_attributes.customer_group.remarks'),
         ];
     }
@@ -175,7 +175,7 @@ class CustomerGroupRequest extends FormRequest
                 $this->merge([
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
                     'payment_term_type' => PaymentTermTypeEnum::isValid($this->payment_term_type) ? PaymentTermTypeEnum::resolveToEnum($this->payment_term_type)->value : null,
-                    'round_on' => RoundingTypeEnum::isValid($this->round_on) ? RoundingTypeEnum::resolveToEnum($this->round_on)->value : null,
+                    'rounding_type' => RoundingTypeEnum::isValid($this->rounding_type) ? RoundingTypeEnum::resolveToEnum($this->rounding_type)->value : null,
                     'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
                 break;
@@ -184,7 +184,7 @@ class CustomerGroupRequest extends FormRequest
                     'id' => HashidsHelper::decodeId($this->route('customer_group')),
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
                     'payment_term_type' => PaymentTermTypeEnum::isValid($this->payment_term_type) ? PaymentTermTypeEnum::resolveToEnum($this->payment_term_type)->value : null,
-                    'round_on' => RoundingTypeEnum::isValid($this->round_on) ? RoundingTypeEnum::resolveToEnum($this->round_on)->value : null,
+                    'rounding_type' => RoundingTypeEnum::isValid($this->rounding_type) ? RoundingTypeEnum::resolveToEnum($this->rounding_type)->value : null,
                     'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
                 break;

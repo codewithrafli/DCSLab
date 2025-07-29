@@ -44,8 +44,8 @@ export default class CustomerGroupService {
             price_markup_nominal: 0,
             price_markdown_percent: 0,
             price_markdown_nominal: 0,
-            round_on: 1,
-            round_digit: 0,
+            rounding_type: 1,
+            rounding_digit: 0,
             remarks: '',
         });
 
@@ -140,8 +140,8 @@ export default class CustomerGroupService {
             price_markup_nominal: 0,
             price_markdown_percent: 0,
             price_markdown_nominal: 0,
-            round_on: 1,
-            round_digit: 0,
+            rounding_type: 1,
+            rounding_digit: 0,
             remarks: '',
         });
 

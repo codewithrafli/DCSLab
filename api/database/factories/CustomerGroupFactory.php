@@ -26,8 +26,8 @@ class CustomerGroupFactory extends Factory
             'price_markup_nominal' => fake()->numberBetween(0, 100) * 10000,
             'price_markdown_percent' => fake()->numberBetween(0, 100),
             'price_markdown_nominal' => fake()->numberBetween(0, 100) * 10000,
-            'round_on' => fake()->randomElement(RoundingTypeEnum::toArrayEnum()),
-            'round_digit' => fake()->numberBetween(0, 100),
+            'rounding_type' => fake()->randomElement(RoundingTypeEnum::toArrayEnum()),
+            'rounding_digit' => fake()->numberBetween(0, 100),
             'remarks' => fake()->sentence(),
         ];
     }

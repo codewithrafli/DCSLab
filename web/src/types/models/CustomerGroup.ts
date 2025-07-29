@@ -18,7 +18,7 @@ export interface CustomerGroup {
     price_markup_nominal: number,
     price_markdown_percent: number,
     price_markdown_nominal: number,
-    round_on: string,
-    round_digit: number,
+    rounding_type: string,
+    rounding_digit: number,
     remarks: string,
 }
