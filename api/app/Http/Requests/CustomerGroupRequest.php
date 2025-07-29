@@ -10,7 +10,6 @@ use App\Models\CustomerGroup;
 use App\Rules\CustomerGroupStoreValidCode;
 use App\Rules\CustomerGroupUpdateValidCode;
 use App\Rules\IsValidCompany;
-use Hashids\Hashids;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Enum;

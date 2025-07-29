@@ -2,17 +2,17 @@
 
 namespace App\Console\Commands;
 
-use Database\Seeders\BranchTableSeeder;
-use Database\Seeders\BrandTableSeeder;
-use Database\Seeders\CompanyTableSeeder;
-use Database\Seeders\CustomerGroupTableSeeder;
-use Database\Seeders\ProductCategoryTableSeeder;
-use Database\Seeders\ProductTableSeeder;
-use Database\Seeders\RoleTableSeeder;
-use Database\Seeders\SupplierTableSeeder;
-use Database\Seeders\UnitTableSeeder;
-use Database\Seeders\UserTableSeeder;
-use Database\Seeders\WarehouseTableSeeder;
+use Database\Seeders\BranchSeeder;
+use Database\Seeders\BrandSeeder;
+use Database\Seeders\CompanySeeder;
+use Database\Seeders\CustomerGroupSeeder;
+use Database\Seeders\ProductCategorySeeder;
+use Database\Seeders\ProductSeeder;
+use Database\Seeders\RoleSeeder;
+use Database\Seeders\SupplierSeeder;
+use Database\Seeders\UnitSeeder;
+use Database\Seeders\UserSeeder;
+use Database\Seeders\WarehouseSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 
@@ -176,8 +176,8 @@ class AppSeed extends Command
 
     private function runUserTableSeeder($truncate, $count)
     {
-        $seeder = new UserTableSeeder();
-        $seeder->callWith(UserTableSeeder::class, [$truncate, $count]);
+        $seeder = new UserSeeder();
+        $seeder->callWith(UserSeeder::class, [$truncate, $count]);
     }
 
     private function runRoleTableSeederInteractive()
@@ -195,8 +195,8 @@ class AppSeed extends Command
 
     private function runRoleTableSeeder($randomPermission, $count)
     {
-        $seeder = new RoleTableSeeder();
-        $seeder->callWith(RoleTableSeeder::class, [$randomPermission, $count]);
+        $seeder = new RoleSeeder();
+        $seeder->callWith(RoleSeeder::class, [$randomPermission, $count]);
     }
 
     private function runCompanyTableSeederInteractive()
@@ -214,8 +214,8 @@ class AppSeed extends Command
 
     private function runCompanyTableSeeder($companiesPerUsers, $userId)
     {
-        $seeder = new CompanyTableSeeder();
-        $seeder->callWith(CompanyTableSeeder::class, [$companiesPerUsers, $userId]);
+        $seeder = new CompanySeeder();
+        $seeder->callWith(CompanySeeder::class, [$companiesPerUsers, $userId]);
     }
 
     private function runBranchTableSeederInteractive()
@@ -233,8 +233,8 @@ class AppSeed extends Command
 
     private function runBranchTableSeeder($branchPerCompanies, $onlyThisCompanyId)
     {
-        $seeder = new BranchTableSeeder();
-        $seeder->callWith(BranchTableSeeder::class, [$branchPerCompanies, $onlyThisCompanyId]);
+        $seeder = new BranchSeeder();
+        $seeder->callWith(BranchSeeder::class, [$branchPerCompanies, $onlyThisCompanyId]);
     }
 
     private function runWarehouseTableSeederInteractive()
@@ -252,43 +252,43 @@ class AppSeed extends Command
 
     private function runWarehouseTableSeeder($warehousePerCompanies, $onlyThisCompanyId)
     {
-        $seeder = new WarehouseTableSeeder();
-        $seeder->callWith(WarehouseTableSeeder::class, [$warehousePerCompanies, $onlyThisCompanyId]);
+        $seeder = new WarehouseSeeder();
+        $seeder->callWith(WarehouseSeeder::class, [$warehousePerCompanies, $onlyThisCompanyId]);
     }
 
     private function runProductCategoryTableSeeder($productCategoryPerCompanies, $onlyThisCompanyId)
     {
-        $seeder = new ProductCategoryTableSeeder();
-        $seeder->callWith(ProductCategoryTableSeeder::class, [$productCategoryPerCompanies, $onlyThisCompanyId]);
+        $seeder = new ProductCategorySeeder();
+        $seeder->callWith(ProductCategorySeeder::class, [$productCategoryPerCompanies, $onlyThisCompanyId]);
     }
 
     private function runBrandTableSeeder($brandPerCompanies, $onlyThisCompanyId)
     {
-        $seeder = new BrandTableSeeder();
-        $seeder->callWith(BrandTableSeeder::class, [$brandPerCompanies, $onlyThisCompanyId]);
+        $seeder = new BrandSeeder();
+        $seeder->callWith(BrandSeeder::class, [$brandPerCompanies, $onlyThisCompanyId]);
     }
 
     private function runUnitTableSeeder($unitPerCompanies, $onlyThisCompanyId)
     {
-        $seeder = new UnitTableSeeder();
-        $seeder->callWith(UnitTableSeeder::class, [$unitPerCompanies, $onlyThisCompanyId]);
+        $seeder = new UnitSeeder();
+        $seeder->callWith(UnitSeeder::class, [$unitPerCompanies, $onlyThisCompanyId]);
     }
 
     private function runProductTableSeeder($productPerCompanies, $onlyThisCompanyId)
     {
-        $seeder = new ProductTableSeeder();
-        $seeder->callWith(ProductTableSeeder::class, [$productPerCompanies, $onlyThisCompanyId]);
+        $seeder = new ProductSeeder();
+        $seeder->callWith(ProductSeeder::class, [$productPerCompanies, $onlyThisCompanyId]);
     }
 
     private function runSupplierTableSeeder($supplierPerCompanies, $onlyThisCompanyId)
     {
-        $seeder = new SupplierTableSeeder();
-        $seeder->callWith(SupplierTableSeeder::class, [$supplierPerCompanies, $onlyThisCompanyId]);
+        $seeder = new SupplierSeeder();
+        $seeder->callWith(SupplierSeeder::class, [$supplierPerCompanies, $onlyThisCompanyId]);
     }
 
     private function runCustomerGroupTableSeeder($customerGroupPerCompanies, $onlyThisCompanyId)
     {
-        $seeder = new CustomerGroupTableSeeder();
-        $seeder->callWith(CustomerGroupTableSeeder::class, [$customerGroupPerCompanies, $onlyThisCompanyId]);
+        $seeder = new CustomerGroupSeeder();
+        $seeder->callWith(CustomerGroupSeeder::class, [$customerGroupPerCompanies, $onlyThisCompanyId]);
     }
 }
