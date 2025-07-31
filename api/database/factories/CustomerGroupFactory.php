@@ -11,9 +11,15 @@ class CustomerGroupFactory extends Factory
 {
     public function definition(): array
     {
+        $names = [
+            'Grosir',
+            'Semi Grosir',
+            'Umum',
+        ];
+
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'name' => fake()->randomElement(['Grosir', 'Semi Grosir', 'Umum']),
+            'name' => fake()->randomElement($names),
             'max_open_invoice' => fake()->numberBetween(1, 100),
             'max_outstanding_invoice' => fake()->numberBetween(0, 100) * 10000,
             'max_invoice_age' => fake()->numberBetween(1, 100),
