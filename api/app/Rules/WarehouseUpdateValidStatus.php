@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -17,7 +17,7 @@ class WarehouseUpdateValidStatus implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if ($this->isDefault == true && $value == RecordStatus::INACTIVE->value) {
+        if ($this->isDefault == true && $value == RecordStatusEnum::INACTIVE->value) {
             $fail('rules.warehouse.deactivate_default_warehouse')->translate();
 
             return;

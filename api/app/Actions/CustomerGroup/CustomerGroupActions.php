@@ -42,8 +42,8 @@ class CustomerGroupActions
             $customerGroup->price_markup_nominal = $data['price_markup_nominal'];
             $customerGroup->price_markdown_percent = $data['price_markdown_percent'];
             $customerGroup->price_markdown_nominal = $data['price_markdown_nominal'];
-            $customerGroup->round_on = $data['round_on'];
-            $customerGroup->round_digit = $data['round_digit'];
+            $customerGroup->rounding_type = $data['rounding_type'];
+            $customerGroup->rounding_digit = $data['rounding_digit'];
             $customerGroup->remarks = $data['remarks'];
             $customerGroup->save();
 
@@ -219,8 +219,8 @@ class CustomerGroupActions
             $customerGroup->price_markup_nominal = $data['price_markup_nominal'];
             $customerGroup->price_markdown_percent = $data['price_markdown_percent'];
             $customerGroup->price_markdown_nominal = $data['price_markdown_nominal'];
-            $customerGroup->round_on = $data['round_on'];
-            $customerGroup->round_digit = $data['round_digit'];
+            $customerGroup->rounding_type = $data['rounding_type'];
+            $customerGroup->rounding_digit = $data['rounding_digit'];
             $customerGroup->remarks = $data['remarks'];
             $customerGroup->save();
 

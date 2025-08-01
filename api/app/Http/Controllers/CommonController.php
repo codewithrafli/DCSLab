@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\RecordStatus;
+use App\Enums\PaymentTermTypeEnum;
+use App\Enums\RecordStatusEnum;
+use App\Enums\RoundingTypeEnum;
 
 class CommonController extends BaseController
 {
@@ -22,8 +24,29 @@ class CommonController extends BaseController
     public function getStatus()
     {
         return [
-            ['name' => 'components.dropdown.values.statusDDL.active', 'code' => RecordStatus::ACTIVE->name],
-            ['name' => 'components.dropdown.values.statusDDL.inactive', 'code' => RecordStatus::INACTIVE->name],
+            ['name' => 'components.dropdown.values.statusDDL.active', 'code' => RecordStatusEnum::ACTIVE->name],
+            ['name' => 'components.dropdown.values.statusDDL.inactive', 'code' => RecordStatusEnum::INACTIVE->name],
+            ['name' => 'components.dropdown.values.statusDDL.deleted', 'code' => RecordStatusEnum::DELETED->name],
+        ];
+    }
+
+    public function getPaymentTermTypes()
+    {
+        return [
+            ['name' => 'components.dropdown.values.paymentTermTypeDDL.pia', 'code' => PaymentTermTypeEnum::PAYMENT_IN_ADVANCE->name],
+            ['name' => 'components.dropdown.values.paymentTermTypeDDL.net', 'code' => PaymentTermTypeEnum::X_DAYS_AFTER_INVOICE->name],
+            ['name' => 'components.dropdown.values.paymentTermTypeDDL.eom', 'code' => PaymentTermTypeEnum::END_OF_MONTH->name],
+            ['name' => 'components.dropdown.values.paymentTermTypeDDL.cod', 'code' => PaymentTermTypeEnum::CASH_ON_DELIVERY->name],
+            ['name' => 'components.dropdown.values.paymentTermTypeDDL.cnd', 'code' => PaymentTermTypeEnum::CASH_ON_NEXT_DELIVERY->name],
+            ['name' => 'components.dropdown.values.paymentTermTypeDDL.cbs', 'code' => PaymentTermTypeEnum::CASH_BEFORE_SHIPMENT->name],
+        ];
+    }
+
+    public function getRoundingTypes()
+    {
+        return [
+            ['name' => 'components.dropdown.values.roundingTypeDDL.up', 'code' => RoundingTypeEnum::UP->name],
+            ['name' => 'components.dropdown.values.roundingTypeDDL.down', 'code' => RoundingTypeEnum::DOWN->name],
         ];
     }
 }

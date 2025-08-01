@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Enums\UnitType;
+use App\Enums\UnitTypeEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UnitFactory extends Factory
@@ -13,7 +13,7 @@ class UnitFactory extends Factory
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
             'name' => fake()->randomElement(['PCS', 'SET', 'BTL']),
             'description' => fake()->sentence(),
-            'type' => fake()->randomElement(UnitType::toArrayEnum()),
+            'type' => fake()->randomElement(UnitTypeEnum::toArrayEnum()),
         ];
     }
 

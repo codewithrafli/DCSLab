@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\PurchaseReturnAdditionalCostAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Company;
 use App\Models\PurchaseReturnAdditionalCost;
 use App\Models\Role;
@@ -21,7 +21,7 @@ class PurchaseReturnAdditionalCostAPIDeleteTest extends APITestCase
     public function test_purchase_return_additional_cost_api_call_delete_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -52,7 +52,7 @@ class PurchaseReturnAdditionalCostAPIDeleteTest extends APITestCase
     public function test_purchase_return_additional_cost_api_call_delete_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 

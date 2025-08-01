@@ -3,7 +3,7 @@
 namespace Tests\Unit\Actions\BranchActions;
 
 use App\Actions\Branch\BranchActions;
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Role;
@@ -144,7 +144,7 @@ class BranchActionsReadTest extends ActionsTestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(
@@ -182,7 +182,7 @@ class BranchActionsReadTest extends ActionsTestCase
         $idxMainBranch = random_int(0, $branchCount - 1);
 
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()
                 ->has(Branch::factory()->setStatusActive()->count($branchCount)
                     ->state(new Sequence(

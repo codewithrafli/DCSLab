@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\UnitType;
+use App\Enums\UnitTypeEnum;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +25,7 @@ class Unit extends Model
     protected function casts(): array
     {
         return [
-            'type' => UnitType::class,
+            'type' => UnitTypeEnum::class,
         ];
     }
 

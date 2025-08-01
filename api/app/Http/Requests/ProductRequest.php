@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ProductType;
-use App\Enums\RecordStatus;
+use App\Enums\ProductTypeEnum;
+use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\Product;
 use App\Rules\IsValidBrand;
@@ -59,7 +59,7 @@ class ProductRequest extends FormRequest
 
                     'search' => ['nullable', 'string'],
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],
@@ -84,8 +84,8 @@ class ProductRequest extends FormRequest
                     'is_expirable' => ['required', 'boolean'],
                     'point' => ['required', 'integer'],
                     'remarks' => ['nullable', 'string', 'max:255'],
-                    'type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
-                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'type' => ['required', 'integer', 'in:'.implode(',', ProductTypeEnum::toArrayValue())],
+                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'product_units' => 'required|array',
                     'product_units.*.unit_id' => 'required|integer',
@@ -111,8 +111,8 @@ class ProductRequest extends FormRequest
                     'is_expirable' => ['required', 'boolean'],
                     'point' => ['required', 'integer'],
                     'remarks' => ['nullable', 'string', 'max:255'],
-                    'type' => ['required', 'integer', 'in:'.implode(',', ProductType::toArrayValue())],
-                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'type' => ['required', 'integer', 'in:'.implode(',', ProductTypeEnum::toArrayValue())],
+                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'delete_product_unit_ids' => 'nullable|array',
                     'delete_product_unit_ids.*' => 'required|integer|exists:product_units,id',

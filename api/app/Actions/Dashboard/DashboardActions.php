@@ -2,7 +2,7 @@
 
 namespace App\Actions\Dashboard;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Traits\CacheHelper;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,13 +32,13 @@ class DashboardActions
 
         $usrRoles = $usr->roles;
 
-        $hasUserRole = $usrRoles->where('name', UserRoles::USER->value)->isNotEmpty() ? true : false;
-        $hasOnlyUserRole = $usrRoles->where('name', UserRoles::USER->value)->isNotEmpty() && $usrRoles->count() == 1 ? true : false;
+        $hasUserRole = $usrRoles->where('name', UserRolesEnum::USER->value)->isNotEmpty() ? true : false;
+        $hasOnlyUserRole = $usrRoles->where('name', UserRolesEnum::USER->value)->isNotEmpty() && $usrRoles->count() == 1 ? true : false;
 
-        $hasAdminRole = $usrRoles->where('name', UserRoles::ADMINISTRATOR->value)->isNotEmpty() ? true : false;
-        $hasOnlyAdminRole = $usrRoles->where('name', UserRoles::ADMINISTRATOR->value)->isNotEmpty() && $usrRoles->count() == 1 ? true : false;
+        $hasAdminRole = $usrRoles->where('name', UserRolesEnum::ADMINISTRATOR->value)->isNotEmpty() ? true : false;
+        $hasOnlyAdminRole = $usrRoles->where('name', UserRolesEnum::ADMINISTRATOR->value)->isNotEmpty() && $usrRoles->count() == 1 ? true : false;
 
-        $hasDevRole = $usrRoles->where('name', UserRoles::DEVELOPER->value)->isNotEmpty() ? true : false;
+        $hasDevRole = $usrRoles->where('name', UserRolesEnum::DEVELOPER->value)->isNotEmpty() ? true : false;
 
         $hasCompany = $usr->companies->count() != 0 ? true : false;
 
@@ -46,6 +46,7 @@ class DashboardActions
 
         $menu = $this->createMenu_Dashboard($menu, $showDemoMenu);
         $menu = $this->createMenu_Company($menu, $hasOnlyUserRole, $hasOnlyAdminRole, $hasCompany, $hasDevRole);
+        $menu = $this->createMenu_Customer($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Administrator($menu, $hasAdminRole, $hasDevRole);
         $menu = $this->createMenu_DevTool($menu, $hasDevRole);
 
@@ -123,6 +124,31 @@ class DashboardActions
             array_push($root_array['subMenu'], $company);
         }
 
+        array_push($menu, $root_array);
+
+        return $menu;
+    }
+
+    private function createMenu_Customer(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
+    {
+        if ($hasOnlyUserRole || $hasOnlyAdminRole) {
+            return $menu;
+        }
+
+        $customerGroup = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-customer-group',
+            'title' => 'components.menu.customer-group',
+        ];
+
+        $root_array = [
+            'icon' => 'Users',
+            'pageName' => 'side-menu-customer',
+            'title' => 'components.menu.customer-management',
+            'subMenu' => [],
+        ];
+
+        array_push($root_array['subMenu'], $customerGroup);
         array_push($menu, $root_array);
 
         return $menu;

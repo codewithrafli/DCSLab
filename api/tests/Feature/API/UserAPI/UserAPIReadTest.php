@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\UserAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Role;
 use App\Models\User;
 use Exception;
@@ -19,7 +19,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_any_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
@@ -59,7 +59,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $api = $this->getJson(route('api.get.db.admin.user.read', $user->ulid));
@@ -82,7 +82,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_any_with_or_without_pagination_expect_paginator_or_collection()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -120,7 +120,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_any_with_pagination_expect_several_per_page()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -153,7 +153,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_any_with_search_expect_filtered_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -184,7 +184,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_any_without_search_querystring_expect_failed()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -197,7 +197,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_any_with_special_char_in_search_expect_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -225,7 +225,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_any_with_negative_value_in_parameters_expect_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -253,7 +253,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -267,7 +267,7 @@ class UserAPIReadTest extends APITestCase
     {
         $this->expectException(Exception::class);
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);
@@ -278,7 +278,7 @@ class UserAPIReadTest extends APITestCase
     public function test_user_api_call_read_with_nonexistance_ulid_expect_not_found()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
         $this->actingAs($user);

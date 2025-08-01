@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\PaymentTermType;
-use App\Enums\RoundOn;
+use App\Enums\PaymentTermTypeEnum;
+use App\Enums\RoundingTypeEnum;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,21 +31,21 @@ class CustomerGroup extends Model
         'price_markup_nominal',
         'price_markdown_percent',
         'price_markdown_nominal',
-        'round_on',
-        'round_digit',
+        'rounding_type',
+        'rounding_digit',
         'remarks',
     ];
 
     protected $casts = [
         'max_outstanding_invoice' => 'decimal:8',
-        'payment_term_type' => PaymentTermType::class,
+        'payment_term_type' => PaymentTermTypeEnum::class,
         'selling_point' => 'integer',
         'selling_point_multiple' => 'decimal:8',
         'price_markup_percent' => 'decimal:8',
         'price_markup_nominal' => 'decimal:8',
         'price_markdown_percent' => 'decimal:8',
         'price_markdown_nominal' => 'decimal:8',
-        'round_on' => RoundOn::class,
+        'rounding_type' => RoundingTypeEnum::class,
     ];
 
     public function company()

@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\RecordStatus;
+use App\Enums\PaymentTermTypeEnum;
+use App\Enums\RecordStatusEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SupplierFactory extends Factory
@@ -14,11 +15,11 @@ class SupplierFactory extends Factory
             'name' => fake()->randomElement(['Unilever', 'Samsung ', 'Huawei']),
             'address' => fake()->address(),
             'city' => fake()->city(),
-            'payment_term_type' => fake()->randomElement(['days', 'months']),
+            'payment_term_type' => fake()->randomElement(PaymentTermTypeEnum::toArrayEnum()),
             'payment_term' => fake()->numberBetween(1, 30),
             'taxable_enterprise' => fake()->boolean(),
             'tax_id' => fake()->numberBetween(100000000000, 999999999999),
-            'status' => fake()->randomElement(RecordStatus::toArrayEnum()),
+            'status' => fake()->randomElement(RecordStatusEnum::toArrayEnum()),
             'remarks' => fake()->sentence(),
         ];
     }

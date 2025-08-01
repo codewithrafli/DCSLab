@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,7 +30,7 @@ class Branch extends Model
     {
         return [
             'is_main' => 'boolean',
-            'status' => RecordStatus::class,
+            'status' => RecordStatusEnum::class,
         ];
     }
 

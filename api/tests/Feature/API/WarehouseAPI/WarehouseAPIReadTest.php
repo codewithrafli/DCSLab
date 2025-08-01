@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\WarehouseAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Role;
@@ -23,7 +23,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_any_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -74,7 +74,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -115,7 +115,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_with_sql_injection_expect_injection_ignored()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -276,7 +276,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_any_with_or_without_pagination_expect_paginator_or_collection()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -331,7 +331,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_any_with_pagination_expect_several_per_page()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -377,7 +377,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_any_with_search_expect_filtered_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setIsDefault()
                 ->has(Branch::factory())
             )->create();
@@ -427,7 +427,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_any_without_search_querystring_expect_failed()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -449,7 +449,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_any_with_special_char_in_search_expect_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -490,7 +490,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_any_with_negative_value_in_parameters_expect_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -522,7 +522,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -545,7 +545,7 @@ class WarehouseAPIReadTest extends APITestCase
     {
         $this->expectException(Exception::class);
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();
@@ -558,7 +558,7 @@ class WarehouseAPIReadTest extends APITestCase
     public function test_warehouse_api_call_read_with_nonexistance_ulid_expect_not_found()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
             )->create();

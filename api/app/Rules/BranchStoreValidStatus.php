@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -18,7 +18,7 @@ class BranchStoreValidStatus implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         return;
-        if ($this->isMain == true && $value == RecordStatus::INACTIVE->value) {
+        if ($this->isMain == true && $value == RecordStatusEnum::INACTIVE->value) {
             $fail('rules.branch.set_branch_to_non_main')->translate();
 
             return;

@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Enums\ProductCategoryType;
-use App\Enums\ProductType;
-use App\Enums\RecordStatus;
+use App\Enums\ProductCategoryTypeEnum;
+use App\Enums\ProductTypeEnum;
+use App\Enums\RecordStatusEnum;
 use App\Helpers\FactoryHelper;
 use App\Models\Brand;
 use App\Models\ProductCategory;
@@ -15,10 +15,51 @@ class ProductFactory extends Factory
 {
     public function definition(): array
     {
+        $type = fake()->randomElement(ProductTypeEnum::toArrayEnum());
+
+        $category = (function () use ($type) {
+            if ($type == ProductTypeEnum::RAW_MATERIAL || $type == ProductTypeEnum::WORK_IN_PROGRESS || $type == ProductTypeEnum::FINISHED_GOODS) {
+                $productCategory = ProductCategory::where('type', ProductCategoryTypeEnum::PRODUCT->value);
+                if ($productCategory->exists()) return $productCategory->inRandomOrder()->value('id');
+
+                return ProductCategory::factory()->forProduct()->create();
+            }
+
+            if ($type == ProductTypeEnum::SERVICE) {
+                $productCategory = ProductCategory::where('type', ProductCategoryTypeEnum::SERVICE->value);
+                if ($productCategory->exists()) return $productCategory->inRandomOrder()->value('id');
+
+                return ProductCategory::factory()->forService()->create();
+            }
+        })();
+
+        $brand = (function () use ($type) {
+            if ($type == ProductTypeEnum::RAW_MATERIAL || $type == ProductTypeEnum::WORK_IN_PROGRESS || $type == ProductTypeEnum::FINISHED_GOODS) {
+                $brand = Brand::inRandomOrder();
+                if ($brand->exists()) return $brand->value('id');
+
+                return Brand::factory()->create();
+            }
+
+            if ($type == ProductTypeEnum::SERVICE) return null;
+        })();
+
+        $name = (function () use ($category, $brand, $type) {
+            if ($type == ProductTypeEnum::RAW_MATERIAL || $type == ProductTypeEnum::WORK_IN_PROGRESS || $type == ProductTypeEnum::FINISHED_GOODS) {
+                return $category->name.' '.$brand->name.' '.fake()->words(3, true);
+            }
+
+            if ($type == ProductTypeEnum::SERVICE) {
+                return $category->name.' '.fake()->words(3, true);
+            }
+        })();
+
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
             'is_manufacturer_sku' => fake()->boolean(),
-            'name' => fake()->words(3, true),
+            'category_id' => $category->id,
+            'brand_id' => $brand->id,
+            'name' => $name,
             'slug' => fake()->slug(),
             'is_taxable' => fake()->boolean(),
             'vat_rate' => fake()->numberBetween(0, 100),
@@ -27,17 +68,17 @@ class ProductFactory extends Factory
             'is_expirable' => fake()->boolean(),
             'point' => fake()->numberBetween(0, 100),
             'remarks' => fake()->sentence(),
-            'type' => fake()->randomElement(ProductType::toArrayEnum()),
-            'status' => fake()->randomElement(RecordStatus::toArrayEnum()),
+            'type' => $type,
+            'status' => fake()->randomElement(RecordStatusEnum::toArrayEnum()),
         ];
     }
 
-    public function setProductTypeAsProduct(bool $encode)
+    public function setProductTypeEnumAsProduct(bool $encode)
     {
         return $this->state(function (array $attributes) use ($encode) {
-            $productCategory = ProductCategory::where('type', ProductCategoryType::PRODUCT->value)->inRandomOrder()->first();
+            $productCategory = ProductCategory::where('type', ProductCategoryTypeEnum::PRODUCT->value)->inRandomOrder()->first();
             $brand = Brand::inRandomOrder()->first();
-            $types = [ProductType::RAW_MATERIAL->value, ProductType::WORK_IN_PROGRESS->value, ProductType::FINISHED_GOODS->value];
+            $types = [ProductTypeEnum::RAW_MATERIAL->value, ProductTypeEnum::WORK_IN_PROGRESS->value, ProductTypeEnum::FINISHED_GOODS->value];
 
             $productUnits = (function () use ($encode) {
                 $productUnits = ProductUnit::factory()->count(mt_rand(1, 3))->make()->toArray();
@@ -62,10 +103,10 @@ class ProductFactory extends Factory
         });
     }
 
-    public function setProductTypeAsService(bool $encode)
+    public function setProductTypeEnumAsService(bool $encode)
     {
         return $this->state(function (array $attributes) use ($encode) {
-            $productCategory = ProductCategory::where('type', ProductCategoryType::SERVICE->value)->inRandomOrder()->first();
+            $productCategory = ProductCategory::where('type', ProductCategoryTypeEnum::SERVICE->value)->inRandomOrder()->first();
             $brand = Brand::inRandomOrder()->first();
 
             $productUnits = (function () use ($encode) {
@@ -85,7 +126,7 @@ class ProductFactory extends Factory
             $result = [
                 'category_id' => $productCategory->id,
                 'brand_id' => mt_rand(0, 1) ? $brand->id : null,
-                'type' => ProductType::SERVICE->value,
+                'type' => ProductTypeEnum::SERVICE->value,
                 'product_units' => $productUnits,
             ];
 

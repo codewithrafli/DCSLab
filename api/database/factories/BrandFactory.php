@@ -9,7 +9,9 @@ class BrandFactory extends Factory
     public function definition(): array
     {
         $brands = [
-            'Samsung', 'Huawei', 'LV', 'Apple', 'Xiaomi', 'Oppo', 'Vivo', 'Google', 'OnePlus', 'Motorola', 'Nokia', 'Sony', 'TCL', 'Hisense', 'Sharp',
+            'Samsung', 'Huawei', 'LV', 'Apple', 'Xiaomi', 'Oppo',
+            'Vivo', 'Google', 'OnePlus', 'Motorola', 'Nokia', 'Sony',
+            'LG', 'TCL', 'Hisense', 'Sharp',
         ];
 
         return [

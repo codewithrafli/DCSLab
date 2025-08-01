@@ -21,6 +21,7 @@ import company from "./en/views/company.json"
 import branch from "./en/views/branch.json"
 import warehouse from "./en/views/warehouse.json"
 import error from "./en/views/error.json"
+import customer_group from "./en/views/customer_group.json"
 
 export default {
     "components": {
@@ -48,5 +49,6 @@ export default {
         "branch": branch,
         "warehouse": warehouse,
         "error": error,
+        "customer_group": customer_group,
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\Supplier;
 use App\Rules\IsValidCompany;
@@ -56,7 +56,7 @@ class SupplierRequest extends FormRequest
 
                     'search' => ['nullable', 'string'],
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],
@@ -77,7 +77,7 @@ class SupplierRequest extends FormRequest
                     'payment_term' => ['required', 'integer'],
                     'taxable_enterprise' => ['required', 'boolean'],
                     'tax_id' => ['required', 'integer'],
-                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'update':
@@ -91,7 +91,7 @@ class SupplierRequest extends FormRequest
                     'payment_term' => ['required', 'integer'],
                     'taxable_enterprise' => ['required', 'boolean'],
                     'tax_id' => ['required', 'integer'],
-                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['required', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'delete':

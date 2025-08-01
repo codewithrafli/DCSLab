@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\PaymentTermType;
-use App\Enums\RecordStatus;
+use App\Enums\PaymentTermTypeEnum;
+use App\Enums\RecordStatusEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CustomerFactory extends Factory
@@ -18,11 +18,11 @@ class CustomerFactory extends Factory
             'max_open_invoice' => fake()->randomNumber(),
             'max_outstanding_invoice' => fake()->randomNumber(),
             'max_invoice_age' => fake()->randomNumber(),
-            'payment_term_type' => fake()->randomElement(PaymentTermType::toArrayEnum()),
+            'payment_term_type' => fake()->randomElement(PaymentTermTypeEnum::toArrayEnum()),
             'payment_term' => fake()->randomNumber(),
             'taxable_enterprise' => fake()->boolean(),
             'tax_id' => (string) fake()->numberBetween(100000000000, 999999999999),
-            'status' => fake()->randomElement(RecordStatus::toArrayEnum()),
+            'status' => fake()->randomElement(RecordStatusEnum::toArrayEnum()),
             'remarks' => fake()->sentence(),
         ];
     }

@@ -27,8 +27,8 @@ return new class extends Migration
             $table->decimal('price_markup_nominal', 30, 8)->default(0);
             $table->decimal('price_markdown_percent', 30, 8)->default(0);
             $table->decimal('price_markdown_nominal', 30, 8)->default(0);
-            $table->integer('round_on')->default(0);
-            $table->integer('round_digit')->default(0);
+            $table->integer('rounding_type')->default(0);
+            $table->integer('rounding_digit')->default(0);
             $table->string('remarks')->nullable();
 
             $table->unsignedBigInteger('created_by')->default(0);

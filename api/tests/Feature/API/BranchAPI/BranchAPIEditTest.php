@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\BranchAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Role;
@@ -21,7 +21,7 @@ class BranchAPIEditTest extends APITestCase
     public function test_branch_api_call_update_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->count(3)))
             ->create();
@@ -74,7 +74,7 @@ class BranchAPIEditTest extends APITestCase
     public function test_branch_api_call_update_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(Branch::factory()->setStatusActive()->count(3)))
             ->create();
@@ -103,7 +103,7 @@ class BranchAPIEditTest extends APITestCase
     public function test_branch_api_call_update_and_use_existing_code_in_same_company_expect_failed()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(
                 Company::factory()->setIsDefault()
                     ->has(Branch::factory()->setStatusActive()->count(3))
@@ -133,7 +133,7 @@ class BranchAPIEditTest extends APITestCase
     public function test_branch_api_call_update_and_use_existing_code_in_different_company_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->count(2)
                 ->state(new Sequence(
                     ['default' => true],

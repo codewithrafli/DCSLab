@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\ProductAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Brand;
 use App\Models\Company;
 use App\Models\Product;
@@ -23,7 +23,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_any_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -48,7 +48,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_any_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -75,7 +75,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -95,7 +95,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -117,7 +117,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_with_sql_injection_expect_injection_ignored()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -276,7 +276,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_any_with_or_without_pagination_expect_paginator_or_collection()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -329,7 +329,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_any_with_pagination_expect_several_per_page()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -374,7 +374,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_any_with_search_expect_filtered_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -423,7 +423,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_any_without_search_querystring_expect_failed()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -445,7 +445,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_any_with_special_char_in_search_expect_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -485,7 +485,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_any_with_negative_value_in_parameters_expect_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -516,7 +516,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -538,7 +538,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_without_ulid_expect_exception()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
@@ -552,7 +552,7 @@ class ProductAPIReadTest extends APITestCase
     public function test_product_api_call_read_with_nonexistance_ulid_expect_not_found()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault()
                 ->has(ProductCategory::factory()->count(3))
                 ->has(Brand::factory()->count(3)))
