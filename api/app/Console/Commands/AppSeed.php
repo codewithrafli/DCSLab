@@ -133,64 +133,34 @@ class AppSeed extends Command
         $progressBar = $this->output->createProgressBar($total);
         $progressBar->start();
 
-        $this->runUserSeeder(
-            truncate: false,
-            count: 5
-        );
+        $this->runUserSeeder(truncate: false, count: 5);
         $progressBar->advance();
 
-        $this->runRoleSeeder(
-            randomPermission: true,
-            count: 5
-        );
+        $this->runRoleSeeder(randomPermission: true, count: 5);
         $progressBar->advance();
 
-        $this->runCompanySeeder(
-            companiesPerUsers: 5,
-            userId: 0
-        );
+        $this->runCompanySeeder(companiesPerUsers: 5, userId: 0);
         $progressBar->advance();
 
-        $this->runBranchSeeder(
-            branchPerCompanies: 5,
-            onlyThisCompanyId: 0
-        );
+        $this->runBranchSeeder(branchPerCompanies: 5, onlyThisCompanyId: 0);
         $progressBar->advance();
 
-        $this->runWarehouseSeeder(
-            warehousePerCompanies: 5,
-            onlyThisCompanyId: 0
-        );
+        $this->runWarehouseSeeder(warehousePerCompanies: 5, onlyThisCompanyId: 0);
         $progressBar->advance();
 
-        $this->runProductCategorySeeder(
-            productCategoryPerCompanies: 5,
-            onlyThisCompanyId: 0
-        );
+        $this->runProductCategorySeeder(productCategoryPerCompanies: 5, onlyThisCompanyId: 0);
         $progressBar->advance();
 
-        $this->runBrandSeeder(
-            brandPerCompanies: 5,
-            onlyThisCompanyId: 0
-        );
+        $this->runBrandSeeder(brandPerCompanies: 5, onlyThisCompanyId: 0);
         $progressBar->advance();
 
-        $this->runUnitSeeder(
-            unitPerCompanies: 5,
-            onlyThisCompanyId: 0
-        );
+        $this->runUnitSeeder(unitPerCompanies: 5, onlyThisCompanyId: 0);
         $progressBar->advance();
 
-        $this->runProductSeeder(
-            productPerCompanies: 5,
-            onlyThisCompanyId: 0
-        );
+        $this->runProductSeeder(productPerCompanies: 5, onlyThisCompanyId: 0);
         $progressBar->advance();
 
-        $this->runCustomerGroupSeeder(
-            customerGroupPerCompanies: 5,
-            onlyThisCompanyId: 0
-        );
+        $this->runCustomerGroupSeeder(customerGroupPerCompanies: 5, onlyThisCompanyId: 0);
         $progressBar->advance();
 
         // $this->runSupplierSeeder(5, 0);

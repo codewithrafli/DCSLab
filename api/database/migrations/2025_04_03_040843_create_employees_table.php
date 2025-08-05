@@ -13,10 +13,11 @@ return new class extends Migration
             $table->ulid();
 
             $table->foreignId('company_id')->references('id')->on('companies');
-            $table->foreignId('user_id')->references('id')->on('users');
             $table->string('code');
+            $table->foreignId('user_id')->references('id')->on('users');
             $table->dateTime('join_date')->nullable();
             $table->integer('status')->nullable();
+            $table->string('remarks')->nullable();
 
             $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('updated_by')->default(0);

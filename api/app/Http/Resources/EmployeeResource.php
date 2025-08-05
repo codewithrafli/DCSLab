@@ -13,7 +13,7 @@ class EmployeeResource extends JsonResource
         return [
             'id' => Hashids::encode($this->id),
             'ulid' => $this->ulid,
-            'company' => new CompanyResource($this->company),
+            'company' => new CompanyResource($this->whenLoaded('company')),
             'code' => $this->code,
             'remarks' => $this->remarks,
         ];

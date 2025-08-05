@@ -139,7 +139,7 @@ class EmployeeActions
         return $employee->with('company')->first();
     }
 
-    public function getAllActiveEmployee(
+    public function getAllActive(
         ?array $with,
         ?bool $withTrashed,
 
@@ -242,7 +242,7 @@ class EmployeeActions
             $tryCount = 0;
             do {
                 $count = $company->employees()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'WH'.str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'EMP'.str_pad($count, 3, '0', STR_PAD_LEFT);
                 $tryCount++;
             } while (! $this->isUniqueCode($companyId, $code, $exceptId));
 
