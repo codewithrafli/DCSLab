@@ -173,8 +173,8 @@ return [
         'price_markup_nominal' => 'Nilai Penambah Harga',
         'price_markdown_percent' => 'Persentase Penurunan Harga',
         'price_markdown_nominal' => 'Nilai Penurunan Harga',
-        'round_on' => 'Pembulatan',
-        'round_digit' => 'Digit Pembulatan',
+        'rounding_type' => 'Jenis Pembulatan',
+        'rounding_digit' => 'Digit Pembulatan',
         'remarks' => 'Catatan',
     ],
 

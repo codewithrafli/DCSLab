@@ -11,9 +11,15 @@ class CustomerGroupFactory extends Factory
 {
     public function definition(): array
     {
+        $names = [
+            'Grosir',
+            'Semi Grosir',
+            'Umum',
+        ];
+
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'name' => fake()->randomElement(['Grosir', 'Semi Grosir', 'Umum']),
+            'name' => fake()->randomElement($names),
             'max_open_invoice' => fake()->numberBetween(1, 100),
             'max_outstanding_invoice' => fake()->numberBetween(0, 100) * 10000,
             'max_invoice_age' => fake()->numberBetween(1, 100),
@@ -26,8 +32,8 @@ class CustomerGroupFactory extends Factory
             'price_markup_nominal' => fake()->numberBetween(0, 100) * 10000,
             'price_markdown_percent' => fake()->numberBetween(0, 100),
             'price_markdown_nominal' => fake()->numberBetween(0, 100) * 10000,
-            'round_on' => fake()->randomElement(RoundingTypeEnum::toArrayEnum()),
-            'round_digit' => fake()->numberBetween(0, 100),
+            'rounding_type' => fake()->randomElement(RoundingTypeEnum::toArrayEnum()),
+            'rounding_digit' => fake()->numberBetween(0, 100),
             'remarks' => fake()->sentence(),
         ];
     }

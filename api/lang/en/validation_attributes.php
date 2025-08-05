@@ -171,8 +171,8 @@ return [
         'price_markup_nominal' => 'Price Markup Nominal',
         'price_markdown_percent' => 'Price Markdown Percent',
         'price_markdown_nominal' => 'Price Markdown Nominal',
-        'round_on' => 'Round On',
-        'round_digit' => 'Round Digit',
+        'rounding_type' => 'Rounding Type',
+        'rounding_digit' => 'Rounding Digit',
         'remarks' => 'Remarks',
     ],
     'supplier' => [

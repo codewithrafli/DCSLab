@@ -31,8 +31,8 @@ class CustomerGroup extends Model
         'price_markup_nominal',
         'price_markdown_percent',
         'price_markdown_nominal',
-        'round_on',
-        'round_digit',
+        'rounding_type',
+        'rounding_digit',
         'remarks',
     ];
 
@@ -45,7 +45,7 @@ class CustomerGroup extends Model
         'price_markup_nominal' => 'decimal:8',
         'price_markdown_percent' => 'decimal:8',
         'price_markdown_nominal' => 'decimal:8',
-        'round_on' => RoundingTypeEnum::class,
+        'rounding_type' => RoundingTypeEnum::class,
     ];
 
     public function company()
