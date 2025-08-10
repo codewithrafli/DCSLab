@@ -31,6 +31,9 @@ import CustomerGroupIndex from "@/pages/customer-group/CustomerGroupIndex.vue";
 import CustomerGroupList from "@/pages/customer-group/CustomerGroupList.vue";
 import CustomerGroupCreate from "@/pages/customer-group/CustomerGroupCreate.vue";
 import CustomerGroupEdit from "@/pages/customer-group/CustomerGroupEdit.vue";
+import CustomerIndex from "@/pages/customer/CustomerIndex.vue";
+import CustomerList from "@/pages/customer/CustomerList.vue";
+import CustomerCreate from "@/pages/customer/CustomerCreate.vue";
 
 export default [
     {
@@ -224,6 +227,30 @@ export default [
                             }
                         ]
                     },
+                    {
+                        path: "/dashboard/customer/customer",
+                        name: "side-menu-customer",
+                        redirect: "/dashboard/customer/customer/list",
+                        component: CustomerIndex,
+                        children: [
+                            {
+                                path: "/dashboard/customer/customer/list",
+                                name: "side-menu-customer-list",
+                                component: CustomerList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/customer/customer/create",
+                                name: "side-menu-customer-create",
+                                component: CustomerCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                        ]
+                    }
                 ]
             },
             {

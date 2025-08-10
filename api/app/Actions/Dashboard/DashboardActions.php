@@ -10,15 +10,13 @@ class DashboardActions
 {
     use CacheHelper;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function createUserMenu(bool $useCache = true): array
     {
         $cacheKey = '';
         if ($useCache) {
-            $cacheKey = 'menu_'.Auth::id();
+            $cacheKey = 'menu_' . Auth::id();
             $cacheResult = $this->readFromCache($cacheKey);
 
             if (! is_null($cacheResult)) {
@@ -141,6 +139,12 @@ class DashboardActions
             'title' => 'components.menu.customer-group',
         ];
 
+        $customer = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-customer',
+            'title' => 'components.menu.customer',
+        ];
+
         $root_array = [
             'icon' => 'Users',
             'pageName' => 'side-menu-customer',
@@ -148,7 +152,7 @@ class DashboardActions
             'subMenu' => [],
         ];
 
-        array_push($root_array['subMenu'], $customerGroup);
+        array_push($root_array['subMenu'], $customerGroup, $customer);
         array_push($menu, $root_array);
 
         return $menu;

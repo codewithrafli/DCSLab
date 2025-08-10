@@ -267,7 +267,7 @@ const showAlertPlaceholder = (pAlertType: 'hidden' | 'danger' | 'success' | 'war
                                         t('views.customer_group.fields.sell_at_cost') }}</div>
                                     <div class="flex-1">
                                         <span v-if="item.sell_at_cost">{{ t('components.dropdown.values.switch.on')
-                                        }}</span>
+                                            }}</span>
                                         <span v-else>{{ t('components.dropdown.values.switch.off') }}</span>
                                     </div>
                                 </div>
