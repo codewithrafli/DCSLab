@@ -31,7 +31,7 @@ class PurchaseOrderDownPaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.edit', $purchaseOrderDownPayment->ulid), $purchaseOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.edit', $purchaseOrderDownPayment->ulid), $purchaseOrderDownPaymentArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class PurchaseOrderDownPaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.edit', $purchaseOrderDownPayment->ulid), $purchaseOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.edit', $purchaseOrderDownPayment->ulid), $purchaseOrderDownPaymentArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class PurchaseOrderDownPaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.edit', $purchaseOrderDownPayment->ulid), $purchaseOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.edit', $purchaseOrderDownPayment->ulid), $purchaseOrderDownPaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_order_down_payments', [
@@ -119,7 +119,7 @@ class PurchaseOrderDownPaymentAPIEditTest extends APITestCase
             'code' => $purchaseOrderDownPayment_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.edit', $purchaseOrderDownPayment_2->ulid), $purchaseOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.edit', $purchaseOrderDownPayment_2->ulid), $purchaseOrderDownPaymentArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class PurchaseOrderDownPaymentAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.edit', $purchaseOrderDownPayment_2->ulid), $purchaseOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.edit', $purchaseOrderDownPayment_2->ulid), $purchaseOrderDownPaymentArr);
 
         $api->assertSuccessful();
     }

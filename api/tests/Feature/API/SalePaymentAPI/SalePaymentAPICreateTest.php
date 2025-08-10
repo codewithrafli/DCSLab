@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\SalePaymentAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\SalePayment;
@@ -20,7 +20,7 @@ class SalePaymentAPICreateTest extends APITestCase
     public function test_sale_payment_api_call_store_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -30,7 +30,7 @@ class SalePaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.save'), $salePaymentArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class SalePaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.save'), $salePaymentArr);
 
         $api->assertForbidden();
     }
@@ -67,7 +67,7 @@ class SalePaymentAPICreateTest extends APITestCase
     public function test_sale_payment_api_call_store_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -79,7 +79,7 @@ class SalePaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.save'), $salePaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_payments', [
@@ -97,7 +97,7 @@ class SalePaymentAPICreateTest extends APITestCase
     public function test_sale_payment_api_call_store_with_existing_code_in_same_company_expect_failed()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(
                 Company::factory()->setStatusActive()->setIsDefault()
             )->create();
@@ -115,7 +115,7 @@ class SalePaymentAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.save'), $salePaymentArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -126,7 +126,7 @@ class SalePaymentAPICreateTest extends APITestCase
     public function test_sale_payment_api_call_store_with_existing_code_in_different_company_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->has(Company::factory()->setStatusActive())
             ->create();
@@ -148,7 +148,7 @@ class SalePaymentAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.save'), $salePaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_payments', [
@@ -161,7 +161,7 @@ class SalePaymentAPICreateTest extends APITestCase
     public function test_sale_payment_api_call_store_with_empty_string_parameters_expect_validation_error()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -169,7 +169,7 @@ class SalePaymentAPICreateTest extends APITestCase
 
         $salePaymentArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.save'), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.save'), $salePaymentArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

@@ -31,7 +31,7 @@ class NonCapitalWithdrawalAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.edit', $nonCapitalWithdrawal->ulid), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.edit', $nonCapitalWithdrawal->ulid), $nonCapitalWithdrawalArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class NonCapitalWithdrawalAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.edit', $nonCapitalWithdrawal->ulid), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.edit', $nonCapitalWithdrawal->ulid), $nonCapitalWithdrawalArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class NonCapitalWithdrawalAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.edit', $nonCapitalWithdrawal->ulid), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.edit', $nonCapitalWithdrawal->ulid), $nonCapitalWithdrawalArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('non_capital_withdrawals', [
@@ -119,7 +119,7 @@ class NonCapitalWithdrawalAPIEditTest extends APITestCase
             'code' => $nonCapitalWithdrawal_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.edit', $nonCapitalWithdrawal_2->ulid), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.edit', $nonCapitalWithdrawal_2->ulid), $nonCapitalWithdrawalArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class NonCapitalWithdrawalAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.edit', $nonCapitalWithdrawal_2->ulid), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.edit', $nonCapitalWithdrawal_2->ulid), $nonCapitalWithdrawalArr);
 
         $api->assertSuccessful();
     }

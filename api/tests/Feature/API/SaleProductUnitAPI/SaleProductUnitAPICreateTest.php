@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\SaleProductUnitAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\SaleProductUnit;
@@ -20,7 +20,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
     public function test_sale_product_unit_api_call_store_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -30,7 +30,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.save'), $saleProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit.save'), $saleProductUnitArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.save'), $saleProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit.save'), $saleProductUnitArr);
 
         $api->assertForbidden();
     }
@@ -67,7 +67,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
     public function test_sale_product_unit_api_call_store_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -79,7 +79,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.save'), $saleProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit.save'), $saleProductUnitArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_product_units', [
@@ -97,7 +97,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
     public function test_sale_product_unit_api_call_store_with_existing_code_in_same_company_expect_failed()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(
                 Company::factory()->setStatusActive()->setIsDefault()
             )->create();
@@ -115,7 +115,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.save'), $saleProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit.save'), $saleProductUnitArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -126,7 +126,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
     public function test_sale_product_unit_api_call_store_with_existing_code_in_different_company_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->has(Company::factory()->setStatusActive())
             ->create();
@@ -148,7 +148,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.save'), $saleProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit.save'), $saleProductUnitArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_product_units', [
@@ -161,7 +161,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
     public function test_sale_product_unit_api_call_store_with_empty_string_parameters_expect_validation_error()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -169,7 +169,7 @@ class SaleProductUnitAPICreateTest extends APITestCase
 
         $saleProductUnitArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit.save'), $saleProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit.save'), $saleProductUnitArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

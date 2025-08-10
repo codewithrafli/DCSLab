@@ -30,7 +30,7 @@ class SaleOrderProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_product_unit.save'), $saleOrderProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_product_unit.save'), $saleOrderProductUnitArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class SaleOrderProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_product_unit.save'), $saleOrderProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_product_unit.save'), $saleOrderProductUnitArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class SaleOrderProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_product_unit.save'), $saleOrderProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_product_unit.save'), $saleOrderProductUnitArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_order_product_units', [
@@ -115,7 +115,7 @@ class SaleOrderProductUnitAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_product_unit.save'), $saleOrderProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_product_unit.save'), $saleOrderProductUnitArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class SaleOrderProductUnitAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_product_unit.save'), $saleOrderProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_product_unit.save'), $saleOrderProductUnitArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_order_product_units', [
@@ -169,7 +169,7 @@ class SaleOrderProductUnitAPICreateTest extends APITestCase
 
         $saleOrderProductUnitArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_product_unit.save'), $saleOrderProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_product_unit.save'), $saleOrderProductUnitArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

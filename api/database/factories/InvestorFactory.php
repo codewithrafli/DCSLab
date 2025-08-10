@@ -14,4 +14,20 @@ class InvestorFactory extends Factory
             'remarks' => fake()->sentence(),
         ];
     }
+
+    public function insertStringInName(string $str)
+    {
+        return $this->state(function (array $attributes) use ($str) {
+            return [
+                'name' => $this->craftName($str),
+            ];
+        });
+    }
+
+    private function craftName(string $str)
+    {
+        $text = fake()->name();
+
+        return substr_replace($text, $str, random_int(0, strlen($text) - 1), 0);
+    }
 }

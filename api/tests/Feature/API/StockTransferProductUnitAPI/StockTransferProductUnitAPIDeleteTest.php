@@ -28,7 +28,7 @@ class StockTransferProductUnitAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $stockTransferProductUnit = StockTransferProductUnit::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.delete', $stockTransferProductUnit->ulid));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.delete', $stockTransferProductUnit->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class StockTransferProductUnitAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $stockTransferProductUnit = StockTransferProductUnit::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.delete', $stockTransferProductUnit->ulid));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.delete', $stockTransferProductUnit->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class StockTransferProductUnitAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $stockTransferProductUnit = StockTransferProductUnit::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.delete', $stockTransferProductUnit->ulid));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.delete', $stockTransferProductUnit->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('stock_transfer_product_units', [
@@ -77,7 +77,7 @@ class StockTransferProductUnitAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class StockTransferProductUnitAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.delete', null));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.delete', null));
 
         $api->assertStatus(500);
     }

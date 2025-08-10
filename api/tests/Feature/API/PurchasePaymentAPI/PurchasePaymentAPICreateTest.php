@@ -30,7 +30,7 @@ class PurchasePaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.save'), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.save'), $purchasePaymentArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class PurchasePaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.save'), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.save'), $purchasePaymentArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class PurchasePaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.save'), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.save'), $purchasePaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_payments', [
@@ -115,7 +115,7 @@ class PurchasePaymentAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.save'), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.save'), $purchasePaymentArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class PurchasePaymentAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.save'), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.save'), $purchasePaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_payments', [
@@ -169,7 +169,7 @@ class PurchasePaymentAPICreateTest extends APITestCase
 
         $purchasePaymentArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.save'), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.save'), $purchasePaymentArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

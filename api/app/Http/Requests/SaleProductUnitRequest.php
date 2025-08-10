@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\SaleProductUnit;
 use App\Rules\IsValidBranch;
@@ -59,7 +59,7 @@ class SaleProductUnitRequest extends FormRequest
 
                     'search' => ['nullable', 'string'],
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],
@@ -75,7 +75,7 @@ class SaleProductUnitRequest extends FormRequest
                     'sale_id' => ['required', 'integer', new IsValidSale()],
                     'warehouse_id' => ['required', 'integer', new IsValidWarehouse($this->company_id, $this->branch_id)],
 
-                    'qty',
+                    'qty' => ['required', 'numeric', 'min:1'],
                     'product_id' => ['required', 'integer', new IsValidProduct($this->company_id)],
                     'product_unit_id' => ['required', 'integer', new IsValidProductUnit($this->company_id)],
                     'product_unit_amount_per_unit' => ['required', 'numeric', 'min:0'],
@@ -115,7 +115,7 @@ class SaleProductUnitRequest extends FormRequest
                     'sale_id' => ['required', 'integer', new IsValidSale()],
                     'warehouse_id' => ['required', 'integer', new IsValidWarehouse($this->company_id, $this->branch_id)],
 
-                    'qty',
+                    'qty' => ['required', 'numeric', 'min:1'],
                     'product_id' => ['required', 'integer', new IsValidProduct($this->company_id)],
                     'product_unit_id' => ['required', 'integer', new IsValidProductUnit($this->company_id)],
                     'product_unit_amount_per_unit' => ['required', 'numeric', 'min:0'],

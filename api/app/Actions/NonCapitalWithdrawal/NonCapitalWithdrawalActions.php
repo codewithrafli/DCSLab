@@ -60,13 +60,14 @@ class NonCapitalWithdrawalActions
 
         ?int $limit
     ) {
-        $query = NonCapitalWithdrawal::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = NonCapitalWithdrawal::select('non_capital_withdrawals.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'non_capital_withdrawals.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -76,8 +77,8 @@ class NonCapitalWithdrawalActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('non_capital_withdrawals.date', 'asc');
 
         if ($limit) {
             $query->limit($limit);

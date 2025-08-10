@@ -60,13 +60,14 @@ class PurchaseReturnAdditionalCostActions
 
         ?int $limit
     ) {
-        $query = PurchaseReturnAdditionalCost::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseReturnAdditionalCost::select('purchase_return_additional_costs.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_return_additional_costs.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -76,8 +77,8 @@ class PurchaseReturnAdditionalCostActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchase_return_additional_costs.id', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -141,7 +142,7 @@ class PurchaseReturnAdditionalCostActions
 
     public function read(PurchaseReturnAdditionalCost $purchaseReturnAdditionalCost): PurchaseReturnAdditionalCost
     {
-        return $purchaseReturnAdditionalCost->with('company')->first();
+        return $purchaseReturnAdditionalCost->load('company')->first();
     }
 
     public function getAllActivePurchaseReturnAdditionalCost(

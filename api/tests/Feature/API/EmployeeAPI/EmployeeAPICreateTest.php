@@ -30,7 +30,7 @@ class EmployeeAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.save'), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.save'), $employeeArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class EmployeeAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.save'), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.save'), $employeeArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class EmployeeAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.save'), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.save'), $employeeArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('employees', [
@@ -115,7 +115,7 @@ class EmployeeAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.save'), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.save'), $employeeArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class EmployeeAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.save'), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.save'), $employeeArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('employees', [
@@ -169,7 +169,7 @@ class EmployeeAPICreateTest extends APITestCase
 
         $employeeArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.employee.save'), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.save'), $employeeArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

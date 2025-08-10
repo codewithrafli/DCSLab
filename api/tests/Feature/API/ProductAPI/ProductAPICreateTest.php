@@ -10,7 +10,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Role;
 use App\Models\User;
-use Database\Seeders\ProductTableSeeder;
+use Database\Seeders\ProductSeeder;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
 
@@ -93,7 +93,7 @@ class ProductAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $productArr = (new ProductTableSeeder)->makeProductUnits(encode: true)->toArray();
+        $productArr = (new ProductSeeder)->makeProductUnits(encode: true)->toArray();
 
         // $company = $user->companies()->inRandomOrder()->first();
         // $productCategory = $company->productCategories()->inRandomOrder()->first();
@@ -140,7 +140,7 @@ class ProductAPICreateTest extends APITestCase
 
     //     $this->actingAs($user);
 
-    //     $productArr = (new ProductTableSeeder())->make(encode: true)->toArray();
+    //     $productArr = (new ProductSeeder())->make(encode: true)->toArray();
 
     //     $api = $this->json('POST', route('api.post.db.product.product.save'), $productArr);
 

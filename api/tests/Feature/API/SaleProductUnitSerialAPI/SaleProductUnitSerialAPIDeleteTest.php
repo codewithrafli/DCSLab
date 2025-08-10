@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\SaleProductUnitSerialAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\SaleProductUnitSerial;
@@ -21,14 +21,14 @@ class SaleProductUnitSerialAPIDeleteTest extends APITestCase
     public function test_sale_product_unit_serial_api_call_delete_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
         $company = $user->companies()->inRandomOrder()->first();
         $saleProductUnitSerial = SaleProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.delete', $saleProductUnitSerial->ulid));
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit_serial.delete', $saleProductUnitSerial->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class SaleProductUnitSerialAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $saleProductUnitSerial = SaleProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.delete', $saleProductUnitSerial->ulid));
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit_serial.delete', $saleProductUnitSerial->ulid));
 
         $api->assertStatus(403);
     }
@@ -52,7 +52,7 @@ class SaleProductUnitSerialAPIDeleteTest extends APITestCase
     public function test_sale_product_unit_serial_api_call_delete_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -61,7 +61,7 @@ class SaleProductUnitSerialAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $saleProductUnitSerial = SaleProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.delete', $saleProductUnitSerial->ulid));
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit_serial.delete', $saleProductUnitSerial->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('sale_product_unit_serials', [
@@ -77,7 +77,7 @@ class SaleProductUnitSerialAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit_serial.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class SaleProductUnitSerialAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.sale_product_unit_serial.delete', null));
+        $api = $this->json('POST', route('api.post.db.sales.sale_product_unit_serial.delete', null));
 
         $api->assertStatus(500);
     }

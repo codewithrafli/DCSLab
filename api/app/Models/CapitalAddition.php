@@ -25,7 +25,7 @@ class CapitalAddition extends Model
     ];
 
     protected $casts = [
-
+        'amount' => 'decimal:8',
     ];
 
     public function company()

@@ -57,13 +57,14 @@ class PurchaseProductUnitSerialActions
 
         ?int $limit
     ) {
-        $query = PurchaseProductUnitSerial::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseProductUnitSerial::select('purchase_order_product_unit_serials.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_order_product_unit_serials.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -73,8 +74,8 @@ class PurchaseProductUnitSerialActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchase_order_product_unit_serials.id', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -138,7 +139,7 @@ class PurchaseProductUnitSerialActions
 
     public function read(PurchaseProductUnitSerial $purchaseProductUnitSerial): PurchaseProductUnitSerial
     {
-        return $purchaseProductUnitSerial->with('company')->first();
+        return $purchaseProductUnitSerial->load('company')->first();
     }
 
     public function getAllActivePurchaseProductUnitSerial(

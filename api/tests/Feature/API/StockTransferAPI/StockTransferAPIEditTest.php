@@ -31,7 +31,7 @@ class StockTransferAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.edit', $stockTransfer->ulid), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.edit', $stockTransfer->ulid), $stockTransferArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class StockTransferAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.edit', $stockTransfer->ulid), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.edit', $stockTransfer->ulid), $stockTransferArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class StockTransferAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.edit', $stockTransfer->ulid), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.edit', $stockTransfer->ulid), $stockTransferArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('stock_transfers', [
@@ -119,7 +119,7 @@ class StockTransferAPIEditTest extends APITestCase
             'code' => $stockTransfer_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.edit', $stockTransfer_2->ulid), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.edit', $stockTransfer_2->ulid), $stockTransferArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class StockTransferAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.edit', $stockTransfer_2->ulid), $stockTransferArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.edit', $stockTransfer_2->ulid), $stockTransferArr);
 
         $api->assertSuccessful();
     }

@@ -31,7 +31,7 @@ class InvestorAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.edit', $investor->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor->ulid), $investorArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class InvestorAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.edit', $investor->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor->ulid), $investorArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class InvestorAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.edit', $investor->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor->ulid), $investorArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('investors', [
@@ -119,7 +119,7 @@ class InvestorAPIEditTest extends APITestCase
             'code' => $investor_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.edit', $investor_2->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor_2->ulid), $investorArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class InvestorAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.edit', $investor_2->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor_2->ulid), $investorArr);
 
         $api->assertSuccessful();
     }

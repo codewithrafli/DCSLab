@@ -87,13 +87,14 @@ class SaleProductUnitActions
 
         ?int $limit
     ) {
-        $query = SaleProductUnit::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = SaleProductUnit::select('sale_product_units.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'sale_product_units.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -103,8 +104,8 @@ class SaleProductUnitActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('sale_product_units.id', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -168,7 +169,7 @@ class SaleProductUnitActions
 
     public function read(SaleProductUnit $saleProductUnit): SaleProductUnit
     {
-        return $saleProductUnit->with('company')->first();
+        return $saleProductUnit->load('company')->first();
     }
 
     public function getAllActiveSaleProductUnit(

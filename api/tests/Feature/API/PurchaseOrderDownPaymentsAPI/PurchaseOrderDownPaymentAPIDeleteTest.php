@@ -28,7 +28,7 @@ class PurchaseOrderDownPaymentAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class PurchaseOrderDownPaymentAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class PurchaseOrderDownPaymentAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseOrderDownPayment = PurchaseOrderDownPayment::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.delete', $purchaseOrderDownPayment->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('purchase_order_down_payments', [
@@ -77,7 +77,7 @@ class PurchaseOrderDownPaymentAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class PurchaseOrderDownPaymentAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.purchase_order_down_payments.delete', null));
+        $api = $this->json('POST', route('api.post.db.purchase_order.purchase_order_down_payments.delete', null));
 
         $api->assertStatus(500);
     }

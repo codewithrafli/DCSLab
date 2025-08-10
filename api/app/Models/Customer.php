@@ -36,6 +36,9 @@ class Customer extends Model
 
     protected $casts = [
         'is_member' => 'boolean',
+        'max_open_invoice' => 'integer',
+        'max_outstanding_invoice' => 'decimal:8',
+        'max_invoice_age' => 'integer',
         'payment_term_type' => PaymentTermTypeEnum::class,
         'taxable_enterprise' => 'boolean',
         'status' => RecordStatusEnum::class,

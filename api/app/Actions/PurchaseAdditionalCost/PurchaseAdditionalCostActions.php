@@ -60,13 +60,14 @@ class PurchaseAdditionalCostActions
 
         ?int $limit
     ) {
-        $query = PurchaseAdditionalCost::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseAdditionalCost::select('purchase_additional_costs.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_additional_costs.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -76,8 +77,8 @@ class PurchaseAdditionalCostActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchase_additional_costs.date', 'dsc');
 
         if ($limit) {
             $query->limit($limit);
@@ -141,7 +142,7 @@ class PurchaseAdditionalCostActions
 
     public function read(PurchaseAdditionalCost $purchaseAdditionalCost): PurchaseAdditionalCost
     {
-        return $purchaseAdditionalCost->with('company')->first();
+        return $purchaseAdditionalCost->load('company')->first();
     }
 
     public function getAllActivePurchaseAdditionalCost(

@@ -30,7 +30,7 @@ class CapitalAdditionAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.save'), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.save'), $capitalAdditionArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class CapitalAdditionAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.save'), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.save'), $capitalAdditionArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class CapitalAdditionAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.save'), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.save'), $capitalAdditionArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('capital_additions', [
@@ -115,7 +115,7 @@ class CapitalAdditionAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.save'), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.save'), $capitalAdditionArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class CapitalAdditionAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.save'), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.save'), $capitalAdditionArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('capital_additions', [
@@ -169,7 +169,7 @@ class CapitalAdditionAPICreateTest extends APITestCase
 
         $capitalAdditionArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.save'), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.save'), $capitalAdditionArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

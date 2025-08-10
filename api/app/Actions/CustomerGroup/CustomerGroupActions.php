@@ -70,13 +70,14 @@ class CustomerGroupActions
 
         ?int $limit
     ) {
-        $query = CustomerGroup::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = CustomerGroup::select('customer_groups.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'customer_groups.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -86,8 +87,8 @@ class CustomerGroupActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('customer_groups.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -151,7 +152,7 @@ class CustomerGroupActions
 
     public function read(CustomerGroup $customerGroup): CustomerGroup
     {
-        return $customerGroup->with('company')->first();
+        return $customerGroup->load('company')->first();
     }
 
     public function getAllActiveCustomerGroup(

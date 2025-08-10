@@ -60,13 +60,14 @@ class SalePaymentActions
 
         ?int $limit
     ) {
-        $query = SalePayment::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = SalePayment::select('sale_payments.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'sale_payments.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -76,8 +77,8 @@ class SalePaymentActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('sale_payments.date', 'dsc');
 
         if ($limit) {
             $query->limit($limit);
@@ -141,7 +142,7 @@ class SalePaymentActions
 
     public function read(SalePayment $salePayment): SalePayment
     {
-        return $salePayment->with('company')->first();
+        return $salePayment->load('company')->first();
     }
 
     public function getAllActiveSalePayment(

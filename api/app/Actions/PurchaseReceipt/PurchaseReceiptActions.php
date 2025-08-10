@@ -59,13 +59,14 @@ class PurchaseReceiptActions
 
         ?int $limit
     ) {
-        $query = PurchaseReceipt::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseReceipt::select('purchase_receipt.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_receipt.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -75,8 +76,8 @@ class PurchaseReceiptActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchase_receipt.id', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -140,7 +141,7 @@ class PurchaseReceiptActions
 
     public function read(PurchaseReceipt $purchaseReceipt): PurchaseReceipt
     {
-        return $purchaseReceipt->with('company')->first();
+        return $purchaseReceipt->load('company')->first();
     }
 
     public function getAllActivePurchaseReceipt(

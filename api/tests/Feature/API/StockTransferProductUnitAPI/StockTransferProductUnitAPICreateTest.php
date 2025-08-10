@@ -30,7 +30,7 @@ class StockTransferProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class StockTransferProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class StockTransferProductUnitAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('stock_transfer_product_units', [
@@ -115,7 +115,7 @@ class StockTransferProductUnitAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class StockTransferProductUnitAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('stock_transfer_product_units', [
@@ -169,7 +169,7 @@ class StockTransferProductUnitAPICreateTest extends APITestCase
 
         $stockTransferProductUnitArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit.save'), $stockTransferProductUnitArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

@@ -73,7 +73,7 @@ class PurchaseRequest extends FormRequest
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
                     'code' => ['required', 'string', 'max:255', new PurchaseStoreValidCode($this->company_id)],
                     'date' => ['required', 'date'],
-                    'due_days' => ['required', 'integer', 'min:1'],
+                    'due_days' => ['required', 'integer', 'min:0'],
                     'warehouse_id' => ['nullable', 'integer', new IsValidWarehouse($this->company_id, true)],
                     'supplier_id' => ['nullable', 'integer', new IsValidSupplier($this->company_id, true)],
                     'purchase_order_id' => ['nullable', 'integer', new IsValidPurchaseOrder($this->company_id)],

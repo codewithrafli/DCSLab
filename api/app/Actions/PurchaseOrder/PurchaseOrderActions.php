@@ -71,8 +71,9 @@ class PurchaseOrderActions
 
         ?int $limit
     ) {
-        $query = PurchaseOrder::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseOrder::select('purchase_orders.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_orders.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
                     $query = $query->withTrashed();
@@ -87,8 +88,8 @@ class PurchaseOrderActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchase_orders.date', 'dsc');
 
         if ($limit) {
             $query->limit($limit);
@@ -152,7 +153,7 @@ class PurchaseOrderActions
 
     public function read(PurchaseOrder $purchaseOrder): PurchaseOrder
     {
-        return $purchaseOrder->with('company')->first();
+        return $purchaseOrder->load('company')->first();
     }
 
     public function getAllActivePurchaseOrder(

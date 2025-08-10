@@ -60,7 +60,33 @@ class Sale extends Model
     ];
 
     protected $casts = [
-
+        'date' => 'datetime',
+        'tax_invoice_vat_base' => 'decimal:8',
+        'tax_invoice_vat' => 'decimal:8',
+        'return_tax_invoice_vat_base' => 'decimal:8',
+        'return_tax_invoice_vat' => 'decimal:8',
+        'is_posted' => 'boolean',
+        'total' => 'decimal:8',
+        'global_discount_rate' => 'decimal:8',
+        'global_discount_fixed' => 'decimal:8',
+        'additional_cost' => 'decimal:8',
+        'rounding' => 'decimal:8',
+        'grand_total' => 'decimal:8',
+        'return_total' => 'decimal:8',
+        'return_global_discount_rate' => 'decimal:8',
+        'return_global_discount_fixed' => 'decimal:8',
+        'return_rounding' => 'decimal:8',
+        'return_grand_total' => 'decimal:8',
+        'amount_due' => 'decimal:8',
+        'amount_paid_by_sale_order_down_payment' => 'decimal:8',
+        'amount_paid_by_sale_return' => 'decimal:8',
+        'amount_paid_before_invoice' => 'decimal:8',
+        'amount_paid_on_invoice' => 'decimal:8',
+        'amount_paid_after_invoice' => 'decimal:8',
+        'amount_paid_total' => 'decimal:8',
+        'amount_due' => 'decimal:8',
+        'is_paid_off' => 'boolean',
+        'is_valid' => 'boolean',
     ];
 
     public function company()

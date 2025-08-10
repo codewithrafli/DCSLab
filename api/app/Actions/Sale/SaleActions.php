@@ -95,13 +95,14 @@ class SaleActions
 
         ?int $limit
     ) {
-        $query = Sale::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = Sale::select('sales.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'sales.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -111,8 +112,8 @@ class SaleActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('sales.date', 'dsc');
 
         if ($limit) {
             $query->limit($limit);
@@ -176,7 +177,7 @@ class SaleActions
 
     public function read(Sale $sale): Sale
     {
-        return $sale->with('company')->first();
+        return $sale->load('company')->first();
     }
 
     public function getAllActiveSale(

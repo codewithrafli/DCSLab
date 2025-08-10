@@ -56,7 +56,7 @@ class PurchaseOrderProductUnit extends Model
     ];
 
     protected $casts = [
-        'qty' => 'decimal:8',
+        'qty' => 'integer',
         'product_unit_amount_per_unit' => 'decimal:8',
         'product_unit_amount_total' => 'decimal:8',
         'product_unit_initial_price' => 'decimal:8',

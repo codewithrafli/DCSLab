@@ -28,7 +28,7 @@ class EmployeeAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $employee = Employee::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.delete', $employee->ulid));
+        $api = $this->json('POST', route('api.post.db.company.employee.delete', $employee->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class EmployeeAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $employee = Employee::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.delete', $employee->ulid));
+        $api = $this->json('POST', route('api.post.db.company.employee.delete', $employee->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class EmployeeAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $employee = Employee::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.delete', $employee->ulid));
+        $api = $this->json('POST', route('api.post.db.company.employee.delete', $employee->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('employees', [
@@ -77,7 +77,7 @@ class EmployeeAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.company.employee.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class EmployeeAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.employee.delete', null));
+        $api = $this->json('POST', route('api.post.db.company.employee.delete', null));
 
         $api->assertStatus(500);
     }

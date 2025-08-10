@@ -30,7 +30,7 @@ class CashAccountAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.save'), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.save'), $cashAccountArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class CashAccountAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.save'), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.save'), $cashAccountArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class CashAccountAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.save'), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.save'), $cashAccountArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('cash_accounts', [
@@ -115,7 +115,7 @@ class CashAccountAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.save'), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.save'), $cashAccountArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class CashAccountAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.save'), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.save'), $cashAccountArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('cash_accounts', [
@@ -169,7 +169,7 @@ class CashAccountAPICreateTest extends APITestCase
 
         $cashAccountArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.save'), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.save'), $cashAccountArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

@@ -57,13 +57,14 @@ class SaleReceiptActions
 
         ?int $limit
     ) {
-        $query = SaleReceipt::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = SaleReceipt::select('sale_receipts.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'sale_receipts.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -73,8 +74,8 @@ class SaleReceiptActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('sale_receipts.id', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -138,7 +139,7 @@ class SaleReceiptActions
 
     public function read(SaleReceipt $saleReceipt): SaleReceipt
     {
-        return $saleReceipt->with('company')->first();
+        return $saleReceipt->load('company')->first();
     }
 
     public function getAllActiveSaleReceipt(

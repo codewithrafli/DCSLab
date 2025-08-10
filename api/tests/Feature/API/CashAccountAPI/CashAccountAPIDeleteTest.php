@@ -28,7 +28,7 @@ class CashAccountAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $cashAccount = CashAccount::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', $cashAccount->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class CashAccountAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $cashAccount = CashAccount::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', $cashAccount->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class CashAccountAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $cashAccount = CashAccount::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', $cashAccount->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('cash_accounts', [
@@ -77,7 +77,7 @@ class CashAccountAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.cash_account.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class CashAccountAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.cash_account.delete', null));
+        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', null));
 
         $api->assertStatus(500);
     }

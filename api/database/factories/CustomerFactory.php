@@ -38,7 +38,7 @@ class CustomerFactory extends Factory
 
     private function craftName(string $str)
     {
-        $text = fake()->company();
+        $text = fake()->name();
 
         return substr_replace($text, $str, random_int(0, strlen($text) - 1), 0);
     }

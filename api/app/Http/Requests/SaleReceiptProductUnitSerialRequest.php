@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\RecordStatus;
+use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\SaleReceiptProductUnitSerial;
 use App\Rules\IsValidBranch;
@@ -57,7 +57,7 @@ class SaleReceiptProductUnitSerialRequest extends FormRequest
 
                     'search' => ['nullable', 'string'],
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatus::toArrayValue())],
+                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],

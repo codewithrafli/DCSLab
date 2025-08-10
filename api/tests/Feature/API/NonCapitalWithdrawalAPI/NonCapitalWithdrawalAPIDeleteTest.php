@@ -28,7 +28,7 @@ class NonCapitalWithdrawalAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalWithdrawal = NonCapitalWithdrawal::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.delete', $nonCapitalWithdrawal->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.delete', $nonCapitalWithdrawal->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class NonCapitalWithdrawalAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalWithdrawal = NonCapitalWithdrawal::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.delete', $nonCapitalWithdrawal->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.delete', $nonCapitalWithdrawal->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class NonCapitalWithdrawalAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalWithdrawal = NonCapitalWithdrawal::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.delete', $nonCapitalWithdrawal->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.delete', $nonCapitalWithdrawal->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('non_capital_withdrawals', [
@@ -77,7 +77,7 @@ class NonCapitalWithdrawalAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class NonCapitalWithdrawalAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.delete', null));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.delete', null));
 
         $api->assertStatus(500);
     }

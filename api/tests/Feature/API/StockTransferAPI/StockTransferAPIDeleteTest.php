@@ -28,7 +28,7 @@ class StockTransferAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $stockTransfer = StockTransfer::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', $stockTransfer->ulid));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.delete', $stockTransfer->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class StockTransferAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $stockTransfer = StockTransfer::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', $stockTransfer->ulid));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.delete', $stockTransfer->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class StockTransferAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $stockTransfer = StockTransfer::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', $stockTransfer->ulid));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.delete', $stockTransfer->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('stock_transfers', [
@@ -77,7 +77,7 @@ class StockTransferAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class StockTransferAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer.delete', null));
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer.delete', null));
 
         $api->assertStatus(500);
     }

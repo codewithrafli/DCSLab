@@ -26,7 +26,10 @@ class SaleReceiptProductUnit extends Model
     ];
 
     protected $casts = [
-
+        'qty' => 'integer',
+        'product_unit_amount_per_unit' => 'decimal:8',
+        'product_unit_amount_total' => 'decimal:8',
+        'is_has_sale' => 'boolean',
     ];
 
     public function company()

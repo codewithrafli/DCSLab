@@ -31,7 +31,7 @@ class SalesOrderAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.edit', $salesOrder->ulid), $salesOrderArr);
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.edit', $salesOrder->ulid), $salesOrderArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class SalesOrderAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.edit', $salesOrder->ulid), $salesOrderArr);
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.edit', $salesOrder->ulid), $salesOrderArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class SalesOrderAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.edit', $salesOrder->ulid), $salesOrderArr);
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.edit', $salesOrder->ulid), $salesOrderArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sales_orders', [
@@ -119,7 +119,7 @@ class SalesOrderAPIEditTest extends APITestCase
             'code' => $salesOrder_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.edit', $salesOrder_2->ulid), $salesOrderArr);
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.edit', $salesOrder_2->ulid), $salesOrderArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class SalesOrderAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.edit', $salesOrder_2->ulid), $salesOrderArr);
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.edit', $salesOrder_2->ulid), $salesOrderArr);
 
         $api->assertSuccessful();
     }

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\SalePaymentAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\SalePayment;
@@ -20,7 +20,7 @@ class SalePaymentAPIEditTest extends APITestCase
     public function test_sale_payment_api_call_update_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -31,7 +31,7 @@ class SalePaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.edit', $salePayment->ulid), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.edit', $salePayment->ulid), $salePaymentArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class SalePaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.edit', $salePayment->ulid), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.edit', $salePayment->ulid), $salePaymentArr);
 
         $api->assertStatus(403);
     }
@@ -69,7 +69,7 @@ class SalePaymentAPIEditTest extends APITestCase
     public function test_sale_payment_api_call_update_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -82,7 +82,7 @@ class SalePaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.edit', $salePayment->ulid), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.edit', $salePayment->ulid), $salePaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_payments', [
@@ -101,7 +101,7 @@ class SalePaymentAPIEditTest extends APITestCase
     public function test_sale_payment_api_call_update_and_use_existing_code_in_same_company_expect_failed()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -119,7 +119,7 @@ class SalePaymentAPIEditTest extends APITestCase
             'code' => $salePayment_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.edit', $salePayment_2->ulid), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.edit', $salePayment_2->ulid), $salePaymentArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -130,7 +130,7 @@ class SalePaymentAPIEditTest extends APITestCase
     public function test_sale_payment_api_call_update_and_use_existing_code_in_different_company_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->has(Company::factory()->setStatusActive())
             ->create();
@@ -154,7 +154,7 @@ class SalePaymentAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_payment.edit', $salePayment_2->ulid), $salePaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_payment.edit', $salePayment_2->ulid), $salePaymentArr);
 
         $api->assertSuccessful();
     }

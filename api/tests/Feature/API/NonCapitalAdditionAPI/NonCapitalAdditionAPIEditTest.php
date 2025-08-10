@@ -31,7 +31,7 @@ class NonCapitalAdditionAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.edit', $nonCapitalAddition->ulid), $nonCapitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.edit', $nonCapitalAddition->ulid), $nonCapitalAdditionArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class NonCapitalAdditionAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.edit', $nonCapitalAddition->ulid), $nonCapitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.edit', $nonCapitalAddition->ulid), $nonCapitalAdditionArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class NonCapitalAdditionAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.edit', $nonCapitalAddition->ulid), $nonCapitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.edit', $nonCapitalAddition->ulid), $nonCapitalAdditionArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('non_capital_additions', [
@@ -119,7 +119,7 @@ class NonCapitalAdditionAPIEditTest extends APITestCase
             'code' => $nonCapitalAddition_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.edit', $nonCapitalAddition_2->ulid), $nonCapitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.edit', $nonCapitalAddition_2->ulid), $nonCapitalAdditionArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class NonCapitalAdditionAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.edit', $nonCapitalAddition_2->ulid), $nonCapitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.edit', $nonCapitalAddition_2->ulid), $nonCapitalAdditionArr);
 
         $api->assertSuccessful();
     }

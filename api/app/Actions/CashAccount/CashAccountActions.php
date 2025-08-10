@@ -59,13 +59,14 @@ class CashAccountActions
 
         ?int $limit
     ) {
-        $query = CashAccount::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = CashAccount::select('cash_accounts.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'cash_accounts.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -75,8 +76,8 @@ class CashAccountActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('cash_accounts.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);

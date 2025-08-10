@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\API\SaleAPI;
 
-use App\Enums\UserRoles;
+use App\Enums\UserRolesEnum;
 use App\Models\Company;
 use App\Models\Role;
 use App\Models\Sale;
@@ -22,7 +22,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_any_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -30,7 +30,7 @@ class SaleAPIReadTest extends APITestCase
 
         Sale::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'paginate' => true,
@@ -54,7 +54,7 @@ class SaleAPIReadTest extends APITestCase
 
         Sale::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'paginate' => true,
@@ -69,7 +69,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -79,7 +79,7 @@ class SaleAPIReadTest extends APITestCase
 
         $ulid = $sale->ulid;
 
-        $api = $this->getJson(route('api.get.db.product.sale.read', $ulid));
+        $api = $this->getJson(route('api.get.db.sales.sale.read', $ulid));
 
         $api->assertStatus(401);
     }
@@ -98,7 +98,7 @@ class SaleAPIReadTest extends APITestCase
 
         $ulid = $sale->ulid;
 
-        $api = $this->getJson(route('api.get.db.product.sale.read', $ulid));
+        $api = $this->getJson(route('api.get.db.sales.sale.read', $ulid));
 
         $api->assertStatus(403);
     }
@@ -106,7 +106,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_with_sql_injection_expect_injection_ignored()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -210,7 +210,7 @@ class SaleAPIReadTest extends APITestCase
 
         $testIdx = random_int(0, count($injections));
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -241,7 +241,7 @@ class SaleAPIReadTest extends APITestCase
 
         $testIdx = random_int(0, count($injections));
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -263,7 +263,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_any_with_or_without_pagination_expect_paginator_or_collection()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -273,7 +273,7 @@ class SaleAPIReadTest extends APITestCase
 
         Sale::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -297,7 +297,7 @@ class SaleAPIReadTest extends APITestCase
             ],
         ]);
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -314,7 +314,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_any_with_pagination_expect_several_per_page()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -324,7 +324,7 @@ class SaleAPIReadTest extends APITestCase
 
         Sale::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -357,7 +357,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_any_with_search_expect_filtered_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setIsDefault())
             ->create();
 
@@ -372,7 +372,7 @@ class SaleAPIReadTest extends APITestCase
             ->insertStringInName('testing')
             ->count(3)->create();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -404,7 +404,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_any_without_search_querystring_expect_failed()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -414,7 +414,7 @@ class SaleAPIReadTest extends APITestCase
 
         Sale::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'company_id' => Hashids::encode($company->id),
         ]));
 
@@ -424,7 +424,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_any_with_special_char_in_search_expect_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -434,7 +434,7 @@ class SaleAPIReadTest extends APITestCase
 
         Sale::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'refresh' => false,
             'with_trashed' => false,
 
@@ -462,7 +462,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_any_with_negative_value_in_parameters_expect_results()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -472,7 +472,7 @@ class SaleAPIReadTest extends APITestCase
 
         Sale::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read_any', [
+        $api = $this->getJson(route('api.get.db.sales.sale.read_any', [
             'refresh' => false,
             'with_trashed' => false,
 
@@ -491,7 +491,7 @@ class SaleAPIReadTest extends APITestCase
     public function test_sale_api_call_read_expect_successful()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -503,7 +503,7 @@ class SaleAPIReadTest extends APITestCase
 
         $ulid = $sale->ulid;
 
-        $api = $this->getJson(route('api.get.db.product.sale.read', $ulid));
+        $api = $this->getJson(route('api.get.db.sales.sale.read', $ulid));
 
         $api->assertSuccessful();
     }
@@ -512,19 +512,19 @@ class SaleAPIReadTest extends APITestCase
     {
         $this->expectException(Exception::class);
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
         $this->actingAs($user);
 
-        $this->getJson(route('api.get.db.product.sale.read', null));
+        $this->getJson(route('api.get.db.sales.sale.read', null));
     }
 
     public function test_sale_api_call_read_with_nonexistance_ulid_expect_not_found()
     {
         $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoles::DEVELOPER->value)->first())
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->has(Company::factory()->setStatusActive()->setIsDefault())
             ->create();
 
@@ -532,7 +532,7 @@ class SaleAPIReadTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->getJson(route('api.get.db.product.sale.read', $ulid));
+        $api = $this->getJson(route('api.get.db.sales.sale.read', $ulid));
 
         $api->assertStatus(404);
     }

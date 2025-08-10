@@ -30,7 +30,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         PurchaseReceiptProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'paginate' => true,
@@ -54,7 +54,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         PurchaseReceiptProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'paginate' => true,
@@ -79,7 +79,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         $ulid = $purchaseReceiptProductUnitSerial->ulid;
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read', $ulid));
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read', $ulid));
 
         $api->assertStatus(401);
     }
@@ -98,7 +98,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         $ulid = $purchaseReceiptProductUnitSerial->ulid;
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read', $ulid));
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read', $ulid));
 
         $api->assertStatus(403);
     }
@@ -210,7 +210,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         $testIdx = random_int(0, count($injections));
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -241,7 +241,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         $testIdx = random_int(0, count($injections));
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -273,7 +273,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         PurchaseReceiptProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -297,7 +297,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
             ],
         ]);
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -324,7 +324,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         PurchaseReceiptProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -372,7 +372,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
             ->insertStringInName('testing')
             ->count(3)->create();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -414,7 +414,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         PurchaseReceiptProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'company_id' => Hashids::encode($company->id),
         ]));
 
@@ -434,7 +434,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         PurchaseReceiptProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'refresh' => false,
             'with_trashed' => false,
 
@@ -472,7 +472,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         PurchaseReceiptProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read_any', [
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read_any', [
             'refresh' => false,
             'with_trashed' => false,
 
@@ -503,7 +503,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         $ulid = $purchaseReceiptProductUnitSerial->ulid;
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read', $ulid));
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read', $ulid));
 
         $api->assertSuccessful();
     }
@@ -518,7 +518,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         $this->actingAs($user);
 
-        $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read', null));
+        $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read', null));
     }
 
     public function test_purchase_receipt_product_unit_serial_api_call_read_with_nonexistance_ulid_expect_not_found()
@@ -532,7 +532,7 @@ class PurchaseReceiptProductUnitSerialAPIReadTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->getJson(route('api.get.db.product.purchase_receipt_product_unit_serial.read', $ulid));
+        $api = $this->getJson(route('api.get.db.purchase.purchase_receipt_product_unit_serial.read', $ulid));
 
         $api->assertStatus(404);
     }

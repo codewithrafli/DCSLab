@@ -28,7 +28,7 @@ class NonCapitalAdditionAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalAddition = NonCapitalAddition::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.delete', $nonCapitalAddition->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.delete', $nonCapitalAddition->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class NonCapitalAdditionAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalAddition = NonCapitalAddition::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.delete', $nonCapitalAddition->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.delete', $nonCapitalAddition->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class NonCapitalAdditionAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalAddition = NonCapitalAddition::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.delete', $nonCapitalAddition->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.delete', $nonCapitalAddition->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('non_capital_additions', [
@@ -77,7 +77,7 @@ class NonCapitalAdditionAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class NonCapitalAdditionAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.non_capital_addition.delete', null));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_addition.delete', null));
 
         $api->assertStatus(500);
     }

@@ -25,7 +25,8 @@ class PurchaseOrderDownPayment extends Model
     ];
 
     protected $casts = [
-
+        'date' => 'datetime',
+        'amount' => 'decimal:8',
     ];
 
     public function company()

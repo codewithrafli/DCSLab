@@ -58,13 +58,14 @@ class CustomerAddressActions
 
         ?int $limit
     ) {
-        $query = CustomerAddress::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = CustomerAddress::select('customer_addresses.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'customer_addresses.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -74,8 +75,8 @@ class CustomerAddressActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('customer_addresses.address', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -139,7 +140,7 @@ class CustomerAddressActions
 
     public function read(CustomerAddress $customerAddress): CustomerAddress
     {
-        return $customerAddress->with('company')->first();
+        return $customerAddress->load('company')->first();
     }
 
     public function getAllActiveCustomerAddress(

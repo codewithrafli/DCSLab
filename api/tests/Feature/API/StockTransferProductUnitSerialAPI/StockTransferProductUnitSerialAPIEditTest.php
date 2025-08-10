@@ -31,7 +31,7 @@ class StockTransferProductUnitSerialAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial->ulid), $stockTransferProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial->ulid), $stockTransferProductUnitSerialArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class StockTransferProductUnitSerialAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial->ulid), $stockTransferProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial->ulid), $stockTransferProductUnitSerialArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class StockTransferProductUnitSerialAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial->ulid), $stockTransferProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial->ulid), $stockTransferProductUnitSerialArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('stock_transfer_product_unit_serials', [
@@ -119,7 +119,7 @@ class StockTransferProductUnitSerialAPIEditTest extends APITestCase
             'code' => $stockTransferProductUnitSerial_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial_2->ulid), $stockTransferProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial_2->ulid), $stockTransferProductUnitSerialArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class StockTransferProductUnitSerialAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial_2->ulid), $stockTransferProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.stock_transfer.stock_transfer_product_unit_serial.edit', $stockTransferProductUnitSerial_2->ulid), $stockTransferProductUnitSerialArr);
 
         $api->assertSuccessful();
     }

@@ -43,6 +43,7 @@ class PurchaseOrder extends Model
         'global_discount_fixed' => 'decimal:8',
         'grand_total' => 'decimal:8',
         'down_payment' => 'decimal:8',
+        'down_payment_due_days' => 'integer',
         'down_payment_applied' => 'decimal:8',
         'down_payment_remaining' => 'decimal:8',
         'is_down_payment_paid_off' => 'boolean',

@@ -60,13 +60,14 @@ class PurchaseOrderDownPaymentApplyActions
 
         ?int $limit
     ) {
-        $query = PurchaseOrderDownPaymentApply::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseOrderDownPaymentApply::select('purchase_order_down_payment_applies.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_order_down_payment_applies.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -76,8 +77,8 @@ class PurchaseOrderDownPaymentApplyActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchase_order_down_payment_applies.date', 'dsc');
 
         if ($limit) {
             $query->limit($limit);
@@ -141,7 +142,7 @@ class PurchaseOrderDownPaymentApplyActions
 
     public function read(PurchaseOrderDownPaymentApply $purchaseOrderDownPaymentApply): PurchaseOrderDownPaymentApply
     {
-        return $purchaseOrderDownPaymentApply->with('company')->first();
+        return $purchaseOrderDownPaymentApply->load('company')->first();
     }
 
     public function getAllActivePurchaseOrderDownPaymentApply(

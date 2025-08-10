@@ -45,6 +45,7 @@ class Product extends Model
             'is_use_serial_number' => 'boolean',
             'is_expirable' => 'boolean',
             'has_expiry_date' => 'boolean',
+            'point' => 'integer',
             'type' => ProductTypeEnum::class,
             'status' => RecordStatusEnum::class,
         ];

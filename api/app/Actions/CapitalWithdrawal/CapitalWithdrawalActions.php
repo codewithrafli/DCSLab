@@ -60,13 +60,14 @@ class CapitalWithdrawalActions
 
         ?int $limit
     ) {
-        $query = CapitalWithdrawal::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = CapitalWithdrawal::select('capital_withdrawals.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'capital_withdrawals.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -76,8 +77,8 @@ class CapitalWithdrawalActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('capital_withdrawals.date', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -141,7 +142,7 @@ class CapitalWithdrawalActions
 
     public function read(CapitalWithdrawal $capitalWithdrawal): CapitalWithdrawal
     {
-        return $capitalWithdrawal->with('company')->first();
+        return $capitalWithdrawal->load('company')->first();
     }
 
     public function getAllActiveCapitalWithdrawal(

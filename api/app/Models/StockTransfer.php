@@ -25,7 +25,8 @@ class StockTransfer extends Model
     ];
 
     protected $casts = [
-
+        'date' => 'datetime',
+        'is_posted' => 'boolean',
     ];
 
     public function company()

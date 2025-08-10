@@ -30,7 +30,7 @@ class PurchaseAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.save'), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.save'), $purchaseArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class PurchaseAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.save'), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.save'), $purchaseArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class PurchaseAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.save'), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.save'), $purchaseArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchases', [
@@ -115,7 +115,7 @@ class PurchaseAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.save'), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.save'), $purchaseArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class PurchaseAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.save'), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.save'), $purchaseArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchases', [
@@ -169,7 +169,7 @@ class PurchaseAPICreateTest extends APITestCase
 
         $purchaseArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.save'), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.save'), $purchaseArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

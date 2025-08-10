@@ -27,7 +27,8 @@ class PurchaseReceiptProductUnit extends Model
     ];
 
     protected $casts = [
-
+        'qty' => 'integer',
+        'is_has_purchase' => 'boolean',
     ];
 
     public function company()

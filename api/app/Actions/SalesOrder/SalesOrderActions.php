@@ -69,13 +69,14 @@ class SalesOrderActions
 
         ?int $limit
     ) {
-        $query = SalesOrder::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = SalesOrder::select('sales_orders.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'sales_orders.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -85,8 +86,8 @@ class SalesOrderActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('sales_orders.remarks', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -150,7 +151,7 @@ class SalesOrderActions
 
     public function read(SalesOrder $salesOrder): SalesOrder
     {
-        return $salesOrder->with('company')->first();
+        return $salesOrder->load('company')->first();
     }
 
     public function getAllActiveSalesOrder(

@@ -30,7 +30,7 @@ class PurchaseReceiptAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.save'), $purchaseReceiptArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.save'), $purchaseReceiptArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class PurchaseReceiptAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.save'), $purchaseReceiptArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.save'), $purchaseReceiptArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class PurchaseReceiptAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.save'), $purchaseReceiptArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.save'), $purchaseReceiptArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_receipts', [
@@ -115,7 +115,7 @@ class PurchaseReceiptAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.save'), $purchaseReceiptArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.save'), $purchaseReceiptArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class PurchaseReceiptAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.save'), $purchaseReceiptArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.save'), $purchaseReceiptArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_receipts', [
@@ -169,7 +169,7 @@ class PurchaseReceiptAPICreateTest extends APITestCase
 
         $purchaseReceiptArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.save'), $purchaseReceiptArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.save'), $purchaseReceiptArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

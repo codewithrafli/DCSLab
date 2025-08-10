@@ -30,7 +30,7 @@ class PurchaseAdditionalCostAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class PurchaseAdditionalCostAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class PurchaseAdditionalCostAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_additional_costs', [
@@ -115,7 +115,7 @@ class PurchaseAdditionalCostAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class PurchaseAdditionalCostAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_additional_costs', [
@@ -169,7 +169,7 @@ class PurchaseAdditionalCostAPICreateTest extends APITestCase
 
         $purchaseAdditionalCostArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_additional_cost.save'), $purchaseAdditionalCostArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }
