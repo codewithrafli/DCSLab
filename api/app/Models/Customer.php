@@ -76,9 +76,9 @@ class Customer extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('customers.code', 'like', '%' . $search . '%')
-            ->orWhere('customers.name', 'like', '%' . $search . '%')
-            ->orWhere('customers.zone', 'like', '%' . $search . '%')
-            ->orWhere('customers.remarks', 'like', '%' . $search . '%');
+        return $query->where('customers.code', 'like', '%'.$search.'%')
+            ->orWhere('customers.name', 'like', '%'.$search.'%')
+            ->orWhere('customers.zone', 'like', '%'.$search.'%')
+            ->orWhere('customers.remarks', 'like', '%'.$search.'%');
     }
 }

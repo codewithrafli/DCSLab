@@ -46,7 +46,6 @@ return new class extends Migration
             $table->decimal('return_rounding', 30, 8)->default(0);
             $table->decimal('return_grand_total', 30, 8)->default(0);
 
-            $table->decimal('amount_due', 30, 8)->default(0);
             $table->decimal('amount_paid_by_sale_order_down_payment', 30, 8)->default(0);
             $table->decimal('amount_paid_by_sale_return', 30, 8)->default(0);
             $table->decimal('amount_paid_before_invoice', 30, 8)->default(0);

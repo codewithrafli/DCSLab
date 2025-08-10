@@ -14,8 +14,13 @@ return new class extends Migration
 
             $table->foreignId('company_id')->references('id')->on('companies');
             $table->foreignId('branch_id')->references('id')->on('branches');
-            $table->foreignId('sale_receipt_id')->references('id')->on('sales_receipts');
-            $table->foreignId('sale_receipt_product_unit_id')->references('id')->on('sale_receipt_product_units');
+
+            $table->foreignId('sale_receipt_id');
+            $table->foreign('sale_receipt_id', 'fk_s_receipt_serials_sr_id')->references('id')->on('sale_receipts');
+
+            $table->foreignId('sale_receipt_product_unit_id');
+            $table->foreign('sale_receipt_product_unit_id', 'fk_s_receipt_pu_serials_srpu_id')->references('id')->on('sale_receipt_product_units');
+
             $table->string('serial');
 
             $table->unsignedBigInteger('created_by')->default(0);
