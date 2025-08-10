@@ -210,6 +210,46 @@ class Company extends Model
         return $this->hasMany(SaleOrderDownPayment::class);
     }
 
+    public function saleOrderDownPaymentApplies()
+    {
+        return $this->hasMany(SaleOrderDownPaymentApply::class);
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function saleProductUnits()
+    {
+        return $this->hasMany(SaleProductUnit::class);
+    }
+
+    public function saleProductUnitSerials()
+    {
+        return $this->hasMany(SaleProductUnitSerial::class);
+    }
+
+    public function salePayments()
+    {
+        return $this->hasMany(SalePayment::class);
+    }
+
+    public function saleReceipts()
+    {
+        return $this->hasMany(SaleReceipt::class);
+    }
+
+    public function saleReceiptProductUnits()
+    {
+        return $this->hasMany(SaleReceiptProductUnit::class);
+    }
+
+    public function saleReceiptProductUnitSerials()
+    {
+        return $this->hasMany(SaleReceiptProductUnitSerial::class);
+    }
+
     public function scopeSearch($query, string $search)
     {
         return $query->where('code', 'like', '%'.$search.'%')

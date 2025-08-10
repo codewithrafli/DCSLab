@@ -31,7 +31,7 @@ class CapitalAdditionAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class CapitalAdditionAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class CapitalAdditionAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('capital_additions', [
@@ -119,7 +119,7 @@ class CapitalAdditionAPIEditTest extends APITestCase
             'code' => $capitalAddition_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.edit', $capitalAddition_2->ulid), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition_2->ulid), $capitalAdditionArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class CapitalAdditionAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.edit', $capitalAddition_2->ulid), $capitalAdditionArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition_2->ulid), $capitalAdditionArr);
 
         $api->assertSuccessful();
     }

@@ -60,13 +60,14 @@ class StockTransferActions
 
         ?int $limit
     ) {
-        $query = StockTransfer::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = StockTransfer::select('stock_transfers.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'stock_transfers.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -76,8 +77,8 @@ class StockTransferActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('stock_transfers.date', 'dsc');
 
         if ($limit) {
             $query->limit($limit);
@@ -141,7 +142,7 @@ class StockTransferActions
 
     public function read(StockTransfer $stockTransfer): StockTransfer
     {
-        return $stockTransfer->with('company', 'branch', 'sourceWarehouse', 'destinationWarehouse')->first();
+        return $stockTransfer->load('company', 'branch', 'sourceWarehouse', 'destinationWarehouse')->first();
     }
 
     public function getAllActiveStockTransfer(

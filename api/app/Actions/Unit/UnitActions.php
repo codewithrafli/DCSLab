@@ -57,13 +57,14 @@ class UnitActions
 
         ?int $limit
     ) {
-        $query = Unit::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = Unit::select('units.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'units.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -73,8 +74,8 @@ class UnitActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('units.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -138,7 +139,7 @@ class UnitActions
 
     public function read(Unit $unit): Unit
     {
-        return $unit->with('company')->first();
+        return $unit->load('company')->first();
     }
 
     public function getAllActiveUnit(

@@ -73,7 +73,7 @@ class SaleOrderProductUnitRequest extends FormRequest
                     'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
                     'sale_order_id' => ['required', 'integer', 'bail', new IsValidSaleOrder($this->company_id, true)],
 
-                    'qty' => ['required', 'numeric'],
+                    'qty' => ['required', 'numeric', 'min:1'],
                     'product_id' => ['required', 'integer', 'bail', new IsValidProduct($this->company_id, true)],
                     'product_unit_id' => ['required', 'integer', 'bail', new IsValidProductUnit($this->company_id, true)],
                     'product_unit_amount_per_unit' => ['required', 'numeric', 'min:0'],
@@ -116,7 +116,7 @@ class SaleOrderProductUnitRequest extends FormRequest
                     'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
                     'sale_order_id' => ['required', 'integer', 'bail', new IsValidSaleOrder($this->company_id, true)],
 
-                    'qty' => ['required', 'numeric'],
+                    'qty' => ['required', 'numeric', 'min:1'],
                     'product_id' => ['required', 'integer', 'bail', new IsValidProduct($this->company_id, true)],
                     'product_unit_id' => ['required', 'integer', 'bail', new IsValidProductUnit($this->company_id, true)],
                     'product_unit_amount_per_unit' => ['required', 'numeric', 'min:0'],

@@ -31,7 +31,7 @@ class PurchaseReturnProductUnitSerialAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial->ulid), $purchaseReturnProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial->ulid), $purchaseReturnProductUnitSerialArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class PurchaseReturnProductUnitSerialAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial->ulid), $purchaseReturnProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial->ulid), $purchaseReturnProductUnitSerialArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class PurchaseReturnProductUnitSerialAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial->ulid), $purchaseReturnProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial->ulid), $purchaseReturnProductUnitSerialArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_return_product_unit_serials', [
@@ -119,7 +119,7 @@ class PurchaseReturnProductUnitSerialAPIEditTest extends APITestCase
             'code' => $purchaseReturnProductUnitSerial_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial_2->ulid), $purchaseReturnProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial_2->ulid), $purchaseReturnProductUnitSerialArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class PurchaseReturnProductUnitSerialAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial_2->ulid), $purchaseReturnProductUnitSerialArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_product_unit_serial.edit', $purchaseReturnProductUnitSerial_2->ulid), $purchaseReturnProductUnitSerialArr);
 
         $api->assertSuccessful();
     }

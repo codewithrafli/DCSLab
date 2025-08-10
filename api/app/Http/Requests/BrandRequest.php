@@ -55,25 +55,25 @@ class BrandRequest extends FormRequest
                     'with_trashed' => ['required', 'boolean'],
 
                     'search' => ['nullable', 'string'],
-                    'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'status' => ['nullable', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
+                    'company_id' => ['required', 'numeric', 'bail', new IsValidCompany()],
+                    'status' => ['nullable', 'numeric', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
 
                     'paginate' => ['required', 'boolean'],
                     'page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:1'],
                     'per_page' => ['nullable', 'required_if:paginate,true', 'numeric', 'min:10'],
-                    'limit' => ['nullable', 'integer', 'min:1'],
+                    'limit' => ['nullable', 'numeric', 'min:1'],
                 ];
             case 'read':
                 return [];
             case 'store':
                 return [
-                    'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+                    'company_id' => ['required', 'numeric', 'bail', new IsValidCompany()],
                     'code' => ['required', 'string', 'max:255', new BrandStoreValidCode($this->company_id)],
                     'name' => ['required', 'string', 'max:255'],
                 ];
             case 'update':
                 return [
-                    'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+                    'company_id' => ['required', 'numeric', 'bail', new IsValidCompany()],
                     'code' => ['required', 'string', 'max:255', new BrandUpdateValidCode($this->company_id, $this->route('brand'))],
                     'name' => ['required', 'string', 'max:255'],
                 ];

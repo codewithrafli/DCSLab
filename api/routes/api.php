@@ -12,6 +12,7 @@ use App\Http\Controllers\CustomerAddressController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerGroupController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\NonCapitalAdditionCategoryController;
 use App\Http\Controllers\NonCapitalAdditionController;
@@ -36,8 +37,16 @@ use App\Http\Controllers\PurchaseReturnAdditionalCostController;
 use App\Http\Controllers\PurchaseReturnProductUnitController;
 use App\Http\Controllers\PurchaseReturnProductUnitSerialController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SaleOrderDownPaymentApplyController;
 use App\Http\Controllers\SaleOrderDownPaymentController;
 use App\Http\Controllers\SaleOrderProductUnitController;
+use App\Http\Controllers\SalePaymentController;
+use App\Http\Controllers\SaleProductUnitController;
+use App\Http\Controllers\SaleProductUnitSerialController;
+use App\Http\Controllers\SaleReceiptController;
+use App\Http\Controllers\SaleReceiptProductUnitController;
+use App\Http\Controllers\SaleReceiptProductUnitSerialController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StockTransferController;
@@ -66,6 +75,10 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'warehouse', 'as' => '.warehouse'], function () {
                 Route::get('read', [WarehouseController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{warehouse:ulid}', [WarehouseController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'employee', 'as' => '.employee'], function () {
+                Route::get('read', [EmployeeController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{employee:ulid}', [EmployeeController::class, 'read'])->name('.read');
             });
         });
 
@@ -248,6 +261,38 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read', [SaleOrderDownPaymentController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{sale_order_down_payment:ulid}', [SaleOrderDownPaymentController::class, 'read'])->name('.read');
             });
+            Route::group(['prefix' => 'sale_order_down_payment_apply', 'as' => '.sale_order_down_payment_apply'], function () {
+                Route::get('read', [SaleOrderDownPaymentApplyController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale', 'as' => '.sale'], function () {
+                Route::get('read', [SaleController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale:ulid}', [SaleController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_product_unit', 'as' => '.sale_product_unit'], function () {
+                Route::get('read', [SaleProductUnitController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_product_unit:ulid}', [SaleProductUnitController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_product_unit_serial', 'as' => '.sale_product_unit_serial'], function () {
+                Route::get('read', [SaleProductUnitSerialController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_product_unit_serial:ulid}', [SaleProductUnitSerialController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_payment', 'as' => '.sale_payment'], function () {
+                Route::get('read', [SalePaymentController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_payment:ulid}', [SalePaymentController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_receipt', 'as' => '.sale_receipt'], function () {
+                Route::get('read', [SaleReceiptController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_receipt:ulid}', [SaleReceiptController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_receipt_product_unit', 'as' => '.sale_receipt_product_unit'], function () {
+                Route::get('read', [SaleReceiptProductUnitController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_receipt_product_unit:ulid}', [SaleReceiptProductUnitController::class, 'read'])->name('.read');
+            });
+            Route::group(['prefix' => 'sale_receipt_product_unit_serial', 'as' => '.sale_receipt_product_unit_serial'], function () {
+                Route::get('read', [SaleReceiptProductUnitSerialController::class, 'readAny'])->name('.read_any');
+                Route::get('read/{sale_receipt_product_unit_serial:ulid}', [SaleReceiptProductUnitSerialController::class, 'read'])->name('.read');
+            });
         });
 
         Route::group(['prefix' => 'supplier', 'as' => '.supplier'], function () {
@@ -314,6 +359,11 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [WarehouseController::class, 'store'])->name('.save');
                 Route::post('edit/{warehouse:ulid}', [WarehouseController::class, 'update'])->name('.edit');
                 Route::post('delete/{warehouse:ulid}', [WarehouseController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'employee', 'as' => '.employee'], function () {
+                Route::post('save', [EmployeeController::class, 'store'])->name('.save');
+                Route::post('edit/{employee:ulid}', [EmployeeController::class, 'update'])->name('.edit');
+                Route::post('delete/{employee:ulid}', [EmployeeController::class, 'delete'])->name('.delete');
             });
         });
 
@@ -531,6 +581,46 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [SaleOrderDownPaymentController::class, 'store'])->name('.save');
                 Route::post('edit/{sale_order_down_payment:ulid}', [SaleOrderDownPaymentController::class, 'update'])->name('.edit');
                 Route::post('delete/{sale_order_down_payment:ulid}', [SaleOrderDownPaymentController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_order_down_payment_apply', 'as' => '.sale_order_down_payment_apply'], function () {
+                Route::post('save', [SaleOrderDownPaymentApplyController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_order_down_payment_apply:ulid}', [SaleOrderDownPaymentApplyController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale', 'as' => '.sale'], function () {
+                Route::post('save', [SaleController::class, 'store'])->name('.save');
+                Route::post('edit/{sale:ulid}', [SaleController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale:ulid}', [SaleController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_product_unit', 'as' => '.sale_product_unit'], function () {
+                Route::post('save', [SaleProductUnitController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_product_unit:ulid}', [SaleProductUnitController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_product_unit:ulid}', [SaleProductUnitController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_product_unit_serial', 'as' => '.sale_product_unit_serial'], function () {
+                Route::post('save', [SaleProductUnitSerialController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_product_unit_serial:ulid}', [SaleProductUnitSerialController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_product_unit_serial:ulid}', [SaleProductUnitSerialController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_payment', 'as' => '.sale_payment'], function () {
+                Route::post('save', [SalePaymentController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_payment:ulid}', [SalePaymentController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_payment:ulid}', [SalePaymentController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_receipt', 'as' => '.sale_receipt'], function () {
+                Route::post('save', [SaleReceiptController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_receipt:ulid}', [SaleReceiptController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_receipt:ulid}', [SaleReceiptController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_receipt_product_unit', 'as' => '.sale_receipt_product_unit'], function () {
+                Route::post('save', [SaleReceiptProductUnitController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_receipt_product_unit:ulid}', [SaleReceiptProductUnitController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_receipt_product_unit:ulid}', [SaleReceiptProductUnitController::class, 'delete'])->name('.delete');
+            });
+            Route::group(['prefix' => 'sale_receipt_product_unit_serial', 'as' => '.sale_receipt_product_unit_serial'], function () {
+                Route::post('save', [SaleReceiptProductUnitSerialController::class, 'store'])->name('.save');
+                Route::post('edit/{sale_receipt_product_unit_serial:ulid}', [SaleReceiptProductUnitSerialController::class, 'update'])->name('.edit');
+                Route::post('delete/{sale_receipt_product_unit_serial:ulid}', [SaleReceiptProductUnitSerialController::class, 'delete'])->name('.delete');
             });
         });
 

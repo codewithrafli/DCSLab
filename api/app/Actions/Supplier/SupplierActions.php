@@ -66,13 +66,14 @@ class SupplierActions
 
         ?int $limit
     ) {
-        $query = Supplier::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
-            ->where(function ($query) use ($user, $withTrashed, $search, $companyId) {
+        $query = Supplier::select('suppliers.*')->withTrashed()
+            ->with(['company', 'user'])
+            ->join('companies', 'companies.id', '=', 'suppliers.company_id')
+            ->where(function ($query) use ($withTrashed, $search, $companyId, $user) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -84,8 +85,8 @@ class SupplierActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('suppliers.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -151,7 +152,7 @@ class SupplierActions
 
     public function read(Supplier $supplier): Supplier
     {
-        return $supplier->with('company', 'user')->first();
+        return $supplier->load('company', 'user')->first();
     }
 
     public function getAllActiveSupplier(

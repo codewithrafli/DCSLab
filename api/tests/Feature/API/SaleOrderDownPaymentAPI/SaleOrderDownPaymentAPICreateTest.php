@@ -30,7 +30,7 @@ class SaleOrderDownPaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class SaleOrderDownPaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class SaleOrderDownPaymentAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_order_down_payments', [
@@ -115,7 +115,7 @@ class SaleOrderDownPaymentAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class SaleOrderDownPaymentAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('sale_order_down_payments', [
@@ -169,7 +169,7 @@ class SaleOrderDownPaymentAPICreateTest extends APITestCase
 
         $saleOrderDownPaymentArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
+        $api = $this->json('POST', route('api.post.db.sales.sale_order_down_payment.save'), $saleOrderDownPaymentArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

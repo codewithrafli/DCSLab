@@ -24,7 +24,7 @@ class CustomerAddress extends Model
     ];
 
     protected $casts = [
-
+        'is_main' => 'boolean',
     ];
 
     public function company()

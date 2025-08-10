@@ -90,13 +90,14 @@ class PurchaseActions
 
         ?int $limit
     ) {
-        $query = Purchase::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = Purchase::select('purchases.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchases.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -106,8 +107,8 @@ class PurchaseActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchases.date', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -171,7 +172,7 @@ class PurchaseActions
 
     public function read(Purchase $purchase): Purchase
     {
-        return $purchase->with('company')->first();
+        return $purchase->load('company')->first();
     }
 
     public function getAllActivePurchase(

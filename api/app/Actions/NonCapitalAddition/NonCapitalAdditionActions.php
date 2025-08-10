@@ -60,8 +60,9 @@ class NonCapitalAdditionActions
 
         ?int $limit
     ) {
-        $query = NonCapitalAddition::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = NonCapitalAddition::select('non_capital_additions.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'non_capital_additions.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
                     $query = $query->withTrashed();
@@ -76,8 +77,8 @@ class NonCapitalAdditionActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('non_capital_additions.date', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -141,7 +142,7 @@ class NonCapitalAdditionActions
 
     public function read(NonCapitalAddition $nonCapitalAddition): NonCapitalAddition
     {
-        return $nonCapitalAddition->with('company')->first();
+        return $nonCapitalAddition->load('company')->first();
     }
 
     public function getAllActiveNonCapitalAddition(

@@ -28,7 +28,7 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $capitalAddition = CapitalAddition::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.delete', $capitalAddition->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $capitalAddition = CapitalAddition::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.delete', $capitalAddition->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $capitalAddition = CapitalAddition::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.delete', $capitalAddition->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('capital_additions', [
@@ -77,7 +77,7 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.capital_addition.delete', null));
+        $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', null));
 
         $api->assertStatus(500);
     }

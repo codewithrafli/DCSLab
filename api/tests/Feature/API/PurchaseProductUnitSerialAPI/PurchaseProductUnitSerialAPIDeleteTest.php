@@ -28,7 +28,7 @@ class PurchaseProductUnitSerialAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseProductUnitSerial = PurchaseProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_product_unit_serial.delete', $purchaseProductUnitSerial->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_product_unit_serial.delete', $purchaseProductUnitSerial->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class PurchaseProductUnitSerialAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseProductUnitSerial = PurchaseProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_product_unit_serial.delete', $purchaseProductUnitSerial->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_product_unit_serial.delete', $purchaseProductUnitSerial->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class PurchaseProductUnitSerialAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseProductUnitSerial = PurchaseProductUnitSerial::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_product_unit_serial.delete', $purchaseProductUnitSerial->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_product_unit_serial.delete', $purchaseProductUnitSerial->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('purchase_product_unit_serials', [
@@ -77,7 +77,7 @@ class PurchaseProductUnitSerialAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_product_unit_serial.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_product_unit_serial.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class PurchaseProductUnitSerialAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.purchase_product_unit_serial.delete', null));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_product_unit_serial.delete', null));
 
         $api->assertStatus(500);
     }

@@ -36,7 +36,19 @@ class SalesOrder extends Model
     ];
 
     protected $casts = [
-
+        'date' => 'datetime',
+        'shipping_date' => 'datetime',
+        'is_has_invoice' => 'boolean',
+        'is_sent' => 'boolean',
+        'total' => 'decimal:8',
+        'global_discount_rate' => 'decimal:8',
+        'global_discount_fixed' => 'decimal:8',
+        'grand_total' => 'decimal:8',
+        'down_payment' => 'decimal:8',
+        'down_payment_due_days' => 'integer',
+        'down_payment_applied' => 'decimal:8',
+        'down_payment_remaining' => 'decimal:8',
+        'is_down_payment_paid_off' => 'boolean',
     ];
 
     public function company()
@@ -67,6 +79,11 @@ class SalesOrder extends Model
     public function saleOrderDownPayments()
     {
         return $this->hasMany(SaleOrderDownPayment::class);
+    }
+
+    public function saleOrderDownPaymentApplies()
+    {
+        return $this->hasMany(SaleOrderDownPaymentApply::class);
     }
 
     public function scopeSearch($query, string $search)

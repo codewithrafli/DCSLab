@@ -31,7 +31,7 @@ class EmployeeAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.edit', $employee->ulid), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.edit', $employee->ulid), $employeeArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class EmployeeAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.edit', $employee->ulid), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.edit', $employee->ulid), $employeeArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class EmployeeAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.edit', $employee->ulid), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.edit', $employee->ulid), $employeeArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('employees', [
@@ -119,7 +119,7 @@ class EmployeeAPIEditTest extends APITestCase
             'code' => $employee_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.edit', $employee_2->ulid), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.edit', $employee_2->ulid), $employeeArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class EmployeeAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.employee.edit', $employee_2->ulid), $employeeArr);
+        $api = $this->json('POST', route('api.post.db.company.employee.edit', $employee_2->ulid), $employeeArr);
 
         $api->assertSuccessful();
     }

@@ -31,7 +31,7 @@ class NonCapitalWithdrawalCategoryAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory->ulid), $nonCapitalWithdrawalCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory->ulid), $nonCapitalWithdrawalCategoryArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class NonCapitalWithdrawalCategoryAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory->ulid), $nonCapitalWithdrawalCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory->ulid), $nonCapitalWithdrawalCategoryArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class NonCapitalWithdrawalCategoryAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory->ulid), $nonCapitalWithdrawalCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory->ulid), $nonCapitalWithdrawalCategoryArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('non_capital_withdrawal_categories', [
@@ -119,7 +119,7 @@ class NonCapitalWithdrawalCategoryAPIEditTest extends APITestCase
             'code' => $nonCapitalWithdrawalCategory_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory_2->ulid), $nonCapitalWithdrawalCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory_2->ulid), $nonCapitalWithdrawalCategoryArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class NonCapitalWithdrawalCategoryAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory_2->ulid), $nonCapitalWithdrawalCategoryArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.edit', $nonCapitalWithdrawalCategory_2->ulid), $nonCapitalWithdrawalCategoryArr);
 
         $api->assertSuccessful();
     }

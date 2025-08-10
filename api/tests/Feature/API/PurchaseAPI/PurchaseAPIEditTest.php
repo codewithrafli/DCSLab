@@ -31,7 +31,7 @@ class PurchaseAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.edit', $purchase->ulid), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.edit', $purchase->ulid), $purchaseArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class PurchaseAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.edit', $purchase->ulid), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.edit', $purchase->ulid), $purchaseArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class PurchaseAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.edit', $purchase->ulid), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.edit', $purchase->ulid), $purchaseArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchases', [
@@ -119,7 +119,7 @@ class PurchaseAPIEditTest extends APITestCase
             'code' => $purchase_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.edit', $purchase_2->ulid), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.edit', $purchase_2->ulid), $purchaseArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class PurchaseAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase.edit', $purchase_2->ulid), $purchaseArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase.edit', $purchase_2->ulid), $purchaseArr);
 
         $api->assertSuccessful();
     }

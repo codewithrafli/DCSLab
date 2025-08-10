@@ -62,13 +62,14 @@ class PurchaseReceiptProductUnitActions
 
         ?int $limit
     ) {
-        $query = PurchaseReceiptProductUnit::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseReceiptProductUnit::select('purchase_order_product_units.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_order_product_units.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -143,7 +144,7 @@ class PurchaseReceiptProductUnitActions
 
     public function read(PurchaseReceiptProductUnit $purchaseReceiptProductUnit): PurchaseReceiptProductUnit
     {
-        return $purchaseReceiptProductUnit->with('company')->first();
+        return $purchaseReceiptProductUnit->load('company')->first();
     }
 
     public function getAllActivePurchaseReceiptProductUnit(

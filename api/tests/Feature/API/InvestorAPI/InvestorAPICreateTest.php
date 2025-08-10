@@ -30,7 +30,7 @@ class InvestorAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class InvestorAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class InvestorAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('investors', [
@@ -115,7 +115,7 @@ class InvestorAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class InvestorAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('investors', [
@@ -169,7 +169,7 @@ class InvestorAPICreateTest extends APITestCase
 
         $investorArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

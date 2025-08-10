@@ -55,13 +55,14 @@ class EmployeeActions
 
         ?int $limit
     ) {
-        $query = Employee::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = Employee::select('employees.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'employees.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -71,8 +72,8 @@ class EmployeeActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('employees.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -136,7 +137,7 @@ class EmployeeActions
 
     public function read(Employee $employee): Employee
     {
-        return $employee->with('company')->first();
+        return $employee->load('company')->first();
     }
 
     public function getAllActive(

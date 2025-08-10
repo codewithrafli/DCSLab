@@ -55,13 +55,14 @@ class PurchaseAdditionalCostCategoryActions
 
         ?int $limit
     ) {
-        $query = PurchaseAdditionalCostCategory::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseAdditionalCostCategory::select('purchase_additional_cost_categories.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_additional_cost_categories.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -71,8 +72,8 @@ class PurchaseAdditionalCostCategoryActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchase_additional_cost_categories.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -136,7 +137,7 @@ class PurchaseAdditionalCostCategoryActions
 
     public function read(PurchaseAdditionalCostCategory $purchaseAdditionalCostCategory): PurchaseAdditionalCostCategory
     {
-        return $purchaseAdditionalCostCategory->with('company')->first();
+        return $purchaseAdditionalCostCategory->load('company')->first();
     }
 
     public function getAllActivePurchaseAdditionalCostCategory(

@@ -28,7 +28,7 @@ class PurchaseReceiptAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseReceipt = PurchaseReceipt::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.delete', $purchaseReceipt->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.delete', $purchaseReceipt->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class PurchaseReceiptAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseReceipt = PurchaseReceipt::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.delete', $purchaseReceipt->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.delete', $purchaseReceipt->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class PurchaseReceiptAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseReceipt = PurchaseReceipt::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.delete', $purchaseReceipt->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.delete', $purchaseReceipt->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('purchase_receipts', [
@@ -77,7 +77,7 @@ class PurchaseReceiptAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class PurchaseReceiptAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.purchase_receipt.delete', null));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_receipt.delete', null));
 
         $api->assertStatus(500);
     }

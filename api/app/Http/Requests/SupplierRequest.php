@@ -76,7 +76,7 @@ class SupplierRequest extends FormRequest
                     'payment_term_type' => ['required', 'string', 'max:255'],
                     'payment_term' => ['required', 'integer'],
                     'taxable_enterprise' => ['required', 'boolean'],
-                    'tax_id' => ['required', 'integer'],
+                    'tax_id' => ['required', 'string', 'max:255'],
                     'status' => ['required', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
@@ -90,7 +90,7 @@ class SupplierRequest extends FormRequest
                     'payment_term_type' => ['required', 'string', 'max:255'],
                     'payment_term' => ['required', 'integer'],
                     'taxable_enterprise' => ['required', 'boolean'],
-                    'tax_id' => ['required', 'integer'],
+                    'tax_id' => ['required', 'string', 'max:255'],
                     'status' => ['required', 'integer', 'in:'.implode(',', RecordStatusEnum::toArrayValue())],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];

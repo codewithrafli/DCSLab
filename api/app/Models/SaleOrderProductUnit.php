@@ -57,7 +57,40 @@ class SaleOrderProductUnit extends Model
     ];
 
     protected $casts = [
+        'qty' => 'integer',
+        'product_unit_amount_per_unit' => 'decimal:8',
+        'product_unit_amount_total' => 'decimal:8',
+        'product_unit_initial_price' => 'decimal:8',
+        'product_unit_discount_rate1' => 'decimal:8',
+        'product_unit_discount_rate2' => 'decimal:8',
+        'product_unit_discount_rate3' => 'decimal:8',
+        'product_unit_discount_rate4' => 'decimal:8',
+        'product_unit_discount_rate5' => 'decimal:8',
+        'product_unit_discount_fixed1' => 'decimal:8',
+        'product_unit_discount_fixed2' => 'decimal:8',
+        'product_unit_discount_fixed3' => 'decimal:8',
+        'product_unit_discount_fixed4' => 'decimal:8',
+        'product_unit_discount_fixed5' => 'decimal:8',
+        'product_unit_net_price' => 'decimal:8',
+        'product_unit_subtotal' => 'decimal:8',
+        'product_unit_subtotal_discount_rate' => 'decimal:8',
+        'product_unit_subtotal_discount_fixed' => 'decimal:8',
+        'product_unit_total' => 'decimal:8',
+        'product_unit_global_discount_rate' => 'decimal:8',
+        'product_unit_global_discount_fixed' => 'decimal:8',
+        'product_unit_grand_total' => 'decimal:8',
 
+        'product_is_taxable' => 'boolean',
+        'product_vat_rate' => 'decimal:8',
+        'product_price_include_vat' => 'boolean',
+        'product_vat_base' => 'decimal:8',
+        'product_vat' => 'decimal:8',
+
+        'product_unit_final_price' => 'decimal:8',
+        'product_final_price_base_unit' => 'decimal:8',
+
+        'it_has_sale' => 'boolean',
+        'it_sent' => 'boolean',
     ];
 
     public function company()

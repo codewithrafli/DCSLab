@@ -28,7 +28,7 @@ class CustomerAddressAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customerAddress = CustomerAddress::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.delete', $customerAddress->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.delete', $customerAddress->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class CustomerAddressAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customerAddress = CustomerAddress::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.delete', $customerAddress->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.delete', $customerAddress->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class CustomerAddressAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $customerAddress = CustomerAddress::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.delete', $customerAddress->ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.delete', $customerAddress->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('customer_addresses', [
@@ -77,7 +77,7 @@ class CustomerAddressAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class CustomerAddressAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.customer_address.delete', null));
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.delete', null));
 
         $api->assertStatus(500);
     }

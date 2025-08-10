@@ -31,7 +31,7 @@ class CustomerAddressAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.edit', $customerAddress->ulid), $customerAddressArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.edit', $customerAddress->ulid), $customerAddressArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class CustomerAddressAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.edit', $customerAddress->ulid), $customerAddressArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.edit', $customerAddress->ulid), $customerAddressArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class CustomerAddressAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.edit', $customerAddress->ulid), $customerAddressArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.edit', $customerAddress->ulid), $customerAddressArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('customer_addresses', [
@@ -119,7 +119,7 @@ class CustomerAddressAPIEditTest extends APITestCase
             'code' => $customerAddress_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.edit', $customerAddress_2->ulid), $customerAddressArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.edit', $customerAddress_2->ulid), $customerAddressArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class CustomerAddressAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.customer_address.edit', $customerAddress_2->ulid), $customerAddressArr);
+        $api = $this->json('POST', route('api.post.db.customer.customer_address.edit', $customerAddress_2->ulid), $customerAddressArr);
 
         $api->assertSuccessful();
     }

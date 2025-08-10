@@ -31,7 +31,7 @@ class CapitalWithdrawalAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_withdrawal.edit', $capitalWithdrawal->ulid), $capitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_withdrawal.edit', $capitalWithdrawal->ulid), $capitalWithdrawalArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class CapitalWithdrawalAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_withdrawal.edit', $capitalWithdrawal->ulid), $capitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_withdrawal.edit', $capitalWithdrawal->ulid), $capitalWithdrawalArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class CapitalWithdrawalAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_withdrawal.edit', $capitalWithdrawal->ulid), $capitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_withdrawal.edit', $capitalWithdrawal->ulid), $capitalWithdrawalArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('capital_withdrawals', [
@@ -119,7 +119,7 @@ class CapitalWithdrawalAPIEditTest extends APITestCase
             'code' => $capitalWithdrawal_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_withdrawal.edit', $capitalWithdrawal_2->ulid), $capitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_withdrawal.edit', $capitalWithdrawal_2->ulid), $capitalWithdrawalArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class CapitalWithdrawalAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.capital_withdrawal.edit', $capitalWithdrawal_2->ulid), $capitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.capital_withdrawal.edit', $capitalWithdrawal_2->ulid), $capitalWithdrawalArr);
 
         $api->assertSuccessful();
     }

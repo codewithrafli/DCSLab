@@ -20,8 +20,8 @@ return new class extends Migration
             $table->dateTime('shipping_date')->nullable();
             $table->string('shipping_address')->nullable();
             $table->string('remarks')->nullable();
-            $table->integer('is_has_invoice')->default(0);
-            $table->integer('is_received')->default(0);
+            $table->boolean('is_has_invoice')->default(0);
+            $table->boolean('is_received')->default(0);
             $table->decimal('total', 30, 8)->default(0);
             $table->decimal('global_discount_rate', 30, 8)->default(0);
             $table->decimal('global_discount_fixed', 30, 8)->default(0);

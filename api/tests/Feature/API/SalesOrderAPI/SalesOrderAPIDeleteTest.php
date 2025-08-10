@@ -28,7 +28,7 @@ class SalesOrderAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $salesOrder = SalesOrder::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', $salesOrder->ulid));
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.delete', $salesOrder->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class SalesOrderAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $salesOrder = SalesOrder::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', $salesOrder->ulid));
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.delete', $salesOrder->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class SalesOrderAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $salesOrder = SalesOrder::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', $salesOrder->ulid));
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.delete', $salesOrder->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('sales_orders', [
@@ -77,7 +77,7 @@ class SalesOrderAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class SalesOrderAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.sales_order.delete', null));
+        $api = $this->json('POST', route('api.post.db.sales.sales_order.delete', null));
 
         $api->assertStatus(500);
     }

@@ -56,13 +56,14 @@ class InvestorActions
 
         ?int $limit
     ) {
-        $query = Investor::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = Investor::select('investors.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'investors.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -72,8 +73,8 @@ class InvestorActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('investors.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -137,7 +138,7 @@ class InvestorActions
 
     public function read(Investor $investor): Investor
     {
-        return $investor->with('company')->first();
+        return $investor->load('company')->first();
     }
 
     public function getAllActiveInvestor(

@@ -61,13 +61,14 @@ class StockTransferProductUnitActions
 
         ?int $limit
     ) {
-        $query = StockTransferProductUnit::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = StockTransferProductUnit::select('stock_transfer_product_units.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'stock_transfer_product_units.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -77,8 +78,8 @@ class StockTransferProductUnitActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('stock_transfer_product_units.id', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -142,7 +143,7 @@ class StockTransferProductUnitActions
 
     public function read(StockTransferProductUnit $stockTransferProductUnit): StockTransferProductUnit
     {
-        return $stockTransferProductUnit->with('company', 'product', 'productUnit')->first();
+        return $stockTransferProductUnit->load('company', 'product', 'productUnit')->first();
     }
 
     public function getAllActiveStockTransferProductUnit(

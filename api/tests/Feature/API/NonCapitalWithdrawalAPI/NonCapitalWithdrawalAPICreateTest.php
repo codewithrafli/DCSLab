@@ -30,7 +30,7 @@ class NonCapitalWithdrawalAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
 
         $api->assertUnauthorized();
     }
@@ -49,7 +49,7 @@ class NonCapitalWithdrawalAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
 
         $api->assertForbidden();
     }
@@ -79,7 +79,7 @@ class NonCapitalWithdrawalAPICreateTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('non_capital_withdrawals', [
@@ -115,7 +115,7 @@ class NonCapitalWithdrawalAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -148,7 +148,7 @@ class NonCapitalWithdrawalAPICreateTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('non_capital_withdrawals', [
@@ -169,7 +169,7 @@ class NonCapitalWithdrawalAPICreateTest extends APITestCase
 
         $nonCapitalWithdrawalArr = [];
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal.save'), $nonCapitalWithdrawalArr);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

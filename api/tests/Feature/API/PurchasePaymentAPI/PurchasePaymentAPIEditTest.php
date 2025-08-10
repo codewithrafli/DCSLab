@@ -31,7 +31,7 @@ class PurchasePaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.edit', $purchasePayment->ulid), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.edit', $purchasePayment->ulid), $purchasePaymentArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class PurchasePaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.edit', $purchasePayment->ulid), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.edit', $purchasePayment->ulid), $purchasePaymentArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class PurchasePaymentAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.edit', $purchasePayment->ulid), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.edit', $purchasePayment->ulid), $purchasePaymentArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('purchase_payments', [
@@ -119,7 +119,7 @@ class PurchasePaymentAPIEditTest extends APITestCase
             'code' => $purchasePayment_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.edit', $purchasePayment_2->ulid), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.edit', $purchasePayment_2->ulid), $purchasePaymentArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class PurchasePaymentAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_payment.edit', $purchasePayment_2->ulid), $purchasePaymentArr);
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_payment.edit', $purchasePayment_2->ulid), $purchasePaymentArr);
 
         $api->assertSuccessful();
     }

@@ -8,12 +8,32 @@ class CashAccountFactory extends Factory
 {
     public function definition(): array
     {
+        $cashAccounts = [
+            'Cash', 'Bank', 'Giro',
+        ];
+
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'name' => fake()->randomElement(['Cash', 'Bank', 'Giro']),
+            'name' => $cashAccounts[array_rand($cashAccounts)],
             'is_bank' => fake()->boolean(),
             'is_active' => fake()->boolean(),
             'remarks' => fake()->sentence(),
         ];
+    }
+
+    public function insertStringInName(string $str)
+    {
+        return $this->state(function (array $attributes) use ($str) {
+            return [
+                'name' => $this->craftName($str),
+            ];
+        });
+    }
+
+    private function craftName(string $str)
+    {
+        $text = fake()->randomElement(['Cash', 'Bank', 'Giro']);
+
+        return substr_replace($text, $str, random_int(0, strlen($text) - 1), 0);
     }
 }

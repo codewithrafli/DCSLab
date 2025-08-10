@@ -28,7 +28,7 @@ class NonCapitalWithdrawalCategoryAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalWithdrawalCategory = NonCapitalWithdrawalCategory::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.delete', $nonCapitalWithdrawalCategory->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.delete', $nonCapitalWithdrawalCategory->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class NonCapitalWithdrawalCategoryAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalWithdrawalCategory = NonCapitalWithdrawalCategory::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.delete', $nonCapitalWithdrawalCategory->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.delete', $nonCapitalWithdrawalCategory->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class NonCapitalWithdrawalCategoryAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $nonCapitalWithdrawalCategory = NonCapitalWithdrawalCategory::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.delete', $nonCapitalWithdrawalCategory->ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.delete', $nonCapitalWithdrawalCategory->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('non_capital_withdrawal_categories', [
@@ -77,7 +77,7 @@ class NonCapitalWithdrawalCategoryAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class NonCapitalWithdrawalCategoryAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.non_capital_withdrawal_category.delete', null));
+        $api = $this->json('POST', route('api.post.db.capital.non_capital_withdrawal_category.delete', null));
 
         $api->assertStatus(500);
     }

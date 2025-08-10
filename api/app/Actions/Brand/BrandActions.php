@@ -55,13 +55,14 @@ class BrandActions
 
         ?int $limit
     ) {
-        $query = Brand::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = Brand::select('brands.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'brands.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -71,8 +72,8 @@ class BrandActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('brands.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -136,7 +137,7 @@ class BrandActions
 
     public function read(Brand $brand): Brand
     {
-        return $brand->with('company')->first();
+        return $brand->load('company')->first();
     }
 
     public function getAllActiveBrand(

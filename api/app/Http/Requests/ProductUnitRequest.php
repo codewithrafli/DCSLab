@@ -6,6 +6,8 @@ use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\ProductUnit;
 use App\Rules\IsValidCompany;
+use App\Rules\IsValidProduct;
+use App\Rules\IsValidUnit;
 use App\Rules\ProductUnitStoreValidCode;
 use App\Rules\ProductUnitUpdateValidCode;
 use Illuminate\Foundation\Http\FormRequest;
@@ -68,13 +70,23 @@ class ProductUnitRequest extends FormRequest
             case 'store':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+                    'product_id' => ['required', 'integer', 'bail', new IsValidProduct($this->company_id)],
+                    'unit_id' => ['required', 'integer', 'bail', new IsValidUnit($this->company_id)],
                     'code' => ['required', 'string', 'max:255', new ProductUnitStoreValidCode($this->company_id)],
+                    'is_base' => ['required', 'boolean'],
+                    'conversion_value' => ['required', 'numeric', 'min:0'],
+                    'is_primary_unit' => ['required', 'boolean'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'update':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+                    'product_id' => ['required', 'integer', 'bail', new IsValidProduct($this->company_id)],
+                    'unit_id' => ['required', 'integer', 'bail', new IsValidUnit($this->company_id)],
                     'code' => ['required', 'string', 'max:255', new ProductUnitUpdateValidCode($this->company_id, $this->route('product_unit'))],
+                    'is_base' => ['required', 'boolean'],
+                    'conversion_value' => ['required', 'numeric', 'min:0'],
+                    'is_primary_unit' => ['required', 'boolean'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'delete':
@@ -92,7 +104,12 @@ class ProductUnitRequest extends FormRequest
     {
         return [
             'company_id' => trans('validation_attributes.product_unit.company'),
+            'product_id' => trans('validation_attributes.product_unit.product'),
+            'unit_id' => trans('validation_attributes.product_unit.unit'),
             'code' => trans('validation_attributes.product_unit.code'),
+            'is_base' => trans('validation_attributes.product_unit.is_base'),
+            'conversion_value' => trans('validation_attributes.product_unit.conversion_value'),
+            'is_primary_unit' => trans('validation_attributes.product_unit.is_primary_unit'),
             'remarks' => trans('validation_attributes.product_unit.remarks'),
         ];
     }

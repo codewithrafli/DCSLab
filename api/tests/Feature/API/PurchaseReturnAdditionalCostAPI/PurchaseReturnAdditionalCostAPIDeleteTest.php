@@ -28,7 +28,7 @@ class PurchaseReturnAdditionalCostAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseReturnAdditionalCost = PurchaseReturnAdditionalCost::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_additional_cost.delete', $purchaseReturnAdditionalCost->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_additional_cost.delete', $purchaseReturnAdditionalCost->ulid));
 
         $api->assertStatus(401);
     }
@@ -44,7 +44,7 @@ class PurchaseReturnAdditionalCostAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseReturnAdditionalCost = PurchaseReturnAdditionalCost::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_additional_cost.delete', $purchaseReturnAdditionalCost->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_additional_cost.delete', $purchaseReturnAdditionalCost->ulid));
 
         $api->assertStatus(403);
     }
@@ -61,7 +61,7 @@ class PurchaseReturnAdditionalCostAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $purchaseReturnAdditionalCost = PurchaseReturnAdditionalCost::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_additional_cost.delete', $purchaseReturnAdditionalCost->ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_additional_cost.delete', $purchaseReturnAdditionalCost->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('purchase_return_additional_costs', [
@@ -77,7 +77,7 @@ class PurchaseReturnAdditionalCostAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_additional_cost.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_additional_cost.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,7 +88,7 @@ class PurchaseReturnAdditionalCostAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.purchase_return_additional_cost.delete', null));
+        $api = $this->json('POST', route('api.post.db.purchase.purchase_return_additional_cost.delete', null));
 
         $api->assertStatus(500);
     }

@@ -87,13 +87,14 @@ class PurchaseOrderProductUnitActions
 
         ?int $limit
     ) {
-        $query = PurchaseOrderProductUnit::with('company')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = PurchaseOrderProductUnit::select('purchase_order_product_units.*')->withTrashed()
+            ->with(['company'])
+            ->join('companies', 'companies.id', '=', 'purchase_order_product_units.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -103,8 +104,8 @@ class PurchaseOrderProductUnitActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('purchase_order_product_units.id', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -168,7 +169,7 @@ class PurchaseOrderProductUnitActions
 
     public function read(PurchaseOrderProductUnit $purchaseOrderProductUnit): PurchaseOrderProductUnit
     {
-        return $purchaseOrderProductUnit->with('company')->first();
+        return $purchaseOrderProductUnit->load('company')->first();
     }
 
     public function getAllActivePurchaseOrderProductUnit(

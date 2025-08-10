@@ -45,6 +45,7 @@ class Product extends Model
             'is_use_serial_number' => 'boolean',
             'is_expirable' => 'boolean',
             'has_expiry_date' => 'boolean',
+            'point' => 'integer',
             'type' => ProductTypeEnum::class,
             'status' => RecordStatusEnum::class,
         ];
@@ -108,6 +109,16 @@ class Product extends Model
     public function saleOrderProductUnits()
     {
         return $this->hasMany(SaleOrderProductUnit::class);
+    }
+
+    public function saleProductUnits()
+    {
+        return $this->hasMany(SaleProductUnit::class);
+    }
+
+    public function saleReceiptProductUnits()
+    {
+        return $this->hasMany(SaleReceiptProductUnit::class);
     }
 
     public function scopeSearch($query, string $search)

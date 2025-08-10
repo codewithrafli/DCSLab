@@ -89,13 +89,14 @@ class ProductActions
 
         ?int $limit
     ) {
-        $query = Product::with('company', 'productCategory', 'brand', 'productUnits.unit')->withTrashed()
-            ->withAggregate('company', 'name')
+        $query = Product::select('products.*')->withTrashed()
+            ->with(['company', 'productCategory', 'brand', 'productUnits.unit'])
+            ->join('companies', 'companies.id', '=', 'products.company_id')
             ->where(function ($query) use ($withTrashed, $search, $companyId) {
                 if ($withTrashed == true) {
-                    $query = $query->withTrashed();
+                    $query->withTrashed();
                 } else {
-                    $query = $query->withoutTrashed();
+                    $query->withoutTrashed();
                 }
 
                 if ($search) {
@@ -105,8 +106,8 @@ class ProductActions
                 $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('company_name', 'asc')
-            ->orderBy('name', 'asc');
+        $query->orderBy('companies.name', 'asc')
+            ->orderBy('products.name', 'asc');
 
         if ($limit) {
             $query->limit($limit);
@@ -170,7 +171,7 @@ class ProductActions
 
     public function read(Product $product): Product
     {
-        return $product->with('company', 'productCategory', 'brand', 'productUnits.unit')->first();
+        return $product->load('company', 'productCategory', 'brand', 'productUnits.unit')->first();
     }
 
     public function getAllActiveProduct(
