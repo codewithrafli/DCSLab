@@ -60,8 +60,8 @@ class CustomerGroup extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('customer_groups.code', 'like', '%'.$search.'%')
+            ->orWhere('customer_groups.name', 'like', '%'.$search.'%')
+            ->orWhere('customer_groups.remarks', 'like', '%'.$search.'%');
     }
 }
