@@ -57,6 +57,6 @@ class SaleReceipt extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%');
+        return $query->where('sale_receipts.code', 'like', '%'.$search.'%');
     }
 }

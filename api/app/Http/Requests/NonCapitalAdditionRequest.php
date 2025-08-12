@@ -105,7 +105,12 @@ class NonCapitalAdditionRequest extends FormRequest
     {
         return [
             'company_id' => trans('validation_attributes.non_capital_addition.company'),
+            'branch_id' => trans('validation_attributes.non_capital_addition.branch'),
             'code' => trans('validation_attributes.non_capital_addition.code'),
+            'date' => trans('validation_attributes.non_capital_addition.date'),
+            'category_id' => trans('validation_attributes.non_capital_addition.category'),
+            'cash_account_id' => trans('validation_attributes.non_capital_addition.cash_account'),
+            'amount' => trans('validation_attributes.non_capital_addition.amount'),
             'remarks' => trans('validation_attributes.non_capital_addition.remarks'),
         ];
     }

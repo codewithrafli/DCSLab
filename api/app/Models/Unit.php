@@ -36,8 +36,8 @@ class Unit extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
-            ->orWhere('description', 'like', '%'.$search.'%');
+        return $query->where('units.code', 'like', '%'.$search.'%')
+            ->orWhere('units.name', 'like', '%'.$search.'%')
+            ->orWhere('units.description', 'like', '%'.$search.'%');
     }
 }

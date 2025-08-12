@@ -46,7 +46,8 @@ class PurchaseOrderDownPayment extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('purchase_order_down_payments.code', 'like', '%'.$search.'%')
+            ->orWhere('purchase_order_down_payments.date', 'like', '%'.$search.'%')
+            ->orWhere('purchase_order_down_payments.remarks', 'like', '%'.$search.'%');
     }
 }

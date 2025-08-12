@@ -51,13 +51,13 @@ class Supplier extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
-            ->orWhere('address', 'like', '%'.$search.'%')
-            ->orWhere('city', 'like', '%'.$search.'%')
-            ->orWhere('payment_term_type', 'like', '%'.$search.'%')
-            ->orWhere('payment_term', 'like', '%'.$search.'%')
-            ->orWhere('tax_id', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('suppliers.code', 'like', '%'.$search.'%')
+            ->orWhere('suppliers.name', 'like', '%'.$search.'%')
+            ->orWhere('suppliers.address', 'like', '%'.$search.'%')
+            ->orWhere('suppliers.city', 'like', '%'.$search.'%')
+            ->orWhere('suppliers.payment_term_type', 'like', '%'.$search.'%')
+            ->orWhere('suppliers.payment_term', 'like', '%'.$search.'%')
+            ->orWhere('suppliers.tax_id', 'like', '%'.$search.'%')
+            ->orWhere('suppliers.remarks', 'like', '%'.$search.'%');
     }
 }

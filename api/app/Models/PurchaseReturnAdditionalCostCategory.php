@@ -35,7 +35,7 @@ class PurchaseReturnAdditionalCostCategory extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%');
+        return $query->where('purchase_return_additional_cost_categories.code', 'like', '%'.$search.'%')
+            ->orWhere('purchase_return_additional_cost_categories.name', 'like', '%'.$search.'%');
     }
 }

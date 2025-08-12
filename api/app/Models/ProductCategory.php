@@ -40,7 +40,7 @@ class ProductCategory extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%');
+        return $query->where('product_categories.code', 'like', '%'.$search.'%')
+            ->orWhere('product_categories.name', 'like', '%'.$search.'%');
     }
 }

@@ -106,6 +106,10 @@ class CapitalAdditionRequest extends FormRequest
         return [
             'company_id' => trans('validation_attributes.capital_addition.company'),
             'code' => trans('validation_attributes.capital_addition.code'),
+            'date' => trans('validation_attributes.capital_addition.date'),
+            'investor_id' => trans('validation_attributes.capital_addition.investor'),
+            'cash_account_id' => trans('validation_attributes.capital_addition.cash_account'),
+            'amount' => trans('validation_attributes.capital_addition.amount'),
             'remarks' => trans('validation_attributes.capital_addition.remarks'),
         ];
     }

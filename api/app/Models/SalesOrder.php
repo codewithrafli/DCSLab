@@ -88,7 +88,8 @@ class SalesOrder extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('sales_orders.code', 'like', '%'.$search.'%')
+            ->orWhere('sales_orders.date', 'like', '%'.$search.'%')
+            ->orWhere('sales_orders.remarks', 'like', '%'.$search.'%');
     }
 }

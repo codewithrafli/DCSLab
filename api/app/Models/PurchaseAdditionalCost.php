@@ -51,7 +51,8 @@ class PurchaseAdditionalCost extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('purchase_additional_costs.code', 'like', '%'.$search.'%')
+            ->orWhere('purchase_additional_costs.date', 'like', '%'.$search.'%')
+            ->orWhere('purchase_additional_costs.remarks', 'like', '%'.$search.'%');
     }
 }

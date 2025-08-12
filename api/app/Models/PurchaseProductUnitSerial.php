@@ -46,7 +46,17 @@ class PurchaseProductUnitSerial extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->whereHas('company', function ($query) use ($search) {
+            $query->search($search);
+        })
+            ->orWhereHas('branch', function ($query) use ($search) {
+                $query->search($search);
+            })
+            ->orWhereHas('purchase', function ($query) use ($search) {
+                $query->search($search);
+            })
+            ->orWhereHas('purchaseProductUnit', function ($query) use ($search) {
+                $query->search($search);
+            });
     }
 }

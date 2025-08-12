@@ -192,11 +192,11 @@ class Branch extends Model
     public function scopeSearch($query, string $search)
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))
-            ->orWhere('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
-            ->orWhere('address', 'like', '%'.$search.'%')
-            ->orWhere('city', 'like', '%'.$search.'%')
-            ->orWhere('contact', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+            ->orWhere('branches.code', 'like', '%'.$search.'%')
+            ->orWhere('branches.name', 'like', '%'.$search.'%')
+            ->orWhere('branches.address', 'like', '%'.$search.'%')
+            ->orWhere('branches.city', 'like', '%'.$search.'%')
+            ->orWhere('branches.contact', 'like', '%'.$search.'%')
+            ->orWhere('branches.remarks', 'like', '%'.$search.'%');
     }
 }

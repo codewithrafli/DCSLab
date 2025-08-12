@@ -131,7 +131,9 @@ class Sale extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('sales.code', 'like', '%'.$search.'%')
+            ->orWhere('sales.date', 'like', '%'.$search.'%')
+            ->orWhere('sales.due_days', 'like', '%'.$search.'%')
+            ->orWhere('sales.remarks', 'like', '%'.$search.'%');
     }
 }

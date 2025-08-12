@@ -74,10 +74,10 @@ class Warehouse extends Model
     {
         return $query->whereHas('company', fn ($query) => $query->search($search))
             ->orWhereHas('branch', fn ($query) => $query->search($search))
-            ->orWhere('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
-            ->orWhere('address', 'like', '%'.$search.'%')
-            ->orWhere('city', 'like', '%'.$search.'%')
-            ->orWhere('contact', 'like', '%'.$search.'%');
+            ->orWhere('warehouses.code', 'like', '%'.$search.'%')
+            ->orWhere('warehouses.name', 'like', '%'.$search.'%')
+            ->orWhere('warehouses.address', 'like', '%'.$search.'%')
+            ->orWhere('warehouses.city', 'like', '%'.$search.'%')
+            ->orWhere('warehouses.contact', 'like', '%'.$search.'%');
     }
 }
