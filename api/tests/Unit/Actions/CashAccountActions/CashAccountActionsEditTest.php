@@ -3,6 +3,7 @@
 namespace Tests\Unit\Actions\CashAccountActions;
 
 use App\Actions\CashAccount\CashAccountActions;
+use App\Models\Branch;
 use App\Models\CashAccount;
 use App\Models\Company;
 use App\Models\User;
@@ -24,13 +25,21 @@ class CashAccountActionsEditTest extends ActionsTestCase
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(CashAccount::factory())
+                ->has(Branch::factory())
+                ->has(
+                    CashAccount::factory()->state(function (array $attributes, Company $company) {
+                        return [
+                            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+                        ];
+                    })
+                )
             )->create();
 
         $company = $user->companies()->inRandomOrder()->first();
         $cashAccount = $company->cashAccounts()->inRandomOrder()->first();
 
         $cashAccountArr = CashAccount::factory()->make()->toArray();
+        $cashAccountArr['company_id'] = $company->id;
 
         $result = $this->cashAccountActions->update($cashAccount, $cashAccountArr);
 
@@ -49,7 +58,14 @@ class CashAccountActionsEditTest extends ActionsTestCase
 
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(CashAccount::factory())
+                ->has(Branch::factory())
+                ->has(
+                    CashAccount::factory()->state(function (array $attributes, Company $company) {
+                        return [
+                            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+                        ];
+                    })
+                )
             )->create();
 
         $cashAccount = $user->companies()->inRandomOrder()->first()

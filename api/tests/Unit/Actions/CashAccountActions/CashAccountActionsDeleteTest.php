@@ -3,6 +3,7 @@
 namespace Tests\Unit\Actions\CashAccountActions;
 
 use App\Actions\CashAccount\CashAccountActions;
+use App\Models\Branch;
 use App\Models\CashAccount;
 use App\Models\Company;
 use App\Models\User;
@@ -23,7 +24,14 @@ class CashAccountActionsDeleteTest extends ActionsTestCase
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(CashAccount::factory())
+                ->has(Branch::factory())
+                ->has(
+                    CashAccount::factory()->state(function (array $attributes, Company $company) {
+                        return [
+                            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+                        ];
+                    })
+                )
             )->create();
 
         $cashAccount = $user->companies()->inRandomOrder()->first()

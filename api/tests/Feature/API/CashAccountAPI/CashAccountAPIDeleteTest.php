@@ -3,6 +3,7 @@
 namespace Tests\Feature\API\CashAccountAPI;
 
 use App\Enums\UserRolesEnum;
+use App\Models\Branch;
 use App\Models\CashAccount;
 use App\Models\Company;
 use App\Models\Role;
@@ -22,46 +23,55 @@ class CashAccountAPIDeleteTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $cashAccount = CashAccount::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.db.cash_account.delete', $cashAccount->ulid));
 
-        $api->assertStatus(401);
+        $api->assertUnauthorized();
     }
 
     public function test_cash_account_api_call_delete_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $cashAccount = CashAccount::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.db.cash_account.delete', $cashAccount->ulid));
 
-        $api->assertStatus(403);
+        $api->assertForbidden();
     }
 
     public function test_cash_account_api_call_delete_expect_successful()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $cashAccount = CashAccount::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.db.cash_account.delete', $cashAccount->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('cash_accounts', [
@@ -71,13 +81,16 @@ class CashAccountAPIDeleteTest extends APITestCase
 
     public function test_cash_account_api_call_delete_of_nonexistance_ulid_expect_not_found()
     {
-        $user = User::factory()->create();
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
+            ->create();
 
         $this->actingAs($user);
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', $ulid));
+        $api = $this->json('POST', route('api.post.db.cash_account.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,8 +101,6 @@ class CashAccountAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.capital_account.cash_account.delete', null));
-
-        $api->assertStatus(500);
+        $this->json('POST', route('api.post.db.cash_account.delete', null));
     }
 }

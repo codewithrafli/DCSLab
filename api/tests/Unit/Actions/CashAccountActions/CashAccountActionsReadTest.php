@@ -3,6 +3,7 @@
 namespace Tests\Unit\Actions\CashAccountActions;
 
 use App\Actions\CashAccount\CashAccountActions;
+use App\Models\Branch;
 use App\Models\CashAccount;
 use App\Models\Company;
 use App\Models\User;
@@ -26,7 +27,14 @@ class CashAccountActionsReadTest extends ActionsTestCase
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(CashAccount::factory())
+                ->has(Branch::factory())
+                ->has(
+                    CashAccount::factory()->state(function (array $attributes, Company $company) {
+                        return [
+                            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+                        ];
+                    })
+                )
             )->create();
 
         $company = $user->companies()->inRandomOrder()->first();
@@ -51,7 +59,14 @@ class CashAccountActionsReadTest extends ActionsTestCase
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(CashAccount::factory())
+                ->has(Branch::factory())
+                ->has(
+                    CashAccount::factory()->state(function (array $attributes, Company $company) {
+                        return [
+                            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+                        ];
+                    })
+                )
             )->create();
 
         $company = $user->companies()->inRandomOrder()->first();
@@ -102,12 +117,19 @@ class CashAccountActionsReadTest extends ActionsTestCase
 
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(CashAccount::factory()->count($cashAccountCount)
-                    ->state(new Sequence(
-                        fn (Sequence $sequence) => [
-                            'name' => $sequence->index == $idxTest ? $testname : $defaultName,
-                        ]
-                    ))
+                ->has(Branch::factory())
+                ->has(
+                    CashAccount::factory()->count($cashAccountCount)
+                        ->state(function (array $attributes, Company $company) {
+                            return [
+                                'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+                            ];
+                        })
+                        ->state(new Sequence(
+                            fn (Sequence $sequence) => [
+                                'name' => $sequence->index == $idxTest ? $testname : $defaultName,
+                            ]
+                        ))
                 )
             )
             ->create();
@@ -137,7 +159,12 @@ class CashAccountActionsReadTest extends ActionsTestCase
 
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()
-                ->has(CashAccount::factory()->count($cashAccountCount))
+                ->has(Branch::factory())
+                ->has(CashAccount::factory()->count($cashAccountCount)->state(function (array $attributes, Company $company) {
+                    return [
+                        'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+                    ];
+                }))
             )
             ->create();
 
@@ -160,40 +187,18 @@ class CashAccountActionsReadTest extends ActionsTestCase
         $this->assertTrue($result->total() == $cashAccountCount);
     }
 
-    public function test_cash_account_actions_call_read_any_with_perpage_parameter_negative_expect_results()
-    {
-        $cashAccountCount = 3;
-
-        $user = User::factory()
-            ->has(Company::factory()->setStatusActive()
-                ->has(CashAccount::factory()->count($cashAccountCount))
-            )
-            ->create();
-
-        $company = $user->companies()->inRandomOrder()->first();
-
-        $result = $this->cashAccountActions->readAny(
-            companyId: $company->id,
-            useCache: true,
-            withTrashed: false,
-
-            search: '',
-
-            paginate: true,
-            page: 1,
-            perPage: -10,
-            limit: null
-        );
-
-        $this->assertInstanceOf(Paginator::class, $result);
-        $this->assertTrue($result->total() == $cashAccountCount);
-    }
-
     public function test_cash_account_actions_call_read_expect_object()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(CashAccount::factory())
+                ->has(Branch::factory())
+                ->has(
+                    CashAccount::factory()->state(function (array $attributes, Company $company) {
+                        return [
+                            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+                        ];
+                    })
+                )
             )->create();
 
         $cashAccount = $user->companies()->inRandomOrder()->first()

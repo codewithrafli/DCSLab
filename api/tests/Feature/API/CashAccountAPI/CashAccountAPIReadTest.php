@@ -34,7 +34,7 @@ class CashAccountAPIReadTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'paginate' => true,
@@ -61,7 +61,7 @@ class CashAccountAPIReadTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'paginate' => true,
@@ -89,7 +89,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $ulid = $cashAccount->ulid;
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read', $ulid));
+        $api = $this->getJson(route('api.get.db.cash_account.read', $ulid));
 
         $api->assertStatus(401);
     }
@@ -111,7 +111,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $ulid = $cashAccount->ulid;
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read', $ulid));
+        $api = $this->getJson(route('api.get.db.cash_account.read', $ulid));
 
         $api->assertStatus(403);
     }
@@ -226,7 +226,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $testIdx = random_int(0, count($injections));
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -257,7 +257,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $testIdx = random_int(0, count($injections));
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -292,7 +292,7 @@ class CashAccountAPIReadTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -316,7 +316,7 @@ class CashAccountAPIReadTest extends APITestCase
             ],
         ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -346,7 +346,7 @@ class CashAccountAPIReadTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -399,7 +399,7 @@ class CashAccountAPIReadTest extends APITestCase
                 'branch_id' => $branch->id,
             ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -444,7 +444,7 @@ class CashAccountAPIReadTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'company_id' => Hashids::encode($company->id),
         ]));
 
@@ -467,7 +467,7 @@ class CashAccountAPIReadTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'refresh' => false,
             'with_trashed' => false,
 
@@ -508,7 +508,7 @@ class CashAccountAPIReadTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.read_any', [
             'refresh' => false,
             'with_trashed' => false,
 
@@ -542,7 +542,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $ulid = $cashAccount->ulid;
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read', $ulid));
+        $api = $this->getJson(route('api.get.db.cash_account.read', $ulid));
 
         $api->assertSuccessful();
     }
@@ -552,26 +552,26 @@ class CashAccountAPIReadTest extends APITestCase
         $this->expectException(Exception::class);
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $this->getJson(route('api.get.db.cash_account.cash_account.read', null));
+        $this->getJson(route('api.get.db.cash_account.read', null));
     }
 
     public function test_cash_account_api_call_read_with_nonexistance_ulid_expect_not_found()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read', $ulid));
+        $api = $this->getJson(route('api.get.db.cash_account.read', $ulid));
 
         $api->assertStatus(404);
     }
