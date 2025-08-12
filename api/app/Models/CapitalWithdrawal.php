@@ -51,7 +51,8 @@ class CapitalWithdrawal extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('capital_withdrawals.code', 'like', '%'.$search.'%')
+            ->orWhere('capital_withdrawals.date', 'like', '%'.$search.'%')
+            ->orWhere('capital_withdrawals.remarks', 'like', '%'.$search.'%');
     }
 }

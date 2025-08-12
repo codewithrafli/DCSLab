@@ -50,7 +50,8 @@ class CapitalAddition extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('capital_additions.code', 'like', '%'.$search.'%')
+            ->orWhere('capital_additions.date', 'like', '%'.$search.'%')
+            ->orWhere('capital_additions.remarks', 'like', '%'.$search.'%');
     }
 }

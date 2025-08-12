@@ -26,9 +26,10 @@ class CapitalAdditionAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $capitalAdditionArr = CapitalAddition::factory()->make([
-            'company_id' => Hashids::encode($company->id),
-        ])->toArray();
+        // $capitalAdditionArr = CapitalAddition::factory()->make([
+        //     'company_id' => Hashids::encode($company->id),
+        // ])->toArray();
+        $capitalAdditionArr = CapitalAddition::factory()->make()->toArray();
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.save'), $capitalAdditionArr);
 

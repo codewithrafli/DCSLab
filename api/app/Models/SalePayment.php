@@ -51,7 +51,8 @@ class SalePayment extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('sale_payments.code', 'like', '%'.$search.'%')
+            ->orWhere('sale_payments.date', 'like', '%'.$search.'%')
+            ->orWhere('sale_payments.remarks', 'like', '%'.$search.'%');
     }
 }

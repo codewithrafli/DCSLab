@@ -39,7 +39,7 @@ class CustomerAddress extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('customer_addresses.code', 'like', '%'.$search.'%')
+            ->orWhere('customer_addresses.remarks', 'like', '%'.$search.'%');
     }
 }

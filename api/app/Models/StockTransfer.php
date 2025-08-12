@@ -56,7 +56,8 @@ class StockTransfer extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('stock_transfers.code', 'like', '%'.$search.'%')
+            ->orWhere('stock_transfers.date', 'like', '%'.$search.'%')
+            ->orWhere('stock_transfers.remarks', 'like', '%'.$search.'%');
     }
 }

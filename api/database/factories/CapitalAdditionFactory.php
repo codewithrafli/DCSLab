@@ -11,7 +11,7 @@ class CapitalAdditionFactory extends Factory
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
             'date' => fake()->date(),
-            'amount' => fake()->randomNumber(0, 1000000),
+            'amount' => fake()->numberBetween(0, 100),
             'remarks' => fake()->sentence(),
         ];
     }

@@ -51,8 +51,8 @@ class SaleOrderDownPayment extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('date', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('sales_order_down_payments.code', 'like', '%'.$search.'%')
+            ->orWhere('sales_order_down_payments.date', 'like', '%'.$search.'%')
+            ->orWhere('sales_order_down_payments.remarks', 'like', '%'.$search.'%');
     }
 }

@@ -35,7 +35,7 @@ class NonCapitalAdditionCategory extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%');
+        return $query->where('non_capital_addition_categories.code', 'like', '%'.$search.'%')
+            ->orWhere('non_capital_addition_categories.name', 'like', '%'.$search.'%');
     }
 }

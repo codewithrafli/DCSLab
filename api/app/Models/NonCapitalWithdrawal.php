@@ -51,7 +51,8 @@ class NonCapitalWithdrawal extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('non_capital_withdrawals.code', 'like', '%'.$search.'%')
+            ->orWhere('non_capital_withdrawals.date', 'like', '%'.$search.'%')
+            ->orWhere('non_capital_withdrawals.remarks', 'like', '%'.$search.'%');
     }
 }
