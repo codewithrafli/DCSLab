@@ -133,12 +133,60 @@ class CashAccountActionsReadTest extends ActionsTestCase
 
     public function test_cash_account_actions_call_read_any_with_page_parameter_negative_expect_results()
     {
-        $this->markTestIncomplete('Need to implement test');
+        $cashAccountCount = 3;
+
+        $user = User::factory()
+            ->has(Company::factory()->setStatusActive()
+                ->has(CashAccount::factory()->count($cashAccountCount))
+            )
+            ->create();
+
+        $company = $user->companies()->inRandomOrder()->first();
+
+        $result = $this->cashAccountActions->readAny(
+            companyId: $company->id,
+            useCache: true,
+            withTrashed: false,
+
+            search: '',
+
+            paginate: true,
+            page: -1,
+            perPage: 10,
+            limit: null
+        );
+
+        $this->assertInstanceOf(Paginator::class, $result);
+        $this->assertTrue($result->total() == $cashAccountCount);
     }
 
     public function test_cash_account_actions_call_read_any_with_perpage_parameter_negative_expect_results()
     {
-        $this->markTestIncomplete('Need to implement test');
+        $cashAccountCount = 3;
+
+        $user = User::factory()
+            ->has(Company::factory()->setStatusActive()
+                ->has(CashAccount::factory()->count($cashAccountCount))
+            )
+            ->create();
+
+        $company = $user->companies()->inRandomOrder()->first();
+
+        $result = $this->cashAccountActions->readAny(
+            companyId: $company->id,
+            useCache: true,
+            withTrashed: false,
+
+            search: '',
+
+            paginate: true,
+            page: 1,
+            perPage: -10,
+            limit: null
+        );
+
+        $this->assertInstanceOf(Paginator::class, $result);
+        $this->assertTrue($result->total() == $cashAccountCount);
     }
 
     public function test_cash_account_actions_call_read_expect_object()

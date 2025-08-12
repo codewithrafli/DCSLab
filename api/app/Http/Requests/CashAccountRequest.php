@@ -9,6 +9,7 @@ use App\Rules\CashAccountStoreValidCode;
 use App\Rules\CashAccountStoreValidName;
 use App\Rules\CashAccountUpdateValidCode;
 use App\Rules\CashAccountUpdateValidName;
+use App\Rules\IsValidBranch;
 use App\Rules\IsValidCompany;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -70,6 +71,7 @@ class CashAccountRequest extends FormRequest
             case 'store':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+                    'branch_id' => ['required', 'integer', 'bail', new IsValidBranch($this->company_id, true)],
                     'code' => ['required', 'string', 'max:255', new CashAccountStoreValidCode($this->company_id)],
                     'name' => ['required', 'string', 'max:255', new CashAccountStoreValidName($this->company_id)],
                     'is_bank' => ['required', 'boolean'],
@@ -136,6 +138,12 @@ class CashAccountRequest extends FormRequest
                 $this->merge([]);
                 break;
             case 'store':
+                $this->merge([
+                    'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
+                    'branch_id' => $this->has('branch_id') ? HashidsHelper::decodeId($this->branch_id) : null,
+                    'remarks' => $this->has('remarks') ? $this['remarks'] : null,
+                ]);
+                break;
             case 'update':
                 $this->merge([
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,

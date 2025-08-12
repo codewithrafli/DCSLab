@@ -32,7 +32,7 @@ class CashAccountActions
             $cashAccount->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $cashAccount->name = $data['name'];
             $cashAccount->is_bank = $data['is_bank'];
-            $cashAccount->is_active = $data['remarks'];
+            $cashAccount->is_active = $data['is_active'];
             $cashAccount->remarks = $data['remarks'];
             $cashAccount->save();
 
@@ -141,7 +141,7 @@ class CashAccountActions
 
     public function read(CashAccount $cashAccount): CashAccount
     {
-        return $cashAccount->with('company', 'branch')->first();
+        return $cashAccount->load('company', 'branch');
     }
 
     public function getAllActiveCashAccount(
@@ -198,7 +198,7 @@ class CashAccountActions
             $cashAccount->code = $this->generateUniqueCode($cashAccount->company_id, $data['code'], $cashAccount->id);
             $cashAccount->name = $data['name'];
             $cashAccount->is_bank = $data['is_bank'];
-            $cashAccount->is_active = $data['remarks'];
+            $cashAccount->is_active = $data['is_active'];
             $cashAccount->remarks = $data['remarks'];
             $cashAccount->save();
 

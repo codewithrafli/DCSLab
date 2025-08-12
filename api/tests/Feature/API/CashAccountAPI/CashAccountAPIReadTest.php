@@ -3,6 +3,7 @@
 namespace Tests\Feature\API\CashAccountAPI;
 
 use App\Enums\UserRolesEnum;
+use App\Models\Branch;
 use App\Models\CashAccount;
 use App\Models\Company;
 use App\Models\Role;
@@ -23,14 +24,17 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        CashAccount::factory()->for($company)->create();
+        CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'paginate' => true,
@@ -45,16 +49,19 @@ class CashAccountAPIReadTest extends APITestCase
     public function test_cash_account_api_call_read_any_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        CashAccount::factory()->for($company)->create();
+        CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'paginate' => true,
@@ -70,16 +77,19 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        $cashAccount = CashAccount::factory()->for($company)->create();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
         $ulid = $cashAccount->ulid;
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read', $ulid));
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read', $ulid));
 
         $api->assertStatus(401);
     }
@@ -87,18 +97,21 @@ class CashAccountAPIReadTest extends APITestCase
     public function test_cash_account_api_call_read_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        $cashAccount = CashAccount::factory()->for($company)->create();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
         $ulid = $cashAccount->ulid;
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read', $ulid));
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read', $ulid));
 
         $api->assertStatus(403);
     }
@@ -107,14 +120,17 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        CashAccount::factory()->for($company)->create();
+        CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
         $injections = [
             "' OR '1'='1",
@@ -210,7 +226,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $testIdx = random_int(0, count($injections));
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -241,7 +257,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $testIdx = random_int(0, count($injections));
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -264,16 +280,19 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        CashAccount::factory()->for($company)->create();
+        CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -297,7 +316,7 @@ class CashAccountAPIReadTest extends APITestCase
             ],
         ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -315,16 +334,19 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        CashAccount::factory()->for($company)->create();
+        CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -358,21 +380,26 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setIsDefault())
+            ->has(Company::factory()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
         CashAccount::factory()->for($company)
-            ->count(2)->create();
+            ->count(2)->create([
+                'branch_id' => $branch->id,
+            ]);
 
         CashAccount::factory()->for($company)
             ->insertStringInName('testing')
-            ->count(3)->create();
+            ->count(3)->create([
+                'branch_id' => $branch->id,
+            ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'refresh' => true,
             'with_trashed' => false,
 
@@ -405,16 +432,19 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        CashAccount::factory()->for($company)->create();
+        CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'company_id' => Hashids::encode($company->id),
         ]));
 
@@ -425,16 +455,19 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        CashAccount::factory()->for($company)->create();
+        CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'refresh' => false,
             'with_trashed' => false,
 
@@ -463,16 +496,19 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        CashAccount::factory()->for($company)->create();
+        CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read_any', [
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read_any', [
             'refresh' => false,
             'with_trashed' => false,
 
@@ -492,18 +528,21 @@ class CashAccountAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
-        $cashAccount = CashAccount::factory()->for($company)->create();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
 
         $ulid = $cashAccount->ulid;
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read', $ulid));
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read', $ulid));
 
         $api->assertSuccessful();
     }
@@ -518,7 +557,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $this->actingAs($user);
 
-        $this->getJson(route('api.get.db.capital_account.cash_account.read', null));
+        $this->getJson(route('api.get.db.cash_account.cash_account.read', null));
     }
 
     public function test_cash_account_api_call_read_with_nonexistance_ulid_expect_not_found()
@@ -532,7 +571,7 @@ class CashAccountAPIReadTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->getJson(route('api.get.db.capital_account.cash_account.read', $ulid));
+        $api = $this->getJson(route('api.get.db.cash_account.cash_account.read', $ulid));
 
         $api->assertStatus(404);
     }

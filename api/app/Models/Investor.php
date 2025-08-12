@@ -41,7 +41,8 @@ class Investor extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('code', 'like', '%'.$search.'%')
-            ->orWhere('remarks', 'like', '%'.$search.'%');
+        return $query->where('investors.code', 'like', '%'.$search.'%')
+            ->orWhere('investors.name', 'like', '%'.$search.'%')
+            ->orWhere('investors.remarks', 'like', '%'.$search.'%');
     }
 }

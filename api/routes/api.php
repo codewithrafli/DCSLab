@@ -90,10 +90,8 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
         });
 
         Route::group(['prefix' => 'cash_account', 'as' => '.cash_account'], function () {
-            Route::group(['prefix' => 'cash_account', 'as' => '.cash_account'], function () {
-                Route::get('read', [CashAccountController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{cash_account:ulid}', [CashAccountController::class, 'read'])->name('.read');
-            });
+            Route::get('read', [CashAccountController::class, 'readAny'])->name('.read_any');
+            Route::get('read/{cash_account:ulid}', [CashAccountController::class, 'read'])->name('.read');
         });
 
         Route::group(['prefix' => 'capital', 'as' => '.capital'], function () {
@@ -376,11 +374,9 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
         });
 
         Route::group(['prefix' => 'cash_account', 'middleware' => ['precognitive'], 'as' => '.cash_account'], function () {
-            Route::group(['prefix' => 'cash_account', 'as' => '.cash_account'], function () {
-                Route::post('save', [CashAccountController::class, 'store'])->name('.save');
-                Route::post('edit/{cash_account:ulid}', [CashAccountController::class, 'update'])->name('.edit');
-                Route::post('delete/{cash_account:ulid}', [CashAccountController::class, 'delete'])->name('.delete');
-            });
+            Route::post('save', [CashAccountController::class, 'store'])->name('.save');
+            Route::post('edit/{cash_account:ulid}', [CashAccountController::class, 'update'])->name('.edit');
+            Route::post('delete/{cash_account:ulid}', [CashAccountController::class, 'delete'])->name('.delete');
         });
 
         Route::group(['prefix' => 'capital', 'middleware' => ['precognitive'], 'as' => '.capital'], function () {
