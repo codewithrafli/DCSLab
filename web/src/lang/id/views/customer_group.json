@@ -50,6 +50,8 @@
         "price_markup_nominal": "Markup Harga (Nominal)",
         "price_markdown_percent": "Markdown Harga (%)",
         "price_markdown_nominal": "Markdown Harga (Nominal)",
+        "rounding_type": "Tipe Pembulatan",
+        "rounding_digit": "Digit Pembulatan",
         "round_on": "Pembulatan Pada",
         "round_digit": "Digit Pembulatan",
         "remarks": "Catatan",
