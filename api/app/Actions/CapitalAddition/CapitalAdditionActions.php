@@ -196,7 +196,6 @@ class CapitalAdditionActions
         $timer_start = microtime(true);
 
         try {
-            $capitalAddition->branch_id = $data['branch_id'];
             $capitalAddition->code = $this->generateUniqueCode($capitalAddition->company_id, $data['code'], $capitalAddition->id);
             $capitalAddition->date = $data['date'];
             $capitalAddition->investor_id = $data['investor_id'];

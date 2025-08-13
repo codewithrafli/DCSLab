@@ -25,6 +25,7 @@ class CapitalAddition extends Model
     ];
 
     protected $casts = [
+        'date' => 'datetime',
         'amount' => 'decimal:8',
     ];
 

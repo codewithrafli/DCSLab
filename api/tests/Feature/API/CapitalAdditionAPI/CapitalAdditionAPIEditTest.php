@@ -3,8 +3,11 @@
 namespace Tests\Feature\API\CapitalAdditionAPI;
 
 use App\Enums\UserRolesEnum;
+use App\Models\Branch;
 use App\Models\CapitalAddition;
+use App\Models\CashAccount;
 use App\Models\Company;
+use App\Models\Investor;
 use App\Models\Role;
 use App\Models\User;
 use Tests\APITestCase;
@@ -21,15 +24,24 @@ class CapitalAdditionAPIEditTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $capitalAddition = CapitalAddition::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
+        $capitalAddition = CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
+        ]);
 
-        $capitalAdditionArr = CapitalAddition::factory()->make([
-            'company_id' => Hashids::encode($company->id),
-        ])->toArray();
+        $capitalAdditionArr = CapitalAddition::factory()->make()->toArray();
+        $capitalAdditionArr['company_id'] = Hashids::encode($company->id);
+        $capitalAdditionArr['branch_id'] = Hashids::encode($branch->id);
+        $capitalAdditionArr['investor_id'] = Hashids::encode($investor->id);
+        $capitalAdditionArr['cash_account_id'] = Hashids::encode($cashAccount->id);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
 
@@ -39,17 +51,26 @@ class CapitalAdditionAPIEditTest extends APITestCase
     public function test_capital_addition_api_call_update_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $capitalAddition = CapitalAddition::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
+        $capitalAddition = CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
+        ]);
 
-        $capitalAdditionArr = CapitalAddition::factory()->make([
-            'company_id' => Hashids::encode($company->id),
-        ])->toArray();
+        $capitalAdditionArr = CapitalAddition::factory()->make()->toArray();
+        $capitalAdditionArr['company_id'] = Hashids::encode($company->id);
+        $capitalAdditionArr['branch_id'] = Hashids::encode($branch->id);
+        $capitalAdditionArr['investor_id'] = Hashids::encode($investor->id);
+        $capitalAdditionArr['cash_account_id'] = Hashids::encode($cashAccount->id);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
 
@@ -70,17 +91,26 @@ class CapitalAdditionAPIEditTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $capitalAddition = CapitalAddition::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
+        $capitalAddition = CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
+        ]);
 
-        $capitalAdditionArr = CapitalAddition::factory()->make([
-            'company_id' => Hashids::encode($company->id),
-        ])->toArray();
+        $capitalAdditionArr = CapitalAddition::factory()->make()->toArray();
+        $capitalAdditionArr['company_id'] = Hashids::encode($company->id);
+        $capitalAdditionArr['branch_id'] = Hashids::encode($branch->id);
+        $capitalAdditionArr['investor_id'] = Hashids::encode($investor->id);
+        $capitalAdditionArr['cash_account_id'] = Hashids::encode($cashAccount->id);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition->ulid), $capitalAdditionArr);
 
@@ -131,28 +161,42 @@ class CapitalAdditionAPIEditTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
-            ->has(Company::factory()->setStatusActive())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
+            ->has(Company::factory()->setStatusActive()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $companies = $user->companies()->inRandomOrder()->get();
+        $companies = $user->companies()->whereHas('branches')->inRandomOrder()->get();
 
         $company_1 = $companies[0];
+        $branch_1 = $company_1->branches()->inRandomOrder()->first();
+        $cashAccount_1 = CashAccount::factory()->for($company_1)->create(['branch_id' => $branch_1->id]);
+        $investor_1 = Investor::factory()->for($company_1)->create();
         CapitalAddition::factory()->for($company_1)->create([
+            'branch_id' => $branch_1->id,
+            'investor_id' => $investor_1->id,
+            'cash_account_id' => $cashAccount_1->id,
             'code' => 'test1',
         ]);
 
         $company_2 = $companies[1];
+        $branch_2 = $company_2->branches()->inRandomOrder()->first();
+        $cashAccount_2 = CashAccount::factory()->for($company_2)->create(['branch_id' => $branch_2->id]);
+        $investor_2 = Investor::factory()->for($company_2)->create();
         $capitalAddition_2 = CapitalAddition::factory()->for($company_2)->create([
+            'branch_id' => $branch_2->id,
+            'investor_id' => $investor_2->id,
+            'cash_account_id' => $cashAccount_2->id,
             'code' => 'test2',
         ]);
 
-        $capitalAdditionArr = CapitalAddition::factory()->make([
-            'company_id' => Hashids::encode($company_2->id),
-            'code' => 'test1',
-        ])->toArray();
+        $capitalAdditionArr = CapitalAddition::factory()->make()->toArray();
+        $capitalAdditionArr['company_id'] = Hashids::encode($company_2->id);
+        $capitalAdditionArr['branch_id'] = Hashids::encode($branch_2->id);
+        $capitalAdditionArr['investor_id'] = Hashids::encode($investor_2->id);
+        $capitalAdditionArr['cash_account_id'] = Hashids::encode($cashAccount_2->id);
+        $capitalAdditionArr['code'] = 'test1';
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.edit', $capitalAddition_2->ulid), $capitalAdditionArr);
 

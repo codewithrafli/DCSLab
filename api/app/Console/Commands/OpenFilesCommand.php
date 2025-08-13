@@ -93,7 +93,7 @@ class OpenFilesCommand extends Command
 
     public function openSeeder($name)
     {
-        $seederPath = database_path("seeders/{$name}TableSeeder.php");
+        $seederPath = database_path("seeders/{$name}Seeder.php");
 
         if (! File::exists($seederPath)) {
             $this->error("Seeder file not found: {$seederPath}");

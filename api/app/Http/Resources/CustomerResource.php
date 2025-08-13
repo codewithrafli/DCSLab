@@ -2,10 +2,10 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use App\Enums\RecordStatusEnum;
-use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Vinkla\Hashids\Facades\Hashids;
 
 class CustomerResource extends JsonResource
 {

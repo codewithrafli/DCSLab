@@ -2,20 +2,27 @@
 
 namespace App\Rules;
 
+use App\Models\Branch;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class IsValidCashAccount implements ValidationRule
 {
-    /**
-     * Run the validation rule.
-     *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     */
+    public ?int $branchId;
+
+    public function __construct(?int $branchId)
+    {
+        $this->branchId = $branchId;
+    }
+
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! auth()->user()->cashAccounts->pluck('id')->contains($value)) {
-            $fail('rules.valid_cash_account')->translate();
+        if ($this->branchId && $value) {
+            $branch = Branch::find($this->branchId);
+
+            if (! $branch->cashAccounts?->pluck('id')->contains($value)) {
+                $fail('rules.valid_cash_account')->translate();
+            }
         }
     }
 }
