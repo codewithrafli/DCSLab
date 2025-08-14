@@ -2,11 +2,19 @@
 
 namespace App\Rules;
 
+use App\Models\NonCapitalAdditionCategory;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class IsValidNonCapitalAdditionCategory implements ValidationRule
 {
+    protected $companyId;
+
+    public function __construct($companyId)
+    {
+        $this->companyId = $companyId;
+    }
+
     /**
      * Run the validation rule.
      *
@@ -14,8 +22,12 @@ class IsValidNonCapitalAdditionCategory implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! auth()->user()->nonCapitalAdditionCategories->pluck('id')->contains($value)) {
-            $fail('rules.valid_customer_group')->translate();
+        $category = NonCapitalAdditionCategory::where('id', $value)
+            ->where('company_id', $this->companyId)
+            ->first();
+
+        if (! $category) {
+            $fail('rules.valid_non_capital_addition_category')->translate();
         }
     }
 }

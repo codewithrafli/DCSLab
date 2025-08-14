@@ -75,18 +75,18 @@ class NonCapitalAdditionRequest extends FormRequest
                     'code' => ['required', 'string', 'max:255', new NonCapitalAdditionStoreValidCode($this->company_id)],
                     'date' => ['required', 'date'],
                     'category_id' => ['required', 'integer', new IsValidNonCapitalAdditionCategory($this->company_id)],
-                    'cash_account_id' => ['required', 'integer', new IsValidCashAccount($this->company_id)],
+                    'cash_account_id' => ['required', 'integer', new IsValidCashAccount($this->branch_id)],
                     'amount' => ['required', 'numeric', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
             case 'update':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
+                    'branch_id' => ['required', 'integer', 'bail', new IsValidBranch($this->company_id, true)],
                     'code' => ['required', 'string', 'max:255', new NonCapitalAdditionUpdateValidCode($this->company_id, $this->route('non_capital_addition'))],
                     'date' => ['required', 'date'],
                     'category_id' => ['required', 'integer', new IsValidNonCapitalAdditionCategory($this->company_id)],
-                    'cash_account_id' => ['required', 'integer', new IsValidCashAccount($this->company_id)],
+                    'cash_account_id' => ['required', 'integer', new IsValidCashAccount($this->branch_id)],
                     'amount' => ['required', 'numeric', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
@@ -145,6 +145,7 @@ class NonCapitalAdditionRequest extends FormRequest
             case 'update':
                 $this->merge([
                     'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
+                    'branch_id' => $this->has('branch_id') ? HashidsHelper::decodeId($this->branch_id) : null,
                     'remarks' => $this->has('remarks') ? $this['remarks'] : null,
                 ]);
                 break;
