@@ -142,7 +142,7 @@ class NonCapitalAdditionActions
 
     public function read(NonCapitalAddition $nonCapitalAddition): NonCapitalAddition
     {
-        return $nonCapitalAddition->load('company', 'branch', 'category', 'cashAccount')->first();
+        return $nonCapitalAddition->load('company', 'branch', 'category', 'cashAccount');
     }
 
     public function getAllActiveNonCapitalAddition(

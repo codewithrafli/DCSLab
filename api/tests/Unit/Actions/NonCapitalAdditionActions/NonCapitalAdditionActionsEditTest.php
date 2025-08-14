@@ -72,7 +72,20 @@ class NonCapitalAdditionActionsEditTest extends ActionsTestCase
 
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(NonCapitalAddition::factory())
+                ->has(Branch::factory())
+                ->has(
+                    NonCapitalAddition::factory()->state(function (array $attributes, Company $company) {
+                        $branch = $company->branches()->inRandomOrder()->first();
+                        $category = NonCapitalAdditionCategory::factory()->for($company)->create();
+                        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+
+                        return [
+                            'branch_id' => $branch->id,
+                            'category_id' => $category->id,
+                            'cash_account_id' => $cashAccount->id,
+                        ];
+                    })
+                )
             )->create();
 
         $nonCapitalAddition = $user->companies()->inRandomOrder()->first()
