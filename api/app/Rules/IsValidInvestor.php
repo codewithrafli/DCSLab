@@ -2,20 +2,32 @@
 
 namespace App\Rules;
 
+use App\Models\Company;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class IsValidInvestor implements ValidationRule
 {
-    /**
-     * Run the validation rule.
-     *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     */
+    public ?int $companyId;
+
+    public function __construct(?int $companyId)
+    {
+        $this->companyId = $companyId;
+    }
+
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! auth()->user()->investors->pluck('id')->contains($value)) {
-            $fail('rules.valid_investor')->translate();
+        if ($this->companyId && $value) {
+            if (! auth()->user()->companies?->pluck('id')->contains($this->companyId)) {
+                // next change message
+                $fail('rules.valid_company')->translate();
+            }
+
+            $company = Company::find($this->companyId);
+
+            if (! $company->investors?->pluck('id')->contains($value)) {
+                $fail('rules.valid_investor')->translate();
+            }
         }
     }
 }

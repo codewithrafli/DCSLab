@@ -3,6 +3,7 @@
 namespace Tests\Unit\Actions\NonCapitalWithdrawalActions;
 
 use App\Actions\NonCapitalWithdrawal\NonCapitalWithdrawalActions;
+use App\Models\Branch;
 use App\Models\Company;
 use App\Models\NonCapitalWithdrawal;
 use App\Models\User;
@@ -23,10 +24,11 @@ class NonCapitalWithdrawalActionsCreateTest extends ActionsTestCase
     public function test_non_capital_withdrawal_actions_call_create_expect_db_has_record()
     {
         $user = User::factory()
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()->setStatusActive()->setIsMainBranch()))
             ->create();
 
         $company = $user->companies()->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
 
         $nonCapitalWithdrawalArr = NonCapitalWithdrawal::factory()->for($company)
             ->make()->toArray();

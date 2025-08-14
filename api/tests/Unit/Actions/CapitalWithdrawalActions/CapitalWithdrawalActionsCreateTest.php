@@ -3,6 +3,7 @@
 namespace Tests\Unit\Actions\CapitalWithdrawalActions;
 
 use App\Actions\CapitalWithdrawal\CapitalWithdrawalActions;
+use App\Models\Branch;
 use App\Models\CapitalWithdrawal;
 use App\Models\Company;
 use App\Models\User;
@@ -23,7 +24,7 @@ class CapitalWithdrawalActionsCreateTest extends ActionsTestCase
     public function test_capital_withdrawal_actions_call_create_expect_db_has_record()
     {
         $user = User::factory()
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $company = $user->companies()->inRandomOrder()->first();

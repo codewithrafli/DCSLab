@@ -3,6 +3,7 @@
 namespace Tests\Feature\API\CapitalAdditionAPI;
 
 use App\Enums\UserRolesEnum;
+use App\Models\Branch;
 use App\Models\CapitalAddition;
 use App\Models\Company;
 use App\Models\Role;
@@ -22,11 +23,13 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $capitalAddition = CapitalAddition::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $capitalAddition = CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+        ]);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
 
@@ -36,13 +39,15 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
     public function test_capital_addition_api_call_delete_without_access_right_expect_unauthorized_message()
     {
         $user = User::factory()
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $capitalAddition = CapitalAddition::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $capitalAddition = CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+        ]);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
 
@@ -53,13 +58,15 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
-        $capitalAddition = CapitalAddition::factory()->for($company)->create();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $capitalAddition = CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+        ]);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
 

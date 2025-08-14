@@ -45,6 +45,11 @@ class Company extends Model
         return $this->hasMany(Warehouse::class);
     }
 
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
+
     public function productCategories()
     {
         return $this->hasMany(ProductCategory::class);
@@ -68,6 +73,11 @@ class Company extends Model
     public function customers()
     {
         return $this->hasMany(Customer::class);
+    }
+
+    public function customerAddresses()
+    {
+        return $this->hasMany(CustomerAddress::class);
     }
 
     public function customerGroups()
@@ -113,6 +123,11 @@ class Company extends Model
     public function nonCapitalWithdrawalCategories()
     {
         return $this->hasMany(NonCapitalWithdrawalCategory::class);
+    }
+
+    public function nonCapitalWithdrawals()
+    {
+        return $this->hasMany(NonCapitalWithdrawal::class);
     }
 
     public function purchaseOrders()

@@ -4,6 +4,7 @@ namespace Tests\Unit\Actions\CustomerAddressActions;
 
 use App\Actions\CustomerAddress\CustomerAddressActions;
 use App\Models\Company;
+use App\Models\Customer;
 use App\Models\CustomerAddress;
 use App\Models\User;
 use Tests\ActionsTestCase;
@@ -23,11 +24,15 @@ class CustomerAddressActionsDeleteTest extends ActionsTestCase
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(CustomerAddress::factory())
-            )->create();
+                ->has(Customer::factory(), 'customers'))
+            ->create();
 
-        $customerAddress = $user->companies()->inRandomOrder()->first()
-            ->customerAddresses()->inRandomOrder()->first();
+        $company = $user->companies()->inRandomOrder()->first();
+        $customer = $company->customers()->inRandomOrder()->first();
+
+        $customerAddress = CustomerAddress::factory()
+            ->for($customer, 'customer')
+            ->create();
         $result = $this->customerAddressActions->delete($customerAddress);
 
         $this->assertIsBool($result);
