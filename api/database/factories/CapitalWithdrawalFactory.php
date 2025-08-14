@@ -11,7 +11,7 @@ class CapitalWithdrawalFactory extends Factory
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
             'date' => fake()->date(),
-            'amount' => fake()->randomNumber(0, 1000000),
+            'amount' => fake()->numberBetween(0, 1000) * 1000,
             'remarks' => fake()->sentence(),
         ];
     }

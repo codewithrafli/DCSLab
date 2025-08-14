@@ -142,7 +142,7 @@ class NonCapitalWithdrawalActions
 
     public function read(NonCapitalWithdrawal $nonCapitalWithdrawal): NonCapitalWithdrawal
     {
-        return $nonCapitalWithdrawal->with('company')->first();
+        return $nonCapitalWithdrawal->with('company', 'branch', 'category', 'cashAccount')->first();
     }
 
     public function getAllActiveNonCapitalWithdrawal(

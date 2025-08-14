@@ -11,7 +11,6 @@ use App\Models\Investor;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\Sequence;
 use Tests\ActionsTestCase;
 
 class CapitalAdditionActionsReadTest extends ActionsTestCase
@@ -125,9 +124,6 @@ class CapitalAdditionActionsReadTest extends ActionsTestCase
     public function test_capital_addition_actions_call_read_any_with_search_parameter_expect_filtered_results()
     {
         $capitalAdditionCount = 4;
-        $idxTest = random_int(0, $capitalAdditionCount - 1);
-        $defaultName = CapitalAddition::factory()->make()->name;
-        $testname = CapitalAddition::factory()->insertStringInName('testing')->make()->name;
 
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
@@ -144,14 +140,11 @@ class CapitalAdditionActionsReadTest extends ActionsTestCase
                             'cash_account_id' => $cashAccount->id,
                         ];
                     })
-                    ->state(new Sequence(
-                        fn (Sequence $sequence) => [
-                            'name' => $sequence->index == $idxTest ? $testname : $defaultName,
-                        ]
-                    ))
                 )
             )
-            ->create();
+            ->create([
+                'remarks' => 'testing',
+            ]);
 
         $company = $user->companies()->inRandomOrder()->first();
 
