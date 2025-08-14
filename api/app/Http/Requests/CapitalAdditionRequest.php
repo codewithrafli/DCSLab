@@ -82,7 +82,7 @@ class CapitalAdditionRequest extends FormRequest
             case 'update':
                 return [
                     'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-                    'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
+                    'branch_id' => ['required', 'integer', 'bail', new IsValidBranch($this->company_id, true)],
                     'code' => ['required', 'string', 'max:255', new CapitalAdditionUpdateValidCode($this->company_id, $this->route('capital_addition'))],
                     'date' => ['required', 'date'],
                     'investor_id' => ['required', 'integer', new IsValidInvestor($this->company_id)],
@@ -151,6 +151,7 @@ class CapitalAdditionRequest extends FormRequest
                 break;
             case 'update':
                 $this->merge([
+                    'company_id' => $this->has('company_id') && $this->company_id ? HashidsHelper::decodeId($this->company_id) : null,
                     'branch_id' => $this->has('branch_id') && $this->branch_id ? HashidsHelper::decodeId($this->branch_id) : null,
                     'investor_id' => $this->has('investor_id') && $this->investor_id ? HashidsHelper::decodeId($this->investor_id) : null,
                     'cash_account_id' => $this->has('cash_account_id') && $this->cash_account_id ? HashidsHelper::decodeId($this->cash_account_id) : null,

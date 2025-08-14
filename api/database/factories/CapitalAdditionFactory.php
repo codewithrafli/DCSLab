@@ -15,4 +15,13 @@ class CapitalAdditionFactory extends Factory
             'remarks' => fake()->sentence(),
         ];
     }
+
+    public function insertStringInName(string $str)
+    {
+        return $this->state(function (array $attributes) use ($str) {
+            return [
+                'remarks' => $str.' '.fake()->sentence(),
+            ];
+        });
+    }
 }

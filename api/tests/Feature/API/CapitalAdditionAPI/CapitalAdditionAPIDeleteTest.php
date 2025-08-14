@@ -5,7 +5,9 @@ namespace Tests\Feature\API\CapitalAdditionAPI;
 use App\Enums\UserRolesEnum;
 use App\Models\Branch;
 use App\Models\CapitalAddition;
+use App\Models\CashAccount;
 use App\Models\Company;
+use App\Models\Investor;
 use App\Models\Role;
 use App\Models\User;
 use Exception;
@@ -27,13 +29,18 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
             ->create();
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
         $capitalAddition = CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
 
-        $api->assertStatus(401);
+        $api->assertUnauthorized();
     }
 
     public function test_capital_addition_api_call_delete_without_access_right_expect_unauthorized_message()
@@ -45,13 +52,18 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
         $capitalAddition = CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
 
-        $api->assertStatus(403);
+        $api->assertForbidden();
     }
 
     public function test_capital_addition_api_call_delete_expect_successful()
@@ -64,8 +76,13 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
         $capitalAddition = CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', $capitalAddition->ulid));
@@ -78,7 +95,10 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
 
     public function test_capital_addition_api_call_delete_of_nonexistance_ulid_expect_not_found()
     {
-        $user = User::factory()->create();
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->create();
 
         $this->actingAs($user);
 
@@ -95,8 +115,6 @@ class CapitalAdditionAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.capital.capital_addition.delete', null));
-
-        $api->assertStatus(500);
+        $this->json('POST', route('api.post.db.capital.capital_addition.delete', null));
     }
 }

@@ -5,7 +5,9 @@ namespace Tests\Feature\API\CapitalAdditionAPI;
 use App\Enums\UserRolesEnum;
 use App\Models\Branch;
 use App\Models\CapitalAddition;
+use App\Models\CashAccount;
 use App\Models\Company;
+use App\Models\Investor;
 use App\Models\Role;
 use App\Models\User;
 use Exception;
@@ -28,9 +30,14 @@ class CapitalAdditionAPIReadTest extends APITestCase
             ->create();
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
         CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $api = $this->getJson(route('api.get.db.capital.capital_addition.read_any', [
@@ -54,9 +61,14 @@ class CapitalAdditionAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
         CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $api = $this->getJson(route('api.get.db.capital.capital_addition.read_any', [
@@ -80,8 +92,13 @@ class CapitalAdditionAPIReadTest extends APITestCase
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
 
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
         $capitalAddition = CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $ulid = $capitalAddition->ulid;
@@ -100,9 +117,14 @@ class CapitalAdditionAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
         $capitalAddition = CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $ulid = $capitalAddition->ulid;
@@ -122,9 +144,14 @@ class CapitalAdditionAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
         CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $injections = [
@@ -281,9 +308,14 @@ class CapitalAdditionAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
         CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $api = $this->getJson(route('api.get.db.capital.capital_addition.read_any', [
@@ -328,14 +360,21 @@ class CapitalAdditionAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
-        CapitalAddition::factory()->for($company)->create();
+        CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
+        ]);
 
         $api = $this->getJson(route('api.get.db.capital.capital_addition.read_any', [
             'refresh' => true,
@@ -378,16 +417,22 @@ class CapitalAdditionAPIReadTest extends APITestCase
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
         $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
         CapitalAddition::factory()->for($company)
             ->count(2)->create([
                 'branch_id' => $branch->id,
+                'investor_id' => $investor->id,
+                'cash_account_id' => $cashAccount->id,
             ]);
 
         CapitalAddition::factory()->for($company)
             ->insertStringInName('testing')
             ->count(3)->create([
                 'branch_id' => $branch->id,
+                'investor_id' => $investor->id,
+                'cash_account_id' => $cashAccount->id,
             ]);
 
         $api = $this->getJson(route('api.get.db.capital.capital_addition.read_any', [
@@ -429,9 +474,14 @@ class CapitalAdditionAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
         CapitalAddition::factory()->for($company)->create([
-            'branch_id' => $company->branches()->inRandomOrder()->first()->id,
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
         ]);
 
         $api = $this->getJson(route('api.get.db.capital.capital_addition.read_any', [
@@ -445,14 +495,21 @@ class CapitalAdditionAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
-        CapitalAddition::factory()->for($company)->create();
+        CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
+        ]);
 
         $api = $this->getJson(route('api.get.db.capital.capital_addition.read_any', [
             'refresh' => false,
@@ -483,14 +540,21 @@ class CapitalAdditionAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
-        CapitalAddition::factory()->for($company)->create();
+        CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
+        ]);
 
         $api = $this->getJson(route('api.get.db.capital.capital_addition.read_any', [
             'refresh' => false,
@@ -512,14 +576,21 @@ class CapitalAdditionAPIReadTest extends APITestCase
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
         $this->actingAs($user);
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
-        $capitalAddition = CapitalAddition::factory()->for($company)->create();
+        $capitalAddition = CapitalAddition::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+            'investor_id' => $investor->id,
+            'cash_account_id' => $cashAccount->id,
+        ]);
 
         $ulid = $capitalAddition->ulid;
 
