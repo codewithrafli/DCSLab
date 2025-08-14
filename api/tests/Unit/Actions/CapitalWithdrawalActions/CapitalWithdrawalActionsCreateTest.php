@@ -5,7 +5,9 @@ namespace Tests\Unit\Actions\CapitalWithdrawalActions;
 use App\Actions\CapitalWithdrawal\CapitalWithdrawalActions;
 use App\Models\Branch;
 use App\Models\CapitalWithdrawal;
+use App\Models\CashAccount;
 use App\Models\Company;
+use App\Models\Investor;
 use App\Models\User;
 use Exception;
 use Tests\ActionsTestCase;
@@ -27,18 +29,28 @@ class CapitalWithdrawalActionsCreateTest extends ActionsTestCase
             ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
             ->create();
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+        $investor = Investor::factory()->for($company)->create();
 
-        $capitalWithdrawalArr = CapitalWithdrawal::factory()->for($company)
-            ->make()->toArray();
+        $capitalWithdrawalArr = CapitalWithdrawal::factory()->for($company)->make()->toArray();
+        $capitalWithdrawalArr['branch_id'] = $branch->id;
+        $capitalWithdrawalArr['investor_id'] = $investor->id;
+        $capitalWithdrawalArr['cash_account_id'] = $cashAccount->id;
 
         $result = $this->capitalWithdrawalActions->create($capitalWithdrawalArr);
 
         $this->assertDatabaseHas('capital_withdrawals', [
             'id' => $result->id,
             'company_id' => $capitalWithdrawalArr['company_id'],
+            'branch_id' => $capitalWithdrawalArr['branch_id'],
             'code' => $capitalWithdrawalArr['code'],
-            'name' => $capitalWithdrawalArr['name'],
+            'date' => $capitalWithdrawalArr['date'],
+            'investor_id' => $capitalWithdrawalArr['investor_id'],
+            'cash_account_id' => $capitalWithdrawalArr['cash_account_id'],
+            'amount' => $capitalWithdrawalArr['amount'],
+            'remarks' => $capitalWithdrawalArr['remarks'],
         ]);
     }
 

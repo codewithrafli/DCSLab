@@ -48,6 +48,8 @@ class CapitalAdditionActionsEditTest extends ActionsTestCase
 
         $capitalAdditionArr = CapitalAddition::factory()->make()->toArray();
         $capitalAdditionArr['branch_id'] = $capitalAddition->branch_id;
+        $capitalAdditionArr['investor_id'] = $capitalAddition->investor_id;
+        $capitalAdditionArr['cash_account_id'] = $capitalAddition->cash_account_id;
 
         $result = $this->capitalAdditionActions->update($capitalAddition, $capitalAdditionArr);
 
@@ -55,8 +57,13 @@ class CapitalAdditionActionsEditTest extends ActionsTestCase
         $this->assertDatabaseHas('capital_additions', [
             'id' => $capitalAddition->id,
             'company_id' => $capitalAddition->company_id,
+            'branch_id' => $capitalAdditionArr['branch_id'],
             'code' => $capitalAdditionArr['code'],
-            'name' => $capitalAdditionArr['name'],
+            'date' => $capitalAdditionArr['date'],
+            'investor_id' => $capitalAdditionArr['investor_id'],
+            'cash_account_id' => $capitalAdditionArr['cash_account_id'],
+            'amount' => $capitalAdditionArr['amount'],
+            'remarks' => $capitalAdditionArr['remarks'],
         ]);
     }
 

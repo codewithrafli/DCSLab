@@ -3,8 +3,11 @@
 namespace Tests\Unit\Actions\NonCapitalAdditionActions;
 
 use App\Actions\NonCapitalAddition\NonCapitalAdditionActions;
+use App\Models\Branch;
+use App\Models\CashAccount;
 use App\Models\Company;
 use App\Models\NonCapitalAddition;
+use App\Models\NonCapitalAdditionCategory;
 use App\Models\User;
 use Tests\ActionsTestCase;
 
@@ -23,7 +26,20 @@ class NonCapitalAdditionActionsDeleteTest extends ActionsTestCase
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
-                ->has(NonCapitalAddition::factory())
+                ->has(Branch::factory())
+                ->has(
+                    NonCapitalAddition::factory()->state(function (array $attributes, Company $company) {
+                        $branch = $company->branches()->inRandomOrder()->first();
+                        $category = NonCapitalAdditionCategory::factory()->for($company)->create();
+                        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
+
+                        return [
+                            'branch_id' => $branch->id,
+                            'category_id' => $category->id,
+                            'cash_account_id' => $cashAccount->id,
+                        ];
+                    })
+                )
             )->create();
 
         $nonCapitalAddition = $user->companies()->inRandomOrder()->first()

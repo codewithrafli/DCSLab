@@ -74,7 +74,7 @@ class PurchaseOrderDownPaymentRequest extends FormRequest
                     'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
                     'purchase_order_id' => ['required', 'integer', 'bail', new IsValidPurchaseOrder()],
                     'code' => ['required', 'string', 'max:255', new PurchaseOrderDownPaymentStoreValidCode($this->company_id)],
-                    'cash_account_id' => ['required', 'integer', 'bail', new IsValidCashAccount()],
+                    'cash_account_id' => ['required', 'integer', 'bail', new IsValidCashAccount($this->company_id)],
                     'amount' => ['nullable', 'numeric', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];
@@ -84,7 +84,7 @@ class PurchaseOrderDownPaymentRequest extends FormRequest
                     'branch_id' => ['required', 'integer', new IsValidBranch($this->company_id, true)],
                     'purchase_order_id' => ['required', 'integer', 'bail', new IsValidPurchaseOrder()],
                     'code' => ['required', 'string', 'max:255', new PurchaseOrderDownPaymentUpdateValidCode($this->company_id, $this->route('purchase_order_down_payments'))],
-                    'cash_account_id' => ['required', 'integer', 'bail', new IsValidCashAccount()],
+                    'cash_account_id' => ['required', 'integer', 'bail', new IsValidCashAccount($this->company_id)],
                     'amount' => ['nullable', 'numeric', 'min:0'],
                     'remarks' => ['nullable', 'string', 'max:255'],
                 ];

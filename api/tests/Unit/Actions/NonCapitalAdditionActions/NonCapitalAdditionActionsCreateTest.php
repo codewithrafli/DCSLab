@@ -29,14 +29,13 @@ class NonCapitalAdditionActionsCreateTest extends ActionsTestCase
             ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()->setStatusActive()->setIsMainBranch()))
             ->create();
 
-        $company = $user->companies()->inRandomOrder()->first();
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
         $branch = $company->branches()->inRandomOrder()->first();
 
         $category = NonCapitalAdditionCategory::factory()->for($company)->create();
-        $cashAccount = CashAccount::factory()->for($company)->create();
+        $cashAccount = CashAccount::factory()->for($company)->create(['branch_id' => $branch->id]);
 
-        $nonCapitalAdditionArr = NonCapitalAddition::factory()->for($company)
-            ->make()->toArray();
+        $nonCapitalAdditionArr = NonCapitalAddition::factory()->for($company)->make()->toArray();
         $nonCapitalAdditionArr['branch_id'] = $branch->id;
         $nonCapitalAdditionArr['category_id'] = $category->id;
         $nonCapitalAdditionArr['cash_account_id'] = $cashAccount->id;
@@ -46,8 +45,13 @@ class NonCapitalAdditionActionsCreateTest extends ActionsTestCase
         $this->assertDatabaseHas('non_capital_additions', [
             'id' => $result->id,
             'company_id' => $nonCapitalAdditionArr['company_id'],
+            'branch_id' => $nonCapitalAdditionArr['branch_id'],
             'code' => $nonCapitalAdditionArr['code'],
-            'name' => $nonCapitalAdditionArr['name'],
+            'date' => $nonCapitalAdditionArr['date'],
+            'category_id' => $nonCapitalAdditionArr['category_id'],
+            'cash_account_id' => $nonCapitalAdditionArr['cash_account_id'],
+            'amount' => $nonCapitalAdditionArr['amount'],
+            'remarks' => $nonCapitalAdditionArr['remarks'],
         ]);
     }
 
