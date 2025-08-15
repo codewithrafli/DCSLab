@@ -35,6 +35,10 @@ import CustomerIndex from "@/pages/customer/CustomerIndex.vue";
 import CustomerList from "@/pages/customer/CustomerList.vue";
 import CustomerCreate from "@/pages/customer/CustomerCreate.vue";
 import CustomerEdit from "@/pages/customer/CustomerEdit.vue";
+import InvestorIndex from "@/pages/investor/InvestorIndex.vue";
+import InvestorList from "@/pages/investor/InvestorList.vue";
+import InvestorCreate from "@/pages/investor/InvestorCreate.vue";
+import InvestorEdit from "@/pages/investor/InvestorEdit.vue";
 
 export default [
     {
@@ -189,7 +193,38 @@ export default [
                                 },
                             }
                         ]
-
+                    },
+                    {
+                        path: "/dashboard/company/investor",
+                        name: "side-menu-company-investor",
+                        redirect: "/dashboard/company/investor/list",
+                        component: InvestorIndex,
+                        children: [
+                            {
+                                path: "/dashboard/company/investor/list",
+                                name: "side-menu-company-investor-list",
+                                component: InvestorList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/company/investor/create",
+                                name: "side-menu-company-investor-create",
+                                component: InvestorCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/company/investor/edit/:ulid",
+                                name: "side-menu-company-investor-edit",
+                                component: InvestorEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
+                        ]
                     }
                 ]
             },

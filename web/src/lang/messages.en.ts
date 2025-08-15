@@ -23,6 +23,7 @@ import warehouse from "./en/views/warehouse.json"
 import error from "./en/views/error.json"
 import customer_group from "./en/views/customer_group.json"
 import customer from "./en/views/customer.json"
+import investor from "./en/views/investor.json"
 
 export default {
     "components": {
@@ -52,5 +53,6 @@ export default {
         "error": error,
         "customer_group": customer_group,
         "customer": customer,
+        "investor": investor,
     }
 }
