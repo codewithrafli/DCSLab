@@ -459,25 +459,21 @@ watch(
                   'text-danger': customerForm.invalid('payment_term_type'),
                 }"
               >
-                {{ t("views.customer.fields.payment_term_type") }}
+                {{ t("views.customer_group.fields.payment_term_type") }}
               </FormLabel>
               <FormSelect
                 v-model="customerForm.payment_term_type"
-                :class="{
-                  'border-danger': customerForm.invalid('payment_term_type'),
-                }"
-                :placeholder="t('views.customer.fields.payment_term_type')"
                 @change="customerForm.validate('payment_term_type')"
               >
-                <option value="0" disabled>
+                <option value="">
                   {{ t("components.dropdown.placeholder") }}
                 </option>
                 <option
-                  v-for="s in paymentTermTypeDDL"
-                  :key="s.code"
-                  :value="s.code"
+                  v-for="pt in paymentTermTypeDDL"
+                  :key="pt.code"
+                  :value="pt.code"
                 >
-                  {{ t(s.name) }}
+                  {{ t(pt.name) }}
                 </option>
               </FormSelect>
               <FormErrorMessages
