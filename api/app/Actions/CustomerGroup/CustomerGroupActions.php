@@ -16,9 +16,7 @@ class CustomerGroupActions
     use CacheHelper;
     use LoggerHelper;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function create(array $data): CustomerGroup
     {
@@ -114,7 +112,7 @@ class CustomerGroupActions
 
         try {
             $cacheSearch = empty($search) ? '[empty]' : $search;
-            $cacheKey = 'readAny_'.$companyId.'-'.$cacheSearch.'-'.$paginate.'-'.$page.'-'.$perPage;
+            $cacheKey = 'readAny_' . $companyId . '-' . $cacheSearch . '-' . $paginate . '-' . $page . '-' . $perPage;
             if ($useCache === true) {
                 $cacheResult = $this->readFromCache($cacheKey);
 
@@ -152,7 +150,7 @@ class CustomerGroupActions
 
     public function read(CustomerGroup $customerGroup): CustomerGroup
     {
-        return $customerGroup->load('company')->first();
+        return $customerGroup->load('company');
     }
 
     public function getAllActiveCustomerGroup(
@@ -182,7 +180,7 @@ class CustomerGroupActions
 
                 $orders = $query->getQuery()->orders;
                 $query->reorder();
-                $query->orderByRaw('FIELD(id, '.implode(',', $includeIds).') desc');
+                $query->orderByRaw('FIELD(id, ' . implode(',', $includeIds) . ') desc');
                 if (! empty($orders)) {
                     foreach ($orders as $order) {
                         $query->orderBy($order['column'], $order['direction']);
@@ -273,7 +271,7 @@ class CustomerGroupActions
             $tryCount = 0;
             do {
                 $count = $company->customerGroups()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'CG'.str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'CG' . str_pad($count, 3, '0', STR_PAD_LEFT);
                 $tryCount++;
             } while (! $this->isUniqueCode($companyId, $code, $exceptId));
 
