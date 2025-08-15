@@ -2,6 +2,7 @@
 // #region Imports
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import CustomerService from "@/services/CustomerService";
 import CustomerGroupService from "@/services/CustomerGroupService";
 import DashboardService from "@/services/DashboardService";
@@ -24,25 +25,24 @@ import { ViewMode } from "@/types/enums/ViewMode";
 import { debounce } from "lodash";
 import Lucide from "@/components/Base/Lucide";
 import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
-import { useRouter } from "vue-router";
 import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
 import { ErrorCode } from "@/types/enums/ErrorCode";
+import { Customer } from "@/types/models/Customer";
 import { CustomerGroup } from "@/types/models/CustomerGroup";
+import { ServiceResponse } from "@/types/services/ServiceResponse";
 import { Collection } from "@/types/resources/Collection";
-// #endregion
-
-// #region Interfaces
 // #endregion
 
 // #region Declarations
 const { t } = useI18n();
+const route = useRoute();
 const router = useRouter();
 const selectedUserLocationStore = useSelectedUserLocationStore();
 
 const customerService = new CustomerService();
 const customerGroupService = new CustomerGroupService();
-const cacheServices = new CacheService();
 const dashboardServices = new DashboardService();
+const cacheServices = new CacheService();
 // #endregion
 
 // #region Props, Emits
@@ -72,12 +72,13 @@ const cards = ref<Array<TwoColumnsLayoutCards>>([
 ]);
 
 const statusDDL = ref<Array<DropDownOption> | null>(null);
-const customerGroupDDL = ref<Array<CustomerGroup> | null>(null);
 const paymentTermTypeDDL = ref<Array<DropDownOption> | null>(null);
-
+const customerGroupDDL = ref<Array<CustomerGroup> | null>(null);
 const isDDLLoading = ref<boolean>(false);
 
-const customerForm = customerService.useCustomerCreateForm();
+const customerForm = customerService.useCustomerEditForm(
+  route.params.ulid as string
+);
 // #endregion
 
 // #region Computed
@@ -91,9 +92,9 @@ const selectedUserLocation = computed(
 
 // #region Lifecycle Hooks
 onMounted(async () => {
-  emits("mode-state", ViewMode.FORM_CREATE);
-  getDDL();
-  loadFromCache();
+  emits("mode-state", ViewMode.FORM_EDIT);
+  await getDDL();
+  await loadData(route.params.ulid as string);
   if (!isUserLocationSelected.value) {
     router.push({
       name: "side-menu-error-code",
@@ -106,18 +107,37 @@ onMounted(async () => {
 
 // #region Methods
 const setCompanyIdData = () => {
-  customerForm.setData({
-    company_id: selectedUserLocation.value.company.id,
-  });
+  if (!selectedUserLocation.value) return;
+  customerForm.setData({ company_id: selectedUserLocation.value.company.id });
 };
 
-const loadFromCache = () => {
-  let data = cacheServices.getLastEntity("CUSTOMER_CREATE") as Record<
-    string,
-    unknown
-  >;
-  if (!data) return;
-  customerForm.setData(data);
+const loadData = async (ulid: string) => {
+  emits("loading-state", true);
+  const response: ServiceResponse<Customer | null> = await customerService.read(
+    ulid
+  );
+
+  if (response && response.data) {
+    customerForm.setData({
+      company_id: response.data.company.id,
+      user_id: response.data.user?.id ?? "0",
+      group_id: response.data.group?.id ?? "0",
+      code: response.data.code,
+      name: response.data.name,
+      zone: response.data.zone,
+      max_open_invoice: response.data.max_open_invoice,
+      max_outstanding_invoice: response.data.max_outstanding_invoice,
+      max_invoice_age: response.data.max_invoice_age,
+      payment_term_type: response.data.payment_term_type,
+      payment_term: response.data.payment_term,
+      is_member: response.data.is_member,
+      taxable_enterprise: response.data.taxable_enterprise,
+      tax_id: response.data.tax_id,
+      status: response.data.status,
+      remarks: response.data.remarks,
+    });
+  }
+  emits("loading-state", false);
 };
 
 const getDDL = async (): Promise<void> => {
@@ -136,7 +156,7 @@ const getDDL = async (): Promise<void> => {
     });
 
   const result = await customerGroupService.readAny({
-    company_id: selectedUserLocation.value.company.id,
+    company_id: selectedUserLocation.value?.company.id,
     search: "",
     refresh: false,
     paginate: false,
@@ -161,7 +181,7 @@ const handleExpandCard = (index: number) => {
 };
 
 const scrollToError = (id: string): void => {
-  let el = document.getElementById(id);
+  const el = document.getElementById(id);
   if (!el) return;
   el.scrollIntoView({ behavior: "smooth", block: "center" });
 };
@@ -174,12 +194,11 @@ const onSubmit = async () => {
   await customerForm
     .submit()
     .then(() => {
-      resetForm();
       emits("update-profile");
       router.push({ name: "side-menu-customer-list" });
     })
     .catch((error) => {
-      let errorList: Record<
+      const errorList: Record<
         string,
         Array<string>
       > = convertErrorTypeToAlertListType(error as Error);
@@ -190,9 +209,10 @@ const onSubmit = async () => {
     });
 };
 
-const resetForm = () => {
+const resetForm = async () => {
   customerForm.reset();
   customerForm.setErrors({});
+  await loadData(route.params.ulid as string);
 };
 
 const setCode = () => {
@@ -209,7 +229,7 @@ const showAlertPlaceholder = (
   pTitle: string,
   pAlertList: Record<string, Array<string>> | null
 ) => {
-  let ap: AlertPlaceholderProps = {
+  const ap: AlertPlaceholderProps = {
     alertType: pAlertType,
     title: pTitle,
     alertList: pAlertList,
@@ -228,7 +248,7 @@ const convertErrorTypeToAlertListType = (error: Error) => {
 watch(
   customerForm,
   debounce((newValue): void => {
-    cacheServices.setLastEntity("CUSTOMER_CREATE", newValue.data());
+    cacheServices.setLastEntity("CUSTOMER_EDIT", newValue.data());
   }, 500),
   { deep: true }
 );

@@ -30,7 +30,7 @@ export default class CustomerService {
         const form = useForm('post', url, {
             company_id: '0',
             user_id: '0',
-            customer_group_id: '0',
+            group_id: '0',
             code: '_AUTO_',
             name: '',
             zone: '',
@@ -124,7 +124,7 @@ export default class CustomerService {
         const form = useForm('post', url, {
             company_id: '0',
             user_id: '0',
-            customer_group_id: '0',
+            group_id: '0',
             code: '_AUTO_',
             name: '',
             zone: '',

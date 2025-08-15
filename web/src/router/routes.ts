@@ -34,6 +34,7 @@ import CustomerGroupEdit from "@/pages/customer-group/CustomerGroupEdit.vue";
 import CustomerIndex from "@/pages/customer/CustomerIndex.vue";
 import CustomerList from "@/pages/customer/CustomerList.vue";
 import CustomerCreate from "@/pages/customer/CustomerCreate.vue";
+import CustomerEdit from "@/pages/customer/CustomerEdit.vue";
 
 export default [
     {
@@ -245,6 +246,14 @@ export default [
                                 path: "/dashboard/customer/customer/create",
                                 name: "side-menu-customer-create",
                                 component: CustomerCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/customer/customer/edit/:ulid",
+                                name: "side-menu-customer-edit",
+                                component: CustomerEdit,
                                 meta: {
                                     remember: true,
                                 },
