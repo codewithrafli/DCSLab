@@ -17,7 +17,9 @@ class CustomerStoreValidGroup implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! $value) return;
+        if (! $value) {
+            return;
+        }
 
         $data = CustomerGroup::whereCompanyId($this->companyId)->where('id', $value);
         if ($data->doesntExist()) {

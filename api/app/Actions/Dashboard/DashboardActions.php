@@ -10,13 +10,15 @@ class DashboardActions
 {
     use CacheHelper;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function createUserMenu(bool $useCache = true): array
     {
         $cacheKey = '';
         if ($useCache) {
-            $cacheKey = 'menu_' . Auth::id();
+            $cacheKey = 'menu_'.Auth::id();
             $cacheResult = $this->readFromCache($cacheKey);
 
             if (! is_null($cacheResult)) {

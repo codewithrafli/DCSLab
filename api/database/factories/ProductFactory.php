@@ -20,14 +20,18 @@ class ProductFactory extends Factory
         $category = (function () use ($type) {
             if ($type == ProductTypeEnum::RAW_MATERIAL || $type == ProductTypeEnum::WORK_IN_PROGRESS || $type == ProductTypeEnum::FINISHED_GOODS) {
                 $productCategory = ProductCategory::where('type', ProductCategoryTypeEnum::PRODUCT->value);
-                if ($productCategory->exists()) return $productCategory->inRandomOrder()->value('id');
+                if ($productCategory->exists()) {
+                    return $productCategory->inRandomOrder()->value('id');
+                }
 
                 return ProductCategory::factory()->forProduct()->create();
             }
 
             if ($type == ProductTypeEnum::SERVICE) {
                 $productCategory = ProductCategory::where('type', ProductCategoryTypeEnum::SERVICE->value);
-                if ($productCategory->exists()) return $productCategory->inRandomOrder()->value('id');
+                if ($productCategory->exists()) {
+                    return $productCategory->inRandomOrder()->value('id');
+                }
 
                 return ProductCategory::factory()->forService()->create();
             }
@@ -36,12 +40,16 @@ class ProductFactory extends Factory
         $brand = (function () use ($type) {
             if ($type == ProductTypeEnum::RAW_MATERIAL || $type == ProductTypeEnum::WORK_IN_PROGRESS || $type == ProductTypeEnum::FINISHED_GOODS) {
                 $brand = Brand::inRandomOrder();
-                if ($brand->exists()) return $brand->value('id');
+                if ($brand->exists()) {
+                    return $brand->value('id');
+                }
 
                 return Brand::factory()->create();
             }
 
-            if ($type == ProductTypeEnum::SERVICE) return null;
+            if ($type == ProductTypeEnum::SERVICE) {
+                return null;
+            }
         })();
 
         $name = (function () use ($category, $brand, $type) {
@@ -84,7 +92,9 @@ class ProductFactory extends Factory
                 $productUnits = ProductUnit::factory()->count(mt_rand(1, 3))->make()->toArray();
 
                 foreach ($productUnits as $productUnit) {
-                    if ($encode) $productUnit = FactoryHelper::encodeIds($productUnit);
+                    if ($encode) {
+                        $productUnit = FactoryHelper::encodeIds($productUnit);
+                    }
                 }
 
                 return $productUnits;
@@ -97,7 +107,9 @@ class ProductFactory extends Factory
                 'product_units' => $productUnits,
             ];
 
-            if ($encode) $result = FactoryHelper::encodeIds($result);
+            if ($encode) {
+                $result = FactoryHelper::encodeIds($result);
+            }
 
             return $result;
         });
@@ -117,7 +129,9 @@ class ProductFactory extends Factory
                 ])->toArray();
 
                 foreach ($productUnits as $productUnit) {
-                    if ($encode) $productUnit = FactoryHelper::encodeIds($productUnit);
+                    if ($encode) {
+                        $productUnit = FactoryHelper::encodeIds($productUnit);
+                    }
                 }
 
                 return $productUnits;
@@ -130,7 +144,9 @@ class ProductFactory extends Factory
                 'product_units' => $productUnits,
             ];
 
-            if ($encode) $result = FactoryHelper::encodeIds($result);
+            if ($encode) {
+                $result = FactoryHelper::encodeIds($result);
+            }
 
             return $result;
         });

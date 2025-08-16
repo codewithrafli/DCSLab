@@ -71,7 +71,9 @@ class BranchActions
         ?int $limit
     ) {
         $relationship = ['company'];
-        if ($with) $relationship = $with;
+        if ($with) {
+            $relationship = $with;
+        }
 
         $query = Branch::with($relationship)->withTrashed()
             ->where(function ($query) use ($withTrashed, $companyId, $search, $isMain, $status) {

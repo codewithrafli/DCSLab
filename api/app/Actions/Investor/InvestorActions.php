@@ -16,7 +16,9 @@ class InvestorActions
     use CacheHelper;
     use LoggerHelper;
 
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function create(array $data): Investor
     {
@@ -98,11 +100,13 @@ class InvestorActions
 
         try {
             $cacheSearch = empty($search) ? '[empty]' : $search;
-            $cacheKey = 'readAny_' . $companyId . '-' . $cacheSearch . '-' . $paginate . '-' . $page . '-' . $perPage;
+            $cacheKey = 'readAny_'.$companyId.'-'.$cacheSearch.'-'.$paginate.'-'.$page.'-'.$perPage;
             if ($useCache === true) {
                 $cacheResult = $this->readFromCache($cacheKey);
 
-                if (! is_null($cacheResult)) return $cacheResult;
+                if (! is_null($cacheResult)) {
+                    return $cacheResult;
+                }
             }
 
             $result = null;
@@ -122,7 +126,9 @@ class InvestorActions
 
             $recordsCount = $result->count();
 
-            if ($useCache === true) $this->saveToCache($cacheKey, $result);
+            if ($useCache === true) {
+                $this->saveToCache($cacheKey, $result);
+            }
 
             return $result;
         } catch (Exception $e) {
@@ -166,7 +172,7 @@ class InvestorActions
 
                 $orders = $query->getQuery()->orders;
                 $query->reorder();
-                $query->orderByRaw('FIELD(id, ' . implode(',', $includeIds) . ') desc');
+                $query->orderByRaw('FIELD(id, '.implode(',', $includeIds).') desc');
                 if (! empty($orders)) {
                     foreach ($orders as $order) {
                         $query->orderBy($order['column'], $order['direction']);
@@ -243,7 +249,7 @@ class InvestorActions
             $tryCount = 0;
             do {
                 $count = $company->investors()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'WH' . str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'WH'.str_pad($count, 3, '0', STR_PAD_LEFT);
                 $tryCount++;
             } while (! $this->isUniqueCode($companyId, $code, $exceptId));
 

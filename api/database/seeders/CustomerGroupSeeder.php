@@ -11,10 +11,14 @@ class CustomerGroupSeeder extends Seeder
     public function run(?int $companyId = null, ?int $qtyPerCompany = null)
     {
         $query = Company::query();
-        if ($companyId) $query->where('id', '=', $companyId);
+        if ($companyId) {
+            $query->where('id', '=', $companyId);
+        }
         $companies = $query->get();
 
-        if (! $qtyPerCompany) $qtyPerCompany = 5;
+        if (! $qtyPerCompany) {
+            $qtyPerCompany = 5;
+        }
         foreach ($companies as $company) {
             for ($i = 0; $i < $qtyPerCompany; $i++) {
                 $customerGroupFactory = CustomerGroup::factory()->for($company);

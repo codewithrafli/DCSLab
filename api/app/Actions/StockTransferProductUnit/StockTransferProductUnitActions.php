@@ -109,7 +109,9 @@ class StockTransferProductUnitActions
             if ($useCache === true) {
                 $cacheResult = $this->readFromCache($cacheKey);
 
-                if (! is_null($cacheResult)) return $cacheResult;
+                if (! is_null($cacheResult)) {
+                    return $cacheResult;
+                }
             }
 
             $result = null;
@@ -129,7 +131,9 @@ class StockTransferProductUnitActions
 
             $recordsCount = $result->count();
 
-            if ($useCache === true) $this->saveToCache($cacheKey, $result);
+            if ($useCache === true) {
+                $this->saveToCache($cacheKey, $result);
+            }
 
             return $result;
         } catch (Exception $e) {
