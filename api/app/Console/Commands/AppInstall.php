@@ -2,7 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Role\RoleActions;
 use App\Actions\System\SystemActions;
+use App\Actions\User\UserActions;
+use App\Enums\RecordStatusEnum;
+use App\Enums\UserRolesEnum;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
@@ -65,7 +69,7 @@ class AppInstall extends Command
         $this->generateAppKey();
         $this->migrateAndSeed();
         $this->storageLinking();
-        $this->createAdminOrDevAccount('admin');
+        $this->createDevAccount();
     }
 
     private function systemCheckingIsOK(): bool
@@ -181,6 +185,72 @@ class AppInstall extends Command
             return true;
         } catch (Exception $e) {
             return false;
+        }
+    }
+
+    private function createDevAccount(): void
+    {
+        $this->info('Creating Developer Account...');
+
+        $userActions = new UserActions();
+        $roleActions = new RoleActions();
+
+        // Get Developer role
+        $roleName = ucfirst(UserRolesEnum::DEVELOPER->value);
+
+        try {
+            $role = $roleActions->readBy('NAME', $roleName);
+
+            if (! $role) {
+                $this->error('Role "'.$roleName.'" not found. Skipping account creation.');
+                $this->warn('Make sure you have run the seeders to create roles.');
+
+                return;
+            }
+
+            // Default user data
+            $userName = 'Developer';
+            $userEmail = 'dev@app.com';
+            $userPassword = 'password';
+
+            // Check if user already exists
+            $existingUser = $userActions->readBy('EMAIL', $userEmail);
+            if ($existingUser) {
+                $this->warn('User with email "'.$userEmail.'" already exists. Skipping account creation.');
+
+                return;
+            }
+
+            $user = [
+                'name' => $userName,
+                'email' => $userEmail,
+                'password' => $userPassword,
+            ];
+
+            $profile = [
+                'first_name' => $userName,
+                'last_name' => '',
+                'tax_id' => 0,
+                'ic_num' => 0,
+                'country' => 'Singapore',
+                'status' => RecordStatusEnum::ACTIVE,
+            ];
+
+            $userActions->create(
+                $user,
+                [$role->id],
+                $profile
+            );
+
+            $this->info('✓ Developer account created successfully!');
+            $this->info('  Name: '.$userName);
+            $this->info('  Email: '.$userEmail);
+            $this->info('  Password: '.$userPassword);
+            $this->info('  Role: '.$role->display_name);
+            $this->warn('  ⚠ Please change the default password after first login!');
+        } catch (Exception $e) {
+            $this->error('Failed to create developer account: '.$e->getMessage());
+            $this->warn('You can create an account manually using: php artisan app:user create');
         }
     }
 }
