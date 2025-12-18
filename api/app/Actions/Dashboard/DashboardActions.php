@@ -46,6 +46,7 @@ class DashboardActions
 
         $menu = $this->createMenu_Dashboard($menu, $showDemoMenu);
         $menu = $this->createMenu_Company($menu, $hasOnlyUserRole, $hasOnlyAdminRole, $hasCompany, $hasDevRole);
+        $menu = $this->createMenu_Product($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Customer($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Administrator($menu, $hasAdminRole, $hasDevRole);
         $menu = $this->createMenu_DevTool($menu, $hasDevRole);
@@ -130,6 +131,31 @@ class DashboardActions
             array_push($root_array['subMenu'], $company);
         }
 
+        array_push($menu, $root_array);
+
+        return $menu;
+    }
+
+    private function createMenu_Product(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
+    {
+        if ($hasOnlyUserRole || $hasOnlyAdminRole) {
+            return $menu;
+        }
+
+        $productCategory = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-product-product-category',
+            'title' => 'components.menu.product-category',
+        ];
+
+        $root_array = [
+            'icon' => 'Package',
+            'pageName' => 'side-menu-product',
+            'title' => 'components.menu.product-management',
+            'subMenu' => [],
+        ];
+
+        array_push($root_array['subMenu'], $productCategory);
         array_push($menu, $root_array);
 
         return $menu;

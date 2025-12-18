@@ -1,0 +1,36 @@
+{
+    "page_title": "Kategori Produk",
+    "table": {
+        "title": "Daftar Kategori Produk",
+        "cols": {
+            "code": "Kode",
+            "name": "Nama",
+            "type": "Tipe"
+        }
+    },
+    "actions": {
+        "create": "Tambah Kategori Produk",
+        "edit": "Ubah Kategori Produk",
+        "show": "Tampilkan Kategori Produk",
+        "delete": "Hapus Kategori Produk"
+    },
+    "field_groups": {
+        "product_category_data": "Data Kategori Produk"
+    },
+    "fields": {
+        "code": "Kode",
+        "name": "Nama",
+        "type": "Tipe"
+    },
+    "type": {
+        "product": "Produk",
+        "service": "Jasa"
+    },
+    "alert": {
+        "delete_product_category": {
+            "title": "Hapus Kategori Produk",
+            "content": "Kategori Produk Berhasil Dihapus"
+        }
+    }
+}
+

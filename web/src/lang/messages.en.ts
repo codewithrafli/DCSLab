@@ -20,10 +20,11 @@ import user from "./en/views/user.json";
 import company from "./en/views/company.json"
 import branch from "./en/views/branch.json"
 import warehouse from "./en/views/warehouse.json"
-import error from "./en/views/error.json"
+import product_category from "./en/views/product_category.json"
 import customer_group from "./en/views/customer_group.json"
 import customer from "./en/views/customer.json"
 import investor from "./en/views/investor.json"
+import error from "./en/views/error.json"
 
 export default {
     "components": {
@@ -50,9 +51,10 @@ export default {
         "company": company,
         "branch": branch,
         "warehouse": warehouse,
-        "error": error,
+        "product_category": product_category,
         "customer_group": customer_group,
         "customer": customer,
         "investor": investor,
+        "error": error,
     }
 }

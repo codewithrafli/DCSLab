@@ -27,6 +27,10 @@ import WarehouseIndex from "@/pages/warehouse/WarehouseIndex.vue";
 import WarehouseList from "@/pages/warehouse/WarehouseList.vue";
 import WarehouseCreate from "@/pages/warehouse/WarehouseCreate.vue";
 import WarehouseEdit from "@/pages/warehouse/WarehouseEdit.vue";
+import ProductCategoryIndex from "@/pages/product-category/ProductCategoryIndex.vue";
+import ProductCategoryList from "@/pages/product-category/ProductCategoryList.vue";
+import ProductCategoryCreate from "@/pages/product-category/ProductCategoryCreate.vue";
+import ProductCategoryEdit from "@/pages/product-category/ProductCategoryEdit.vue";
 import CustomerGroupIndex from "@/pages/customer-group/CustomerGroupIndex.vue";
 import CustomerGroupList from "@/pages/customer-group/CustomerGroupList.vue";
 import CustomerGroupCreate from "@/pages/customer-group/CustomerGroupCreate.vue";
@@ -220,6 +224,43 @@ export default [
                                 path: "/dashboard/company/investor/edit/:ulid",
                                 name: "side-menu-company-investor-edit",
                                 component: InvestorEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                path: "/dashboard/product",
+                children: [
+                    {
+                        path: "/dashboard/product/product-category",
+                        name: "side-menu-product-product-category",
+                        redirect: "/dashboard/product/product-category/list",
+                        component: ProductCategoryIndex,
+                        children: [
+                            {
+                                path: "/dashboard/product/product-category/list",
+                                name: "side-menu-product-product-category-list",
+                                component: ProductCategoryList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/product/product-category/create",
+                                name: "side-menu-product-product-category-create",
+                                component: ProductCategoryCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/product/product-category/edit/:ulid",
+                                name: "side-menu-product-product-category-edit",
+                                component: ProductCategoryEdit,
                                 meta: {
                                     remember: true,
                                 },
