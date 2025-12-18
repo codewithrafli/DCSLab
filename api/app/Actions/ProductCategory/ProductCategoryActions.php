@@ -142,7 +142,7 @@ class ProductCategoryActions
 
     public function read(ProductCategory $productCategory): ProductCategory
     {
-        return $productCategory->load('company')->first();
+        return $productCategory->load('company');
     }
 
     public function getAllActiveProductCategory(
