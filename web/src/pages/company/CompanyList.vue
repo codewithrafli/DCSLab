@@ -11,8 +11,7 @@ import { Company } from "@/types/models/Company";
 import { Collection } from "@/types/resources/Collection";
 import { DataListEmittedData } from "@/components/DataList/DataList.vue";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
-import { Resource } from "@/types/resources/Resource";
-import { ReadAnyRequest } from "@/types/services/ServiceRequest";
+import { CompanyReadAnyPaginateRequest } from "@/types/services/company/CompanyRequest";
 import { useRouter } from "vue-router";
 import { Dialog } from "@/components/Base/Headless";
 import { ViewMode } from "@/types/enums/ViewMode";
@@ -69,31 +68,34 @@ const companyLists = ref<Collection<Array<Company>> | null>({
 // #region Lifecycle Hooks
 onMounted(async () => {
   emits("mode-state", ViewMode.LIST);
-  await getCompanies("", true, true, 1, 10);
+  await getCompanies("", true, 1, 10);
 });
 // #endregion
 
 // #region Methods
 const getCompanies = async (
   search: string,
+    
   refresh: boolean,
-  paginate: boolean,
   page: number,
   per_page: number
 ) => {
   emits("loading-state", true);
 
-  const searchReq: ReadAnyRequest = {
+  const searchReq: CompanyReadAnyPaginateRequest = {
+    with_trashed: false,
     search: search,
+    default: undefined,
+    status: undefined,
+    include_id: undefined,
+
     refresh: refresh,
-    paginate: paginate,
     page: page,
     per_page: per_page,
   };
 
-  let result: ServiceResponse<
-    Collection<Array<Company>> | Resource<Array<Company>> | null
-  > = await companyServices.readAny(searchReq);
+  let result: ServiceResponse<Collection<Array<Company>> | null> =
+    await companyServices.readAnyPaginate(searchReq);
 
   if (result.success && result.data) {
     companyLists.value = result.data as Collection<Array<Company>>;
@@ -112,7 +114,6 @@ const onDataListChanged = async (data: DataListEmittedData) => {
   await getCompanies(
     data.search.text,
     false,
-    true,
     data.pagination.page,
     data.pagination.per_page
   );
@@ -155,7 +156,7 @@ const confirmDelete = async () => {
 
   if (result.success) {
     emits("update-profile");
-    await getCompanies("", true, true, 1, 10);
+    await getCompanies("", true, 1, 10);
     showNotification(
       t("views.company.alert.delete_company.title"),
       t("views.company.alert.delete_company.content")
@@ -368,7 +369,7 @@ const showAlertPlaceholder = (
               type="button"
               variant="danger"
               class="w-24"
-              @click="confirmDelete;"
+              @click="confirmDelete"
             >
               {{ t("components.buttons.delete") }}
             </Button>
