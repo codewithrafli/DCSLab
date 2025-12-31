@@ -60,14 +60,23 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth', [ApiAuthController::class, 'auth', 'middleware' => ['guest', 'throttle:3,1']])->name('api.auth');
 
+Route::prefix('company')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.company.')->group(function () {
+        Route::get('read', [CompanyController::class, 'readAny'])->name('read_any');
+        Route::get('read/{company:ulid}', [CompanyController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.company.')->group(function () {
+        Route::post('save', [CompanyController::class, 'store'])->name('save');
+        Route::post('edit/{company:ulid}', [CompanyController::class, 'update'])->name('edit');
+        Route::post('delete/{company:ulid}', [CompanyController::class, 'delete'])->name('delete');
+    });
+});
+
 Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,1'], 'as' => 'api.get'], function () {
     Route::group(['prefix' => 'dashboard', 'as' => '.db'], function () {
         /* #region Extensions */
         Route::group(['prefix' => 'company', 'as' => '.company'], function () {
-            Route::group(['prefix' => 'company', 'as' => '.company'], function () {
-                Route::get('read', [CompanyController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{company:ulid}', [CompanyController::class, 'read'])->name('.read');
-            });
             Route::group(['prefix' => 'branch', 'as' => '.branch'], function () {
                 Route::get('read', [BranchController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{branch:ulid}', [BranchController::class, 'read'])->name('.read');
@@ -343,11 +352,6 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
     Route::group(['prefix' => 'dashboard', 'as' => '.db'], function () {
         /* #region Extensions */
         Route::group(['prefix' => 'company', 'middleware' => ['precognitive'], 'as' => '.company'], function () {
-            Route::group(['prefix' => 'company', 'as' => '.company'], function () {
-                Route::post('save', [CompanyController::class, 'store'])->name('.save');
-                Route::post('edit/{company:ulid}', [CompanyController::class, 'update'])->name('.edit');
-                Route::post('delete/{company:ulid}', [CompanyController::class, 'delete'])->name('.delete');
-            });
             Route::group(['prefix' => 'branch', 'middleware' => ['precognitive'], 'as' => '.branch'], function () {
                 Route::post('save', [BranchController::class, 'store'])->name('.save');
                 Route::post('edit/{branch:ulid}', [BranchController::class, 'update'])->name('.edit');

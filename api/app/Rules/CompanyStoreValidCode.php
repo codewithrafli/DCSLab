@@ -20,7 +20,7 @@ class CompanyStoreValidCode implements ValidationRule
         if ($value !== config('dcslab.KEYWORDS.AUTO')) {
             $companyActions = new CompanyActions();
 
-            if (! $companyActions->isUniqueCode($this->user, $value)) {
+            if (! $companyActions->isUniqueCode($this->user, $value, null)) {
                 $fail('rules.unique_code')->translate();
 
                 return;

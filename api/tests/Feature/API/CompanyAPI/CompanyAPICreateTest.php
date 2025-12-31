@@ -24,7 +24,7 @@ class CompanyAPICreateTest extends APITestCase
         $companyArr = Company::factory()->setStatusActive()->setIsDefault()
             ->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.company.save'), $companyArr);
+        $api = $this->json('POST', route('api.post.company.save'), $companyArr);
 
         $api->assertUnauthorized();
     }
@@ -39,7 +39,7 @@ class CompanyAPICreateTest extends APITestCase
         $companyArr = Company::factory()->setStatusActive()->setIsDefault()
             ->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.company.save'), $companyArr);
+        $api = $this->json('POST', route('api.post.company.save'), $companyArr);
 
         $api->assertForbidden();
     }
@@ -65,7 +65,7 @@ class CompanyAPICreateTest extends APITestCase
         $companyArr = Company::factory()->setStatusActive()->setIsDefault()
             ->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.company.save'), $companyArr);
+        $api = $this->json('POST', route('api.post.company.save'), $companyArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('companies', [
@@ -87,7 +87,7 @@ class CompanyAPICreateTest extends APITestCase
 
         $companyArr = [];
 
-        $api = $this->json('POST', route('api.post.db.company.company.save'), $companyArr);
+        $api = $this->json('POST', route('api.post.company.save'), $companyArr);
 
         $api->assertJsonValidationErrors(['code', 'name', 'status']);
     }

@@ -27,7 +27,7 @@ class CompanyAPIEditTest extends APITestCase
 
         $companyArr = Company::factory()->setStatusActive()->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.company.edit', $company->ulid), $companyArr);
+        $api = $this->json('POST', route('api.post.company.edit', $company->ulid), $companyArr);
 
         $api->assertUnauthorized();
     }
@@ -44,7 +44,7 @@ class CompanyAPIEditTest extends APITestCase
 
         $companyArr = Company::factory()->setStatusActive()->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.company.edit', $company->ulid), $companyArr);
+        $api = $this->json('POST', route('api.post.company.edit', $company->ulid), $companyArr);
 
         $api->assertForbidden();
     }
@@ -72,7 +72,7 @@ class CompanyAPIEditTest extends APITestCase
 
         $companyArr = Company::factory()->setStatusActive()->setIsDefault()->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.company.edit', $company->ulid), $companyArr);
+        $api = $this->json('POST', route('api.post.company.edit', $company->ulid), $companyArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('companies', [
@@ -111,7 +111,7 @@ class CompanyAPIEditTest extends APITestCase
             'code' => $company_2->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.company.edit', $company_1->ulid), $companyArr);
+        $api = $this->json('POST', route('api.post.company.edit', $company_1->ulid), $companyArr);
 
         $api->assertUnprocessable();
         $api->assertJsonStructure([

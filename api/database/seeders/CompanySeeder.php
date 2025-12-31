@@ -13,35 +13,27 @@ class CompanySeeder extends Seeder
      *
      * @return void
      */
-    public function run($companiesPerUsers = 3, $userId = 0)
+    public function run(?int $companiesPerUser = null, ?int $userId = null)
     {
-        if ($userId != 0) {
-            $users = User::where('id', '=', $userId)->get();
-        } else {
-            $users = User::all();
-        }
+        $companiesPerUser = $companiesPerUser ?? 3;
 
-        if ($companiesPerUsers <= 0) {
-            $companiesPerUsers = 3;
-        }
+        $users = $userId ? User::where('id', $userId)->get() : User::all();
 
         foreach ($users as $user) {
-            $rand = random_int(0, $companiesPerUsers - 1);
+            Company::factory()
+                ->hasAttached($user)
+                ->setIsDefault()
+                ->setStatusActive()
+                ->create();
 
-            for ($i = 0; $i < $companiesPerUsers; $i++) {
-                $makeItActiveStatus = boolval(random_int(0, 1));
+            $remaining = max(0, $companiesPerUser - 1);
 
-                $companyFactory = Company::factory()->hasAttached($user);
+            for ($i = 0; $i < $remaining; $i++) {
+                $company = Company::factory()->hasAttached($user);
 
-                if ($i == $rand) {
-                    $companyFactory->setIsDefault()->setStatusActive()->create();
-                } else {
-                    if ($makeItActiveStatus) {
-                        $companyFactory->setStatusActive()->create();
-                    } else {
-                        $companyFactory->setStatusInactive()->create();
-                    }
-                }
+                random_int(0, 1) ? $company->setStatusActive() : $company->setStatusInactive();
+
+                $company->create();
             }
         }
     }

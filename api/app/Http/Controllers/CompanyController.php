@@ -3,13 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Company\CompanyActions;
+use App\DTOs\ExecuteDTO;
+use App\DTOs\ExecuteGetDTO;
+use App\DTOs\ExecutePaginationDTO;
 use App\Enums\RecordStatusEnum;
-use App\Http\Requests\CompanyRequest;
+use App\Helpers\HashidsHelper;
+use App\Http\Requests\Company\CompanyStoreRequest;
+use App\Http\Requests\Company\CompanyUpdateRequest;
 use App\Http\Resources\CompanyResource;
 use App\Models\Company;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Enum;
 
 class CompanyController extends BaseController
 {
@@ -22,30 +29,74 @@ class CompanyController extends BaseController
         $this->companyActions = $companyActions;
     }
 
-    public function store(CompanyRequest $companyRequest)
+    public function store(CompanyStoreRequest $request)
     {
-        $request = $companyRequest->validated();
+        $validatedRequest = $request->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $request['status'] = RecordStatusEnum::resolveToEnum($request['status'])->value;
+            DB::beginTransaction();
+
+            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
+                $code = $this->companyActions->generateUniqueCode(
+                    Auth::user(), $validatedRequest['code'], null,
+                );
+                $validatedRequest['code'] = $code;
+            } else {
+                $isUnique = $this->companyActions->isUniqueCode(
+                    Auth::user(), $validatedRequest['code'], null,
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            if ($validatedRequest['default']) {
+                $this->companyActions->resetDefault(Auth::user());
+            }
 
             $result = $this->companyActions->create(
                 user: Auth::user(),
-                data: $request
+                data: $validatedRequest
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function readAny(CompanyRequest $companyRequest)
+    public function readAny(Request $request)
     {
-        $request = $companyRequest->validated();
+        if (! Auth::check())  return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('viewAny', Company::class);
+
+        if ($request->filled('include_id')) $request->merge(['include_id' => HashidsHelper::decodeId($request->include_id)]);
+
+        if ($request->filled('status')) {
+            $request->merge(['status' => RecordStatusEnum::isValid($request->status) ? RecordStatusEnum::resolveToEnum($request->status)->value : -1]);
+        }
+
+        $validatedRequest = $request->validate([
+            'with_trashed' => ['required', 'boolean'],
+
+            'search' => ['nullable', 'string'],
+            'default' => ['nullable', 'boolean'],
+            'status' => ['nullable', new Enum(RecordStatusEnum::class)],
+            'include_id' => ['nullable', 'integer', 'exists:companies,id'],
+
+            'refresh' => ['required', 'boolean'],
+            'paginate' => ['nullable', 'array', 'required_without:get', 'prohibits:get'],
+            'paginate.page' => ['required_with:paginate', 'integer', 'min:1'],
+            'paginate.per_page' => ['required_with:paginate', 'integer', 'min:10'],
+            'get' => ['nullable', 'array', 'required_without:paginate', 'prohibits:paginate'],
+            'get.limit' => ['required_with:get', 'integer', 'min:10'],
+        ]);
 
         $result = null;
         $errorMsg = '';
@@ -53,18 +104,37 @@ class CompanyController extends BaseController
         try {
             $result = $this->companyActions->readAny(
                 user: Auth::user(),
-                useCache: $request['refresh'],
-                with: $request['with'],
-                withTrashed: $request['with_trashed'],
+                withTrashed: $validatedRequest['with_trashed'],
 
-                search: $request['search'],
-                default: $request['default'],
-                status: $request['status'] ? RecordStatusEnum::resolveToEnum($request['status'])->value : null,
+                search: $validatedRequest['search'] ?? null,
+                default: $validatedRequest['default'] ?? null,
+                status: $validatedRequest['status'] ?? null,
+                includeId: $validatedRequest['include_id'] ?? null,
 
-                paginate: $request['paginate'],
-                page: $request['page'],
-                perPage: $request['per_page'],
-                limit: $request['limit'],
+                execute: new ExecuteDTO(
+                    useCache: $validatedRequest['refresh'],
+                    pagination: (function () use ($validatedRequest) {
+                        $pagination = null;
+                        if (isset($validatedRequest['paginate'])) {
+                            $pagination = new ExecutePaginationDTO(
+                                page: $validatedRequest['paginate']['page'],
+                                perPage: $validatedRequest['paginate']['per_page'],
+                            );
+                        }
+
+                        return $pagination;
+                    })(),
+                    get: (function () use ($validatedRequest) {
+                        $get = null;
+                        if (isset($validatedRequest['get'])) {
+                            $get = new ExecuteGetDTO(
+                                limit: $validatedRequest['get']['limit'],
+                            );
+                        }
+
+                        return $get;
+                    })()
+                )
             );
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
@@ -79,9 +149,10 @@ class CompanyController extends BaseController
         }
     }
 
-    public function read(Company $company, CompanyRequest $companyRequest)
+    public function read(Company $company)
     {
-        $request = $companyRequest->validated();
+        if (! Auth::check())  return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('view', $company);
 
         $result = null;
         $errorMsg = '';
@@ -101,58 +172,50 @@ class CompanyController extends BaseController
         }
     }
 
-    public function getAllActive(Request $request)
+    public function update(Company $company, CompanyUpdateRequest $request)
     {
-        $request = $request->validated();
-
-        $result = $this->companyActions->getAllActive(
-            user: Auth::user(),
-            with: $request['with'],
-            search: $request['search'],
-            includeIds: $request['includeIds'],
-            limit: $request['limit']
-        );
-
-        if (is_null($result)) {
-            return response()->error();
-        } else {
-            $response = CompanyResource::collection($result);
-
-            return $response;
-        }
-    }
-
-    public function getDefault()
-    {
-        $user = Auth::user();
-        $defaultCompany = $this->companyActions->getDefault($user);
-
-        return $defaultCompany->hId;
-    }
-
-    public function update(Company $company, CompanyRequest $companyRequest)
-    {
-        $request = $companyRequest->validated();
+        $validatedRequest = $request->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $request['status'] = RecordStatusEnum::resolveToEnum($request['status'])->value;
+            DB::beginTransaction();
+
+            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
+                $code = $this->companyActions->generateUniqueCode(
+                    Auth::user(), $validatedRequest['code'], $company->id,
+                );
+                $validatedRequest['code'] = $code;
+            } else {
+                $isUnique = $this->companyActions->isUniqueCode(
+                    Auth::user(), $validatedRequest['code'], $company->id,
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            if ($validatedRequest['default']) {
+                $this->companyActions->resetDefault(Auth::user());
+                $company->refresh();
+            }
 
             $result = $this->companyActions->update(
-                user: Auth::user(),
                 company: $company,
-                data: $request
+                data: $validatedRequest
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function delete(Company $company, CompanyRequest $companyRequest)
+    public function delete(Company $company)
     {
         //Throw Error
         //throw New \Exception('Test Exception From Controller');
@@ -165,6 +228,9 @@ class CompanyController extends BaseController
 
         //Custom Validation With Multiple Error (HttpStatus 422)
         //return response()->error(['name' => ['Custom Validation With Multiple Error'], 'address' => ['Custom Validation With Multiple Error']], 422);
+
+        if (! Auth::check())  return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('delete', $company);
 
         $result = false;
         $errorMsg = '';

@@ -36,7 +36,7 @@ class CompanyAPIDeleteTest extends APITestCase
 
         $company = $user->companies()->where('default', '=', false)->first();
 
-        $api = $this->json('POST', route('api.post.db.company.company.delete', $company->ulid));
+        $api = $this->json('POST', route('api.post.company.delete', $company->ulid));
 
         $api->assertUnauthorized();
     }
@@ -60,7 +60,7 @@ class CompanyAPIDeleteTest extends APITestCase
 
         $company = $user->companies()->where('default', '=', false)->first();
 
-        $api = $this->json('POST', route('api.post.db.company.company.delete', $company->ulid));
+        $api = $this->json('POST', route('api.post.company.delete', $company->ulid));
 
         $api->assertForbidden();
     }
@@ -85,7 +85,7 @@ class CompanyAPIDeleteTest extends APITestCase
 
         $company = $user->companies()->where('default', '=', false)->first();
 
-        $api = $this->json('POST', route('api.post.db.company.company.delete', $company->ulid));
+        $api = $this->json('POST', route('api.post.company.delete', $company->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('companies', [
@@ -101,7 +101,7 @@ class CompanyAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.company.company.delete', $ulid));
+        $api = $this->json('POST', route('api.post.company.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -112,6 +112,6 @@ class CompanyAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.company.company.delete', null));
+        $api = $this->json('POST', route('api.post.company.delete', null));
     }
 }
