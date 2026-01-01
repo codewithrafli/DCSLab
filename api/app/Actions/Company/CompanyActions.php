@@ -9,7 +9,6 @@ use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
 use Exception;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 
 class CompanyActions
 {
@@ -153,7 +152,7 @@ class CompanyActions
 
     public function getById(int $companyId): Company
     {
-        return Company::find($companyId)->first();
+        return Company::find($companyId);
     }
 
     public function isDefault(Company $company): bool
@@ -204,7 +203,6 @@ class CompanyActions
 
     public function delete(Company $company): bool
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         $retval = false;
@@ -212,13 +210,10 @@ class CompanyActions
         try {
             $retval = $company->delete();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $retval;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {

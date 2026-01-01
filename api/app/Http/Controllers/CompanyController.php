@@ -53,6 +53,8 @@ class CompanyController extends BaseController
                 }
             }
 
+            $validatedRequest['address'] = $validatedRequest['address'] ?? null;
+
             if ($validatedRequest['default']) {
                 $this->companyActions->resetDefault(Auth::user());
             }
@@ -196,6 +198,8 @@ class CompanyController extends BaseController
                 }
             }
 
+            $validatedRequest['address'] = $validatedRequest['address'] ?? null;
+
             if ($validatedRequest['default']) {
                 $this->companyActions->resetDefault(Auth::user());
                 $company->refresh();
@@ -236,12 +240,17 @@ class CompanyController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             if ($this->companyActions->isDefault($company)) {
                 return response()->error(trans('rules.company.delete_default_company'), 422);
             }
 
             $result = $this->companyActions->delete($company);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

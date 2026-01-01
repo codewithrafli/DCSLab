@@ -54,7 +54,6 @@ class CompanyStoreRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->merge([
-            'address' => $this->has('address') ? $this['address'] : null,
             'status' => RecordStatusEnum::isValid($this->status) ? RecordStatusEnum::resolveToEnum($this->status)->value : null,
         ]);
     }

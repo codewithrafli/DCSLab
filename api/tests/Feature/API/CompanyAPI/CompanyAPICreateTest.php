@@ -21,10 +21,10 @@ class CompanyAPICreateTest extends APITestCase
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
-        $companyArr = Company::factory()->setStatusActive()->setIsDefault()
+        $payload = Company::factory()->setStatusActive()->setIsDefault()
             ->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.company.save'), $companyArr);
+        $api = $this->json('POST', route('api.post.company.save'), $payload);
 
         $api->assertUnauthorized();
     }
@@ -36,10 +36,10 @@ class CompanyAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $companyArr = Company::factory()->setStatusActive()->setIsDefault()
+        $payload = Company::factory()->setStatusActive()->setIsDefault()
             ->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.company.save'), $companyArr);
+        $api = $this->json('POST', route('api.post.company.save'), $payload);
 
         $api->assertForbidden();
     }
@@ -62,18 +62,18 @@ class CompanyAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $companyArr = Company::factory()->setStatusActive()->setIsDefault()
+        $payload = Company::factory()->setStatusActive()->setIsDefault()
             ->make()->toArray();
 
-        $api = $this->json('POST', route('api.post.company.save'), $companyArr);
+        $api = $this->json('POST', route('api.post.company.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('companies', [
-            'code' => $companyArr['code'],
-            'name' => $companyArr['name'],
-            'address' => $companyArr['address'],
-            'default' => $companyArr['default'],
-            'status' => $companyArr['status'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'address' => $payload['address'],
+            'default' => $payload['default'],
+            'status' => $payload['status'],
         ]);
     }
 
@@ -85,9 +85,9 @@ class CompanyAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $companyArr = [];
+        $payload = [];
 
-        $api = $this->json('POST', route('api.post.company.save'), $companyArr);
+        $api = $this->json('POST', route('api.post.company.save'), $payload);
 
         $api->assertJsonValidationErrors(['code', 'name', 'status']);
     }
