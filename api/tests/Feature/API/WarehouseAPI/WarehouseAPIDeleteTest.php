@@ -31,9 +31,9 @@ class WarehouseAPIDeleteTest extends APITestCase
         $branch = $company->branches()->inRandomOrder()->first();
         $warehouse = Warehouse::factory()->for($company)->for($branch)->create();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.delete', $warehouse->ulid));
+        $api = $this->json('POST', route('api.post.warehouse.delete', $warehouse->ulid));
 
-        $api->assertStatus(401);
+        $api->assertUnauthorized();
     }
 
     public function test_warehouse_api_call_delete_without_access_right_expect_unauthorized_message()
@@ -49,9 +49,9 @@ class WarehouseAPIDeleteTest extends APITestCase
         $branch = $company->branches()->inRandomOrder()->first();
         $warehouse = Warehouse::factory()->for($company)->for($branch)->create();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.delete', $warehouse->ulid));
+        $api = $this->json('POST', route('api.post.warehouse.delete', $warehouse->ulid));
 
-        $api->assertStatus(403);
+        $api->assertForbidden();
     }
 
     public function test_warehouse_api_call_delete_expect_successful()
@@ -68,7 +68,7 @@ class WarehouseAPIDeleteTest extends APITestCase
         $branch = $company->branches()->inRandomOrder()->first();
         $warehouse = Warehouse::factory()->for($company)->for($branch)->create();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.delete', $warehouse->ulid));
+        $api = $this->json('POST', route('api.post.warehouse.delete', $warehouse->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('warehouses', [
@@ -84,7 +84,7 @@ class WarehouseAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.delete', $ulid));
+        $api = $this->json('POST', route('api.post.warehouse.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -95,8 +95,36 @@ class WarehouseAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.company.warehouse.delete', null));
+        $api = $this->json('POST', route('api.post.warehouse.delete', null));
+    }
 
-        $api->assertStatus(500);
+    public function test_warehouse_api_call_delete_with_sql_injection_expect_not_found()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()
+                ->has(Branch::factory()->setStatusActive()->setIsMainBranch())
+            )->create();
+
+        $this->actingAs($user);
+
+        $injections = [
+            "' OR '1'='1",
+            '1 UNION SELECT username, password FROM users',
+            '1; DROP TABLE users',
+            "' OR '1'='1' --",
+            '1 OR SLEEP(5)',
+            "1; INSERT INTO logs (message) VALUES ('Injected SQL query')",
+            "1; UPDATE users SET password = 'hacked' WHERE id = 1; --",
+            "admin'--",
+            "' OR 1=1 --",
+        ];
+
+        $testIdx = random_int(0, count($injections) - 1);
+        $injection = $injections[$testIdx];
+
+        $api = $this->json('POST', route('api.post.warehouse.delete', $injection));
+
+        $api->assertStatus(404);
     }
 }

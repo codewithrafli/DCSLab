@@ -30,17 +30,17 @@ class WarehouseAPICreateTest extends APITestCase
 
         $branch = $company->branches()->inRandomOrder()->first();
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.save'), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.save'), $payload);
 
-        $api->assertStatus(401);
+        $api->assertUnauthorized();
     }
 
-    public function test_warehouse_api_call_store_without_access_right_expect_unauthorized_message()
+    public function test_warehouse_api_call_store_without_access_right_expect_forbidden_message()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
@@ -53,14 +53,14 @@ class WarehouseAPICreateTest extends APITestCase
 
         $branch = $company->branches()->inRandomOrder()->first();
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.save'), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.save'), $payload);
 
-        $api->assertStatus(403);
+        $api->assertForbidden();
     }
 
     public function test_warehouse_api_call_store_with_script_tags_in_payload_expect_stripped()
@@ -87,24 +87,24 @@ class WarehouseAPICreateTest extends APITestCase
 
         $branch = $company->branches()->inRandomOrder()->first();
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.save'), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('warehouses', [
             'company_id' => $company->id,
             'branch_id' => $branch->id,
-            'code' => $warehouseArr['code'],
-            'name' => $warehouseArr['name'],
-            'address' => $warehouseArr['address'],
-            'city' => $warehouseArr['city'],
-            'contact' => $warehouseArr['contact'],
-            'remarks' => $warehouseArr['remarks'],
-            'status' => $warehouseArr['status'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'address' => $payload['address'],
+            'city' => $payload['city'],
+            'contact' => $payload['contact'],
+            'remarks' => $payload['remarks'],
+            'status' => $payload['status'],
         ]);
     }
 
@@ -122,14 +122,14 @@ class WarehouseAPICreateTest extends APITestCase
 
         $branchId = Branch::max('id') + 1;
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branchId),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.save'), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.save'), $payload);
 
-        $api->assertStatus(422);
+        $api->assertUnprocessable();
         $api->assertJsonStructure([
             'errors',
         ]);
@@ -154,15 +154,15 @@ class WarehouseAPICreateTest extends APITestCase
             'code' => 'test1',
         ]);
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.save'), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.save'), $payload);
 
-        $api->assertStatus(422);
+        $api->assertUnprocessable();
         $api->assertJsonStructure([
             'errors',
         ]);
@@ -192,26 +192,25 @@ class WarehouseAPICreateTest extends APITestCase
             'code' => 'test1',
         ]);
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'branch_id' => Hashids::encode($branch_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.save'), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('warehouses', [
             'company_id' => $company_2->id,
             'branch_id' => $branch_2->id,
-            'code' => $warehouseArr['code'],
-            'name' => $warehouseArr['name'],
-            'name' => $warehouseArr['name'],
-            'address' => $warehouseArr['address'],
-            'city' => $warehouseArr['city'],
-            'contact' => $warehouseArr['contact'],
-            'remarks' => $warehouseArr['remarks'],
-            'status' => $warehouseArr['status'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'address' => $payload['address'],
+            'city' => $payload['city'],
+            'contact' => $payload['contact'],
+            'remarks' => $payload['remarks'],
+            'status' => $payload['status'],
         ]);
     }
 
@@ -225,10 +224,47 @@ class WarehouseAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $warehouseArr = [];
+        $payload = [];
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.save'), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.save'), $payload);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
+    }
+
+    public function test_warehouse_api_call_store_with_sql_injection_payload_expect_failed()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()
+                ->has(Branch::factory()->setStatusActive()->setIsMainBranch()))
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+
+        $payload = Warehouse::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'branch_id' => Hashids::encode($branch->id),
+            'code' => "'; DROP TABLE warehouses; --",
+            'name' => "'; DROP TABLE warehouses; --",
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.warehouse.save'), $payload);
+
+        // Should succeed because it's just text, but shouldn't execute SQL.
+        // If it was vulnerable, the table might be dropped or error out.
+        // We expect it to be saved as is or handled gracefully.
+        // Here we just check it is successful (saved as text) or validation error if there are rules against special chars.
+        // Assuming no strict regex on code/name, it should be saved.
+        $api->assertSuccessful();
+
+        $this->assertDatabaseHas('warehouses', [
+            'company_id' => $company->id,
+            'branch_id' => $branch->id,
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+        ]);
     }
 }

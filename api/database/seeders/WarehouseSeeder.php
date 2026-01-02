@@ -12,26 +12,23 @@ class WarehouseSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run($warehousePerCompanies = 3, $onlyThisCompanyId = 0)
+    public function run(?int $warehousesPerCompany = null, ?int $companyId = null)
     {
-        if ($onlyThisCompanyId != 0) {
-            $companies = Company::where('id', '=', $onlyThisCompanyId)->get();
-        } else {
-            $companies = Company::get();
-        }
+        $warehousesPerCompany = $warehousesPerCompany ?? 3;
+
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
 
         foreach ($companies as $company) {
-            for ($i = 0; $i < $warehousePerCompanies; $i++) {
-                $branch = Branch::whereRelation('company', 'id', '=', $company->id)->inRandomOrder()->first();
+            $branch = Branch::where('company_id', $company->id)->inRandomOrder()->first();
 
-                $makeItActiveStatus = boolval(random_int(0, 1));
+            for ($i = 0; $i < $warehousesPerCompany; $i++) {
+                $warehouse = Warehouse::factory()
+                    ->for($company)
+                    ->for($branch);
 
-                if ($makeItActiveStatus) {
-                    Warehouse::factory()->for($company)->for($branch)->setStatusActive()->create();
-                } else {
-                    Warehouse::factory()->for($company)->for($branch)->setStatusInactive()->create();
-                }
+                random_int(0, 1) ? $warehouse->setStatusActive() : $warehouse->setStatusInactive();
 
+                $warehouse->create();
             }
         }
     }

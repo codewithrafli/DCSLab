@@ -12,7 +12,7 @@ import { Collection } from "@/types/resources/Collection";
 import { DataListEmittedData } from "@/components/DataList/DataList.vue";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
 import { Resource } from "@/types/resources/Resource";
-import { ReadAnyRequest } from "@/types/services/ServiceRequest";
+import { WarehouseReadAnyPaginateRequest } from "@/types/services/warehouse/WarehouseRequest";
 import { useRouter } from "vue-router";
 import { Dialog } from "@/components/Base/Headless";
 import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
@@ -74,32 +74,39 @@ onMounted(async () => {
         router.push({ name: 'side-menu-error-code', params: { code: ErrorCode.USERLOCATION_REQUIRED } });
     }
 
-    await getWarehouses('', true, true, 1, 10);
+    await getWarehouses('', true, 1, 10);
 });
 // #endregion
 
 // #region Methods
-const getWarehouses = async (search: string, refresh: boolean, paginate: boolean, page: number, per_page: number) => {
+const getWarehouses = async (
+    search: string,
+    refresh: boolean,
+    page: number,
+    per_page: number
+) => {
     emits('loading-state', true);
 
     let company_id = selectedUserLocation.value.company.id;
     let branch_id = selectedUserLocation.value.branch.id;
 
-    const searchReq: ReadAnyRequest = {
+    const searchReq: WarehouseReadAnyPaginateRequest = {
+        with_trashed: false,
+
         company_id: company_id,
         branch_id: branch_id,
         search: search,
+        status: undefined,
+
         refresh: refresh,
-        paginate: paginate,
         page: page,
         per_page: per_page,
-        with_trashed: false,
     };
 
-    let result: ServiceResponse<Collection<Array<Warehouse>> | Resource<Array<Warehouse>> | null> = await warehouseServices.readAny(searchReq);
+    let result: ServiceResponse<Collection<Array<Warehouse>> | null> = await warehouseServices.readAnyPaginate(searchReq);
 
     if (result.success && result.data) {
-        warehouseLists.value = result.data as Collection<Array<Warehouse>>;
+        warehouseLists.value = result.data;
     } else {
         showAlertPlaceholder('danger', '', result.errors as Record<string, Array<string>>);
     }
@@ -108,7 +115,12 @@ const getWarehouses = async (search: string, refresh: boolean, paginate: boolean
 };
 
 const onDataListChanged = async (data: DataListEmittedData) => {
-    await getWarehouses(data.search.text, false, true, data.pagination.page, data.pagination.per_page);
+    await getWarehouses(
+        data.search.text,
+        true,
+        data.pagination.page,
+        data.pagination.per_page
+    );
 }
 
 const viewSelected = (idx: number) => {
@@ -143,7 +155,7 @@ const confirmDelete = async () => {
 
     if (result.success) {
         emits('update-profile');
-        await getWarehouses('', true, true, 1, 10);
+        await getWarehouses('', true, 1, 10);
         showNotification(t('views.warehouse.alert.delete_warehouse.title'), t('views.warehouse.alert.delete_warehouse.content'));
     } else {
         showAlertPlaceholder('danger', '', result.errors as Record<string, Array<string>>);

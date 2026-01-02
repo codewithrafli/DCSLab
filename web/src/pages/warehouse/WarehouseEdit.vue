@@ -26,6 +26,7 @@ import { debounce } from "lodash";
 import Lucide from "@/components/Base/Lucide";
 import { Warehouse } from "@/types/models/Warehouse";
 import { useRouter } from "vue-router";
+import { ErrorCode } from "@/types/enums/ErrorCode";
 import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
 import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
 // #endregion
@@ -69,6 +70,11 @@ const selectedUserLocation = computed(() => selectedUserLocationStore.selectedUs
 // #region Lifecycle Hooks
 onMounted(async () => {
     emits('mode-state', ViewMode.FORM_EDIT);
+
+    if (!isUserLocationSelected.value) {
+        router.push({ name: 'side-menu-error-code', params: { code: ErrorCode.USERLOCATION_REQUIRED } });
+    }
+
     getDDL();
 
     await loadData(route.params.ulid as string);

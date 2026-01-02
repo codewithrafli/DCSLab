@@ -3,10 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Warehouse\WarehouseActions;
-use App\Http\Requests\WarehouseRequest;
+use App\DTOs\ExecuteDTO;
+use App\DTOs\ExecuteGetDTO;
+use App\DTOs\ExecutePaginationDTO;
+use App\Enums\RecordStatusEnum;
+use App\Helpers\HashidsHelper;
+use App\Http\Requests\Warehouse\WarehouseStoreRequest;
+use App\Http\Requests\Warehouse\WarehouseUpdateRequest;
 use App\Http\Resources\WarehouseResource;
 use App\Models\Warehouse;
+use App\Rules\IsValidBranch;
+use App\Rules\IsValidCompany;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Enum;
 
 class WarehouseController extends BaseController
 {
@@ -19,44 +31,115 @@ class WarehouseController extends BaseController
         $this->warehouseActions = $warehouseActions;
     }
 
-    public function store(WarehouseRequest $warehouseRequest)
+    public function store(WarehouseStoreRequest $request)
     {
-        $request = $warehouseRequest->validated();
+        $validatedRequest = $request->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->warehouseActions->create($request);
+            DB::beginTransaction();
+
+            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
+                $code = $this->warehouseActions->generateUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], null,
+                );
+                $validatedRequest['code'] = $code;
+            } else {
+                $isUnique = $this->warehouseActions->isUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], null,
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $validatedRequest['address'] = $validatedRequest['address'] ?? null;
+            $validatedRequest['city'] = $validatedRequest['city'] ?? null;
+            $validatedRequest['contact'] = $validatedRequest['contact'] ?? null;
+            $validatedRequest['remarks'] = $validatedRequest['remarks'] ?? null;
+
+            $result = $this->warehouseActions->create($validatedRequest);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function readAny(WarehouseRequest $warehouseRequest)
+    public function readAny(Request $request)
     {
-        $request = $warehouseRequest->validated();
+        if (! Auth::check())  return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('viewAny', Warehouse::class);
+
+        if ($request->filled('company_id')) $request->merge(['company_id' => HashidsHelper::decodeId($request->company_id)]);
+
+        if ($request->filled('branch_id')) $request->merge(['branch_id' => HashidsHelper::decodeId($request->branch_id)]);
+
+        if ($request->filled('include_id')) $request->merge(['include_id' => HashidsHelper::decodeId($request->include_id)]);
+
+        if ($request->filled('status')) {
+            $request->merge(['status' => RecordStatusEnum::isValid($request->status) ? RecordStatusEnum::resolveToEnum($request->status)->value : -1]);
+        }
+
+        $validatedRequest = $request->validate([
+            'with_trashed' => ['required', 'boolean'],
+
+            'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+            'branch_id' => ['nullable', 'integer', 'bail', new IsValidBranch($request->company_id, false)],
+            'search' => ['nullable', 'string'],
+            'status' => ['nullable', new Enum(RecordStatusEnum::class)],
+            'include_id' => ['nullable', 'integer', 'exists:warehouses,id'],
+
+            'refresh' => ['required', 'boolean'],
+            'paginate' => ['nullable', 'array', 'required_without:get', 'prohibits:get'],
+            'paginate.page' => ['required_with:paginate', 'integer', 'min:1'],
+            'paginate.per_page' => ['required_with:paginate', 'integer', 'min:10'],
+            'get' => ['nullable', 'array', 'required_without:paginate', 'prohibits:paginate'],
+            'get.limit' => ['required_with:get', 'integer', 'min:10'],
+        ]);
 
         $result = null;
         $errorMsg = '';
 
         try {
             $result = $this->warehouseActions->readAny(
-                useCache: $request['refresh'],
-                with: [],
-                withTrashed: $request['with_trashed'],
+                withTrashed: $validatedRequest['with_trashed'],
 
-                search: $request['search'],
-                companyId: $request['company_id'],
-                branchId: $request['branch_id'],
-                status: $request['status'],
+                companyId: $validatedRequest['company_id'],
+                search: $validatedRequest['search'] ?? null,
+                branchId: $validatedRequest['branch_id'] ?? null,
+                status: $validatedRequest['status'] ?? null,
+                includeId: $validatedRequest['include_id'] ?? null,
 
-                paginate: $request['paginate'],
-                page: $request['page'],
-                perPage: $request['per_page'],
-                limit: $request['limit'],
+                execute: new ExecuteDTO(
+                    useCache: $validatedRequest['refresh'],
+                    pagination: (function () use ($validatedRequest) {
+                        $pagination = null;
+                        if (isset($validatedRequest['paginate'])) {
+                            $pagination = new ExecutePaginationDTO(
+                                page: $validatedRequest['paginate']['page'],
+                                perPage: $validatedRequest['paginate']['per_page'],
+                            );
+                        }
+
+                        return $pagination;
+                    })(),
+                    get: (function () use ($validatedRequest) {
+                        $get = null;
+                        if (isset($validatedRequest['get'])) {
+                            $get = new ExecuteGetDTO(
+                                limit: $validatedRequest['get']['limit'],
+                            );
+                        }
+
+                        return $get;
+                    })()
+                )
             );
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
@@ -71,9 +154,10 @@ class WarehouseController extends BaseController
         }
     }
 
-    public function read(Warehouse $warehouse, WarehouseRequest $warehouseRequest)
+    public function read(Warehouse $warehouse)
     {
-        $request = $warehouseRequest->validated();
+        if (! Auth::check())  return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('view', $warehouse);
 
         $result = null;
         $errorMsg = '';
@@ -93,33 +177,65 @@ class WarehouseController extends BaseController
         }
     }
 
-    public function update(Warehouse $warehouse, WarehouseRequest $warehouseRequest)
+    public function update(Warehouse $warehouse, WarehouseUpdateRequest $request)
     {
-        $request = $warehouseRequest->validated();
+        $validatedRequest = $request->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
+                $code = $this->warehouseActions->generateUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], $warehouse->id,
+                );
+                $validatedRequest['code'] = $code;
+            } else {
+                $isUnique = $this->warehouseActions->isUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], $warehouse->id,
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $validatedRequest['address'] = $validatedRequest['address'] ?? null;
+            $validatedRequest['city'] = $validatedRequest['city'] ?? null;
+            $validatedRequest['contact'] = $validatedRequest['contact'] ?? null;
+            $validatedRequest['remarks'] = $validatedRequest['remarks'] ?? null;
+
             $result = $this->warehouseActions->update(
-                $warehouse,
-                $request
+                warehouse: $warehouse,
+                data: $validatedRequest
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function delete(Warehouse $warehouse, WarehouseRequest $warehouseRequest)
+    public function delete(Warehouse $warehouse)
     {
+        if (! Auth::check())  return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('delete', $warehouse);
+
         $result = false;
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->warehouseActions->delete($warehouse);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

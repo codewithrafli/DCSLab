@@ -30,17 +30,17 @@ class WarehouseAPIEditTest extends APITestCase
         $branch = $company->branches()->inRandomOrder()->first();
         $warehouse = Warehouse::factory()->for($company)->for($branch)->create();
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.edit', $warehouse->ulid), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.edit', $warehouse->ulid), $payload);
 
-        $api->assertStatus(401);
+        $api->assertUnauthorized();
     }
 
-    public function test_warehouse_api_call_update_without_access_right_expect_unauthorized_message()
+    public function test_warehouse_api_call_update_without_access_right_expect_forbidden_message()
     {
         $user = User::factory()
             ->has(Company::factory()->setStatusActive()->setIsDefault()
@@ -53,14 +53,14 @@ class WarehouseAPIEditTest extends APITestCase
         $branch = $company->branches()->inRandomOrder()->first();
         $warehouse = Warehouse::factory()->for($company)->for($branch)->create();
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.edit', $warehouse->ulid), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.edit', $warehouse->ulid), $payload);
 
-        $api->assertStatus(403);
+        $api->assertForbidden();
     }
 
     public function test_warehouse_api_call_update_with_script_tags_in_payload_expect_stripped()
@@ -87,26 +87,25 @@ class WarehouseAPIEditTest extends APITestCase
         $branch = $company->branches()->inRandomOrder()->first();
         $warehouse = Warehouse::factory()->for($company)->for($branch)->create();
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.edit', $warehouse->ulid), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.edit', $warehouse->ulid), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('warehouses', [
             'id' => $warehouse->id,
             'company_id' => $company->id,
             'branch_id' => $branch->id,
-            'code' => $warehouseArr['code'],
-            'name' => $warehouseArr['name'],
-            'name' => $warehouseArr['name'],
-            'address' => $warehouseArr['address'],
-            'city' => $warehouseArr['city'],
-            'contact' => $warehouseArr['contact'],
-            'remarks' => $warehouseArr['remarks'],
-            'status' => $warehouseArr['status'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'address' => $payload['address'],
+            'city' => $payload['city'],
+            'contact' => $payload['contact'],
+            'remarks' => $payload['remarks'],
+            'status' => $payload['status'],
         ]);
     }
 
@@ -125,14 +124,14 @@ class WarehouseAPIEditTest extends APITestCase
         $warehouse = Warehouse::factory()->for($company)->for($branch)->create();
 
         $newBranchId = Branch::max('id') + 1;
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($newBranchId),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.edit', $warehouse->ulid), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.edit', $warehouse->ulid), $payload);
 
-        $api->assertStatus(422);
+        $api->assertUnprocessable();
         $api->assertJsonStructure([
             'errors',
         ]);
@@ -156,15 +155,15 @@ class WarehouseAPIEditTest extends APITestCase
         $warehouse_1 = $warehouses[0];
         $warehouse_2 = $warehouses[1];
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch->id),
             'code' => $warehouse_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.edit', $warehouse_2->ulid), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.edit', $warehouse_2->ulid), $payload);
 
-        $api->assertStatus(422);
+        $api->assertUnprocessable();
         $api->assertJsonStructure([
             'errors',
         ]);
@@ -196,14 +195,46 @@ class WarehouseAPIEditTest extends APITestCase
             'code' => 'test2',
         ]);
 
-        $warehouseArr = Warehouse::factory()->make([
+        $payload = Warehouse::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'branch_id' => Hashids::encode($branch_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.warehouse.edit', $warehouse_2->ulid), $warehouseArr);
+        $api = $this->json('POST', route('api.post.warehouse.edit', $warehouse_2->ulid), $payload);
 
         $api->assertSuccessful();
+    }
+
+    public function test_warehouse_api_call_update_with_sql_injection_payload_expect_failed()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()
+                ->has(Branch::factory()->setStatusActive()->setIsMainBranch()))
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $warehouse = Warehouse::factory()->for($company)->for($branch)->create();
+
+        $payload = Warehouse::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'branch_id' => Hashids::encode($branch->id),
+            'code' => "'; DROP TABLE warehouses; --",
+            'name' => "'; DROP TABLE warehouses; --",
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.warehouse.edit', $warehouse->ulid), $payload);
+
+        $api->assertSuccessful();
+
+        $this->assertDatabaseHas('warehouses', [
+            'id' => $warehouse->id,
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+        ]);
     }
 }
