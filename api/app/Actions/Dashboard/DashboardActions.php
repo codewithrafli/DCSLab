@@ -112,12 +112,6 @@ class DashboardActions
             'title' => 'components.menu.warehouse',
         ];
 
-        $investor = [
-            'icon' => 'ChevronRight',
-            'pageName' => 'side-menu-company-investor',
-            'title' => 'components.menu.investor',
-        ];
-
         $root_array = [
             'icon' => 'Umbrella',
             'pageName' => 'side-menu-company',
@@ -126,7 +120,7 @@ class DashboardActions
         ];
 
         if ($hasCompany || $hasDevRole) {
-            array_push($root_array['subMenu'], $company, $branches, $warehouse, $investor);
+            array_push($root_array['subMenu'], $company, $branches, $warehouse);
         } else {
             array_push($root_array['subMenu'], $company);
         }
