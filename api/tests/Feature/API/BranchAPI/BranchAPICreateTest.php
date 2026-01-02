@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\API\BranchAPI;
 
+use App\Enums\RecordStatusEnum;
 use App\Enums\UserRolesEnum;
 use App\Models\Branch;
 use App\Models\Company;
@@ -27,11 +28,11 @@ class BranchAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $branchArr = Branch::factory()->make([
+        $payload = Branch::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.branch.save'), $branchArr);
+        $api = $this->json('POST', route('api.post.branch.save'), $payload);
 
         $api->assertUnauthorized();
     }
@@ -46,11 +47,11 @@ class BranchAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $branchArr = Branch::factory()->make([
+        $payload = Branch::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.branch.save'), $branchArr);
+        $api = $this->json('POST', route('api.post.branch.save'), $payload);
 
         $api->assertForbidden();
     }
@@ -76,17 +77,17 @@ class BranchAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $branchArr = Branch::factory()->make([
+        $payload = Branch::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.branch.save'), $branchArr);
+        $api = $this->json('POST', route('api.post.branch.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('branches', [
             'company_id' => $company->id,
-            'code' => $branchArr['code'],
-            'name' => $branchArr['name'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
         ]);
     }
 
@@ -105,13 +106,13 @@ class BranchAPICreateTest extends APITestCase
             'code' => 'test1',
         ]);
 
-        $branchArr = array_merge([
+        $payload = array_merge([
             'company_id' => Hashids::encode($company->id),
         ], Branch::factory()->make([
             'code' => 'test1',
         ])->toArray());
 
-        $api = $this->json('POST', route('api.post.db.company.branch.save'), $branchArr);
+        $api = $this->json('POST', route('api.post.branch.save'), $payload);
 
         $api->assertUnprocessable();
         $api->assertJsonStructure([
@@ -148,17 +149,17 @@ class BranchAPICreateTest extends APITestCase
             'code' => 'test1',
         ]);
 
-        $branchArr = Branch::factory()->make([
+        $payload = Branch::factory()->make([
             'company_id' => Hashids::encode($companyId_2),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.company.branch.save'), $branchArr);
+        $api = $this->json('POST', route('api.post.branch.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('branches', [
             'company_id' => $companyId_2,
-            'code' => $branchArr['code'],
+            'code' => $payload['code'],
         ]);
     }
 
@@ -171,9 +172,74 @@ class BranchAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $branchArr = [];
-        $api = $this->json('POST', route('api.post.db.company.branch.save'), $branchArr);
+        $payload = [];
+        $api = $this->json('POST', route('api.post.branch.save'), $payload);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
+    }
+
+    public function test_branch_api_call_store_with_auto_code_expect_successful()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+
+        $payload = Branch::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'code' => config('dcslab.KEYWORDS.AUTO'),
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.branch.save'), $payload);
+
+        $api->assertSuccessful();
+        $this->assertDatabaseHas('branches', [
+            'company_id' => $company->id,
+            'name' => $payload['name'],
+        ]);
+    }
+
+    public function test_branch_api_call_store_with_is_main_expect_other_branches_reset()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()
+                ->has(Branch::factory()->count(3)->state(['is_main' => false]))
+            )
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+        // Set one existing branch as main manually
+        $existingMain = $company->branches()->first();
+        $existingMain->update(['is_main' => true]);
+
+        $payload = Branch::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'is_main' => true,
+            'status' => RecordStatusEnum::ACTIVE->value,
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.branch.save'), $payload);
+
+        $api->assertSuccessful();
+
+        // Check if new branch is main
+        $this->assertDatabaseHas('branches', [
+            'company_id' => $company->id,
+            'name' => $payload['name'],
+            'is_main' => true,
+        ]);
+
+        // Check if old main branch is now not main
+        $this->assertDatabaseHas('branches', [
+            'id' => $existingMain->id,
+            'is_main' => false,
+        ]);
     }
 }

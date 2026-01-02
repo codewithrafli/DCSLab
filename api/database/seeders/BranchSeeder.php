@@ -13,31 +13,27 @@ class BranchSeeder extends Seeder
      *
      * @return void
      */
-    public function run($branchPerCompanies = 3, $onlyThisCompanyId = 0)
+    public function run(?int $branchesPerCompany = null, ?int $companyId = null)
     {
-        if ($onlyThisCompanyId != 0) {
-            $companies = Company::where('id', '=', $onlyThisCompanyId)->get();
-        } else {
-            $companies = Company::get();
-        }
+        $branchesPerCompany = $branchesPerCompany ?? 3;
+
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
 
         foreach ($companies as $company) {
-            $rand = random_int(0, $branchPerCompanies - 1);
+            Branch::factory()
+                ->for($company)
+                ->setIsMainBranch()
+                ->setStatusActive()
+                ->create();
 
-            for ($i = 0; $i < $branchPerCompanies; $i++) {
-                $makeItActiveStatus = boolval(random_int(0, 1));
+            $remaining = max(0, $branchesPerCompany - 1);
 
-                $branchFactory = Branch::factory()->for($company);
+            for ($i = 0; $i < $remaining; $i++) {
+                $branch = Branch::factory()->for($company);
 
-                if ($i == $rand) {
-                    $branchFactory->setIsMainBranch()->setStatusActive()->create();
-                } else {
-                    if ($makeItActiveStatus) {
-                        $branchFactory->setStatusActive()->create();
-                    } else {
-                        $branchFactory->setStatusInactive()->create();
-                    }
-                }
+                random_int(0, 1) ? $branch->setStatusActive() : $branch->setStatusInactive();
+
+                $branch->create();
             }
         }
     }

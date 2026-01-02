@@ -20,7 +20,7 @@ class BranchStoreValidCode implements ValidationRule
         if ($value !== config('dcslab.KEYWORDS.AUTO')) {
             $branchActions = new BranchActions();
 
-            if (! $branchActions->isUniqueCode($this->companyId, $value)) {
+            if (! $branchActions->isUniqueCode($this->companyId, $value, null)) {
                 $fail('rules.unique_code')->translate();
 
                 return;
