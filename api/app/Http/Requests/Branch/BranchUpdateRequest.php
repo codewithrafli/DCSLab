@@ -79,7 +79,7 @@ class BranchUpdateRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->merge([
-            'company_id' => $this->has('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
+            'company_id' => $this->filled('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
             'status' => RecordStatusEnum::isValid($this->status) ? RecordStatusEnum::resolveToEnum($this->status)->value : null,
         ]);
     }
