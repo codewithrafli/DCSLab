@@ -5,9 +5,7 @@ namespace App\Http\Requests\Branch;
 use App\Enums\RecordStatusEnum;
 use App\Helpers\HashidsHelper;
 use App\Models\Branch;
-use App\Rules\BranchUpdateValidCode;
 use App\Rules\BranchUpdateValidIsMain;
-use App\Rules\BranchUpdateValidName;
 use App\Rules\BranchUpdateValidStatus;
 use App\Rules\IsValidCompany;
 use Illuminate\Foundation\Http\FormRequest;
@@ -43,8 +41,8 @@ class BranchUpdateRequest extends FormRequest
     {
         return [
             'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
-            'code' => ['required', 'string', 'max:255', new BranchUpdateValidCode($this->input('company_id'), $this->route('branch'))],
-            'name' => ['required', 'string', 'max:255', new BranchUpdateValidName($this->input('company_id'), $this->route('branch'))],
+            'code' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'contact' => ['nullable', 'string', 'max:255'],

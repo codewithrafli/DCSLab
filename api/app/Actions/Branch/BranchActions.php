@@ -260,4 +260,18 @@ class BranchActions
 
         return $query->doesntExist();
     }
+
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId): bool
+    {
+        $company = Company::find($companyId);
+
+        if ($company->branches()->count() == 0) return true;
+
+        $query = $company->branches()->where('name', '=', $name);
+        if ($exceptId) {
+            $query->where('branches.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
 }

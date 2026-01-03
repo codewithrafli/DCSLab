@@ -54,6 +54,13 @@ class BranchController extends BaseController
                 }
             }
 
+            $isUniqueName = $this->branchActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], null,
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
             $validatedRequest['city'] = $validatedRequest['city'] ?? null;
             $validatedRequest['contact'] = $validatedRequest['contact'] ?? null;
@@ -201,6 +208,13 @@ class BranchController extends BaseController
                 if (! $isUnique) {
                     return response()->error(['code' => [trans('rules.unique_code')]], 422);
                 }
+            }
+
+            $isUniqueName = $this->branchActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], $branch->id,
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
             }
 
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
