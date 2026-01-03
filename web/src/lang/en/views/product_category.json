@@ -15,9 +15,11 @@
         "delete": "Delete Product Category"
     },
     "field_groups": {
+        "company_info": "Company Information",
         "product_category_data": "Product Category Data"
     },
     "fields": {
+        "company_id": "Company",
         "code": "Code",
         "name": "Name",
         "type": "Type"

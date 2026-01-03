@@ -2,14 +2,13 @@
 
 namespace App\Actions\ProductCategory;
 
+use App\DTOs\ExecuteDTO;
 use App\Models\Company;
 use App\Models\ProductCategory;
 use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
 use Exception;
-use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 
 class ProductCategoryActions
 {
@@ -22,24 +21,20 @@ class ProductCategoryActions
 
     public function create(array $data): ProductCategory
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
             $productCategory = new ProductCategory();
             $productCategory->company_id = $data['company_id'];
-            $productCategory->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
+            $productCategory->code = $data['code'];
             $productCategory->name = $data['name'];
             $productCategory->type = $data['type'];
             $productCategory->save();
-
-            DB::commit();
 
             $this->flushCache();
 
             return $productCategory;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -48,96 +43,103 @@ class ProductCategoryActions
         }
     }
 
-    private function readAnyQuery(
-        ?bool $withTrashed,
+    public function readAny(
+        bool $withTrashed,
 
-        ?string $search,
         int $companyId,
+        ?string $search,
+        ?int $type,
+        ?int $includeId,
 
-        ?int $limit
+        ?ExecuteDTO $execute
     ) {
-        $query = ProductCategory::select('product_categories.*')->withTrashed()
-            ->with(['company'])
-            ->join('companies', 'companies.id', '=', 'product_categories.company_id')
-            ->where(function ($query) use ($withTrashed, $search, $companyId) {
-                if ($withTrashed == true) {
+        $query = ProductCategory::with('company')->select('product_categories.*')
+            ->where('product_categories.company_id', $companyId)
+            ->withTrashed();
+
+        $query->where(function ($query) use ($withTrashed, $search, $type, $includeId) {
+            $query->where(function ($query) use ($withTrashed, $search, $type) {
+                $query->withoutTrashed();
+                if ($withTrashed) {
                     $query->withTrashed();
-                } else {
-                    $query->withoutTrashed();
                 }
 
                 if ($search) {
                     $query->search($search);
                 }
 
-                $query->whereCompanyId($companyId);
+                if ($type) {
+                    $query->where('product_categories.type', $type);
+                }
             });
 
-        $query->orderBy('companies.name', 'asc')
-            ->orderBy('product_categories.name', 'asc');
+            if ($includeId) {
+                $query->orWhere('product_categories.id', $includeId);
+            }
+        });
 
-        if ($limit) {
-            $query->limit($limit);
+        if ($includeId) {
+            $query->orderByRaw('FIELD(product_categories.id, '.$includeId.') desc');
+        }
+        $query->orderBy('product_categories.name', 'asc');
+
+        if ($execute) {
+            $timer_start = microtime(true);
+            $recordsCount = 0;
+
+            try {
+                $cacheParams = [
+                    $withTrashed,
+                    $companyId,
+                    empty($search) ? '[empty]' : $search,
+                    $type,
+                    $includeId,
+                    $execute->pagination ? true : false,
+                    $execute->pagination?->page,
+                    $execute->pagination?->perPage,
+                    $execute->get?->limit,
+                ];
+
+                $cacheKey = 'readAny_'.implode('-', $cacheParams);
+
+                if ($execute->useCache) {
+                    $cacheData = $this->readFromCache($cacheKey);
+                    if ($cacheData !== Config::get('dcslab.ERROR_RETURN_VALUE')) {
+                        return $cacheData;
+                    }
+                }
+
+                if ($execute->pagination) {
+                    $result = $query->paginate(
+                        perPage: $execute->pagination->perPage,
+                        columns: ['*'],
+                        pageName: 'page',
+                        page: $execute->pagination->page
+                    );
+                } else {
+                    if ($execute->get?->limit) {
+                        $query->limit($execute->get->limit);
+                    }
+                    $result = $query->get();
+                }
+
+                $recordsCount = $result->count();
+
+                if ($execute->useCache) {
+                    $this->saveToCache($cacheKey, $result);
+                }
+
+                return $result;
+            } catch (Exception $e) {
+                $this->loggerDebug(__METHOD__, $e);
+                throw $e;
+            } finally {
+                $execution_time = microtime(true) - $timer_start;
+                $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
+            }
         }
 
         return $query;
-    }
-
-    public function readAny(
-        ?bool $useCache,
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-
-        bool $paginate,
-        ?int $page,
-        ?int $perPage,
-        ?int $limit
-    ): Paginator|Collection {
-        $timer_start = microtime(true);
-        $recordsCount = 0;
-
-        try {
-            $cacheSearch = empty($search) ? '[empty]' : $search;
-            $cacheKey = 'readAny_'.$companyId.'-'.$cacheSearch.'-'.$paginate.'-'.$page.'-'.$perPage;
-            if ($useCache === true) {
-                $cacheResult = $this->readFromCache($cacheKey);
-
-                if (! is_null($cacheResult)) {
-                    return $cacheResult;
-                }
-            }
-
-            $result = null;
-
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-                search: $search,
-                companyId: $companyId,
-                limit: $paginate ? null : $limit
-            );
-
-            if ($paginate) {
-                $result = $query->paginate(perPage: $perPage, page: $page);
-            } else {
-                $result = $query->get();
-            }
-
-            $recordsCount = $result->count();
-
-            if ($useCache === true) {
-                $this->saveToCache($cacheKey, $result);
-            }
-
-            return $result;
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
-        }
     }
 
     public function read(ProductCategory $productCategory): ProductCategory
@@ -145,69 +147,20 @@ class ProductCategoryActions
         return $productCategory->load('company');
     }
 
-    public function getAllActiveProductCategory(
-        ?array $with,
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-        ?array $includeIds,
-
-        ?int $limit
-    ) {
-        $timer_start = microtime(true);
-
-        try {
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-
-                search: $search,
-                companyId: $companyId,
-
-                limit: $limit
-            );
-
-            if ($includeIds) {
-                $query = $query->orWhereIn('id', $includeIds);
-
-                $orders = $query->getQuery()->orders;
-                $query->reorder();
-                $query->orderByRaw('FIELD(id, '.implode(',', $includeIds).') desc');
-                if (! empty($orders)) {
-                    foreach ($orders as $order) {
-                        $query->orderBy($order['column'], $order['direction']);
-                    }
-                }
-            }
-
-            return $query->get();
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time);
-        }
-    }
-
     public function update(ProductCategory $productCategory, array $data): ProductCategory
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
-            $productCategory->code = $this->generateUniqueCode($productCategory->company_id, $data['code'], $productCategory->id);
+            $productCategory->code = $data['code'];
             $productCategory->name = $data['name'];
             $productCategory->type = $data['type'];
             $productCategory->save();
-
-            DB::commit();
 
             $this->flushCache();
 
             return $productCategory->refresh();
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -218,7 +171,6 @@ class ProductCategoryActions
 
     public function delete(ProductCategory $productCategory): bool
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         $retval = false;
@@ -226,13 +178,10 @@ class ProductCategoryActions
         try {
             $retval = $productCategory->delete();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $retval;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -243,30 +192,47 @@ class ProductCategoryActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
-        if ($code == config('dcslab.KEYWORDS.AUTO')) {
-            $company = Company::find($companyId);
+        $company = Company::find($companyId);
 
-            $tryCount = 0;
-            do {
-                $count = $company->productCategories()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'PC'.str_pad($count, 3, '0', STR_PAD_LEFT);
-                $tryCount++;
-            } while (! $this->isUniqueCode($companyId, $code, $exceptId));
+        $tryCount = 0;
+        do {
+            $count = $company->productCategories()->withTrashed()->count() + 1 + $tryCount;
+            $code = 'PC'.str_pad($count, 3, '0', STR_PAD_LEFT);
+            $tryCount++;
+        } while (! $this->isUniqueCode($companyId, $code, $exceptId));
 
-            return $code;
-        } else {
-            return $code;
-        }
+        return $code;
     }
 
-    public function isUniqueCode(int $companyId, string $code, ?int $exceptId): bool
+    public function isUniqueCode(int $companyId, string $code, ?int $exceptId = null): bool
     {
-        $result = ProductCategory::whereCompanyId($companyId)->where('code', '=', $code);
+        $company = Company::find($companyId);
 
-        if ($exceptId) {
-            $result = $result->where('id', '<>', $exceptId);
+        if ($company->productCategories()->count() == 0) {
+            return true;
         }
 
-        return $result->count() == 0 ? true : false;
+        $query = $company->productCategories()->where('code', '=', $code);
+        if ($exceptId) {
+            $query->where('product_categories.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId = null): bool
+    {
+        $company = Company::find($companyId);
+
+        if ($company->productCategories()->count() == 0) {
+            return true;
+        }
+
+        $query = $company->productCategories()->where('name', '=', $name);
+        if ($exceptId) {
+            $query->where('product_categories.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
     }
 }

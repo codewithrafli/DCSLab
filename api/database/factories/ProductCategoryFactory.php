@@ -44,27 +44,21 @@ class ProductCategoryFactory extends Factory
 
     public function definition(): array
     {
-        $productNames = $this->productNames;
-        $serviceNames = $this->serviceNames;
-        $type = fake()->randomElement(ProductCategoryTypeEnum::toArrayEnum());
+        $type = fake()->randomElement(ProductCategoryTypeEnum::cases());
 
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'name' => (function () use ($type, $productNames, $serviceNames) {
-                switch ($type) {
-                    case ProductCategoryTypeEnum::PRODUCT:
-                        return fake()->randomElement($productNames);
-                    case ProductCategoryTypeEnum::SERVICE:
-                        return fake()->randomElement($serviceNames);
-                }
-            }),
+            'name' => match ($type) {
+                ProductCategoryTypeEnum::PRODUCT => fake()->randomElement($this->productNames),
+                ProductCategoryTypeEnum::SERVICE => fake()->randomElement($this->serviceNames),
+            },
             'type' => $type,
         ];
     }
 
     public function forProduct()
     {
-        return $this->state([
+        return $this->state(fn (array $attributes) => [
             'name' => fake()->randomElement($this->productNames),
             'type' => ProductCategoryTypeEnum::PRODUCT,
         ]);
@@ -72,21 +66,17 @@ class ProductCategoryFactory extends Factory
 
     public function forService()
     {
-        return $this->state(function (array $attributes) {
-            return [
-                'name' => fake()->randomElement($this->serviceNames),
-                'type' => ProductCategoryTypeEnum::SERVICE,
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'name' => fake()->randomElement($this->serviceNames),
+            'type' => ProductCategoryTypeEnum::SERVICE,
+        ]);
     }
 
     public function insertStringInName(string $str)
     {
-        return $this->state(function (array $attributes) use ($str) {
-            return [
-                'name' => $this->craftName($str),
-            ];
-        });
+        return $this->state(fn (array $attributes) => [
+            'name' => $this->craftName($str),
+        ]);
     }
 
     private function craftName(string $str)

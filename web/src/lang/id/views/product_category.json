@@ -15,9 +15,11 @@
         "delete": "Hapus Kategori Produk"
     },
     "field_groups": {
+        "company_info": "Informasi Perusahaan",
         "product_category_data": "Data Kategori Produk"
     },
     "fields": {
+        "company_id": "Perusahaan",
         "code": "Kode",
         "name": "Nama",
         "type": "Tipe"

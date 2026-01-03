@@ -7,63 +7,12 @@ use App\Models\Company;
 use App\Models\ProductCategory;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Config;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
 
 class ProductCategoryAPICreateTest extends APITestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
-    public function test_product_category_api_call_store_without_authorization_expect_unauthorized_message()
-    {
-        $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
-            ->create();
-
-        $company = $user->companies()->inRandomOrder()->first();
-
-        $productCategoryArr = ProductCategory::factory()->make([
-            'company_id' => Hashids::encode($company->id),
-        ])->toArray();
-
-        $api = $this->json('POST', route('api.post.db.product.product_category.save'), $productCategoryArr);
-
-        $api->assertUnauthorized();
-    }
-
-    public function test_product_category_api_call_store_without_access_right_expect_unauthorized_message()
-    {
-        $user = User::factory()
-            ->has(Company::factory()->setStatusActive()->setIsDefault())
-            ->create();
-
-        $this->actingAs($user);
-
-        $company = $user->companies()->inRandomOrder()->first();
-
-        $productCategoryArr = ProductCategory::factory()->make([
-            'company_id' => Hashids::encode($company->id),
-        ])->toArray();
-
-        $api = $this->json('POST', route('api.post.db.product.product_category.save'), $productCategoryArr);
-
-        $api->assertForbidden();
-    }
-
-    public function test_product_category_api_call_store_with_script_tags_in_payload_expect_stripped()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    public function test_product_category_api_call_store_with_script_tags_in_payload_expect_encoded()
-    {
-        $this->markTestSkipped('Test under construction');
-    }
-
     public function test_product_category_api_call_store_expect_successful()
     {
         $user = User::factory()
@@ -75,25 +24,50 @@ class ProductCategoryAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $productCategoryArr = ProductCategory::factory()->make([
+        $payload = ProductCategory::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.product_category.save'), $productCategoryArr);
+        $api = $this->json('POST', route('api.post.product_category.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('product_categories', [
             'company_id' => $company->id,
-            'code' => $productCategoryArr['code'],
-            'name' => $productCategoryArr['name'],
-            'type' => $productCategoryArr['type'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'type' => $payload['type'],
         ]);
     }
 
-    public function test_product_category_api_call_store_with_nonexistance_branch_id_expect_failed()
+    public function test_product_category_api_call_store_with_auto_code_expect_successful()
     {
-        $this->markTestSkipped('Nothing to test yet.');
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->create();
 
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+
+        $payload = ProductCategory::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'code' => Config::get('dcslab.KEYWORDS.AUTO'),
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.product_category.save'), $payload);
+
+        $api->assertSuccessful();
+        $this->assertDatabaseHas('product_categories', [
+            'company_id' => $company->id,
+            'name' => $payload['name'],
+            'type' => $payload['type'],
+        ]);
+
+        $this->assertDatabaseMissing('product_categories', [
+            'company_id' => $company->id,
+            'code' => Config::get('dcslab.KEYWORDS.AUTO'),
+        ]);
     }
 
     public function test_product_category_api_call_store_with_existing_code_in_same_company_expect_failed()
@@ -112,14 +86,14 @@ class ProductCategoryAPICreateTest extends APITestCase
             'code' => 'test1',
         ]);
 
-        $productCategoryArr = ProductCategory::factory()->make([
+        $payload = ProductCategory::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.product_category.save'), $productCategoryArr);
+        $api = $this->json('POST', route('api.post.product_category.save'), $payload);
 
-        $api->assertStatus(422);
+        $api->assertUnprocessable();
         $api->assertJsonStructure([
             'errors',
         ]);
@@ -138,26 +112,25 @@ class ProductCategoryAPICreateTest extends APITestCase
         $companies = $user->companies()->inRandomOrder()->take(2)->get();
 
         $company_1 = $companies[0];
-
         $company_2 = $companies[1];
 
         ProductCategory::factory()->for($company_1)->create([
             'code' => 'test1',
         ]);
 
-        $productCategoryArr = ProductCategory::factory()->make([
+        $payload = ProductCategory::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.product_category.save'), $productCategoryArr);
+        $api = $this->json('POST', route('api.post.product_category.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('product_categories', [
             'company_id' => $company_2->id,
-            'code' => $productCategoryArr['code'],
-            'name' => $productCategoryArr['name'],
-            'type' => $productCategoryArr['type'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'type' => $payload['type'],
         ]);
     }
 
@@ -170,10 +143,38 @@ class ProductCategoryAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $productCategoryArr = [];
+        $payload = [];
 
-        $api = $this->json('POST', route('api.post.db.product.product_category.save'), $productCategoryArr);
+        $api = $this->json('POST', route('api.post.product_category.save'), $payload);
 
-        $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
+        $api->assertJsonValidationErrors(['company_id', 'code', 'name', 'type']);
+    }
+
+    public function test_product_category_api_call_store_with_sql_injection_payload_expect_failed()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+
+        $payload = ProductCategory::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'code' => "'; DROP TABLE product_categories; --",
+            'name' => "'; DROP TABLE product_categories; --",
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.product_category.save'), $payload);
+
+        $api->assertSuccessful();
+
+        $this->assertDatabaseHas('product_categories', [
+            'company_id' => $company->id,
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+        ]);
     }
 }

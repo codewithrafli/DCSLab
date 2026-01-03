@@ -1,13 +1,13 @@
 import axios from "../axios";
 import { useZiggyRouteStore } from "../stores/ziggy-route";
 import { route, Config } from "ziggy-js";
-import { ProductCategory } from "@/types/models/ProductCategory";
+import { ProductCategory } from "../types/models/ProductCategory";
 import { Resource } from "../types/resources/Resource";
 import { Collection } from "../types/resources/Collection";
 import { ServiceResponse } from "../types/services/ServiceResponse";
 import { AxiosError, AxiosResponse, isAxiosError } from "axios";
 import ErrorHandlerService from "./ErrorHandlerService";
-import { ReadAnyRequest } from "../types/services/ServiceRequest";
+import { ProductCategoryReadAnyPaginateRequest, ProductCategoryReadAnyGetRequest } from "../types/services/product-category/ProductCategoryRequest";
 import { StatusCode } from "../types/enums/StatusCode";
 import { client, useForm } from "laravel-precognition-vue";
 
@@ -24,12 +24,12 @@ export default class ProductCategoryService {
     }
 
     public useProductCategoryCreateForm() {
-        const url = route('api.post.db.product.product_category.save', undefined, true, this.ziggyRoute);
+        const url = route('api.post.product_category.save', undefined, true, this.ziggyRoute);
 
         client.axios().defaults.withCredentials = true;
         client.axios().defaults.withXSRFToken = true;
         const form = useForm('post', url, {
-            company_id: '0',
+            company_id: '',
             code: '_AUTO_',
             name: '',
             type: 1,
@@ -38,26 +38,73 @@ export default class ProductCategoryService {
         return form;
     }
 
-    public async readAny(args: ReadAnyRequest): Promise<ServiceResponse<Collection<Array<ProductCategory>> | Resource<Array<ProductCategory>> | null>> {
-        const result: ServiceResponse<Collection<Array<ProductCategory>> | Resource<Array<ProductCategory>> | null> = {
+    public async readAnyPaginate(args: ProductCategoryReadAnyPaginateRequest): Promise<ServiceResponse<Collection<Array<ProductCategory>> | null>> {
+        const result: ServiceResponse<Collection<Array<ProductCategory>> | null> = {
             success: false
         }
 
         try {
-            const queryParams: Record<string, string | number | boolean> = {};
+            const queryParams: Record<string, any> = {};
+            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            
+            queryParams['company_id'] = args.company_id;
             queryParams['search'] = args.search ? args.search : '';
-            if (args.company_id) queryParams['company_id'] = args.company_id;
-            queryParams['refresh'] = args.refresh;
-            queryParams['paginate'] = args.paginate;
-            if (args.page) queryParams['page'] = args.page;
-            if (args.per_page) queryParams['per_page'] = args.per_page;
-            queryParams['with_trashed'] = args.with_trashed ?? false;
+            if (args.type) queryParams['type'] = args.type;
+            if (args.include_id) queryParams['include_id'] = args.include_id;
 
-            const url = route('api.get.db.product.product_category.read_any', {
+            queryParams['refresh'] = args.refresh;
+            queryParams['paginate'] = {
+                page: args.page,
+                per_page: args.per_page
+            };
+
+            const url = route('api.get.product_category.read_any', {
                 _query: queryParams
             }, false, this.ziggyRoute);
 
             const response: AxiosResponse<Collection<Array<ProductCategory>>> = await axios.get(url);
+
+            if (response.status == StatusCode.OK) {
+                result.success = true;
+                result.data = response.data;
+            }
+
+            return result;
+        } catch (e: unknown) {
+            if (e instanceof Error && e.message.includes('Ziggy error')) {
+                return this.errorHandlerService.generateZiggyUrlErrorServiceResponse(e.message);
+            } else if (isAxiosError(e)) {
+                return this.errorHandlerService.generateAxiosErrorServiceResponse(e as AxiosError);
+            } else {
+                return result;
+            }
+        }
+    }
+
+    public async readAnyGet(args: ProductCategoryReadAnyGetRequest): Promise<ServiceResponse<Resource<Array<ProductCategory>> | null>> {
+        const result: ServiceResponse<Resource<Array<ProductCategory>> | null> = {
+            success: false
+        }
+
+        try {
+            const queryParams: Record<string, any> = {};
+            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            
+            queryParams['company_id'] = args.company_id;
+            queryParams['search'] = args.search ? args.search : '';
+            if (args.type) queryParams['type'] = args.type;
+            if (args.include_id) queryParams['include_id'] = args.include_id;
+
+            queryParams['refresh'] = args.refresh;
+            queryParams['get'] = {
+                limit: args.limit
+            };
+
+            const url = route('api.get.product_category.read_any', {
+                _query: queryParams
+            }, false, this.ziggyRoute);
+
+            const response: AxiosResponse<Resource<Array<ProductCategory>>> = await axios.get(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
@@ -82,7 +129,7 @@ export default class ProductCategoryService {
         }
 
         try {
-            const url = route('api.get.db.product.product_category.read', {
+            const url = route('api.get.product_category.read', {
                 product_category: ulid
             }, false, this.ziggyRoute);
 
@@ -106,12 +153,14 @@ export default class ProductCategoryService {
     }
 
     public useProductCategoryEditForm(ulid: string) {
-        const url = route('api.post.db.product.product_category.edit', ulid, true, this.ziggyRoute);
+        const url = route('api.post.product_category.edit', {
+            product_category: ulid
+        }, true, this.ziggyRoute);
 
         client.axios().defaults.withCredentials = true;
         client.axios().defaults.withXSRFToken = true;
         const form = useForm('post', url, {
-            company_id: '0',
+            company_id: '',
             code: '_AUTO_',
             name: '',
             type: 1,
@@ -120,15 +169,17 @@ export default class ProductCategoryService {
         return form;
     }
 
-    public async delete(ulid: string): Promise<ServiceResponse<boolean | null>> {
-        const result: ServiceResponse<boolean | null> = {
-            success: false,
+    public async delete(ulid: string): Promise<ServiceResponse<any>> {
+        const result: ServiceResponse<any> = {
+            success: false
         }
 
         try {
-            const url = route('api.post.db.product.product_category.delete', ulid, false, this.ziggyRoute);
+            const url = route('api.post.product_category.delete', {
+                product_category: ulid
+            }, false, this.ziggyRoute);
 
-            const response: AxiosResponse<boolean | null> = await axios.post(url);
+            const response: AxiosResponse<any> = await axios.post(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
@@ -146,5 +197,3 @@ export default class ProductCategoryService {
         }
     }
 }
-
-

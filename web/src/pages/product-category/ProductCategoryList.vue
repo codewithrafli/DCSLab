@@ -12,7 +12,7 @@ import { Collection } from "@/types/resources/Collection";
 import { DataListEmittedData } from "@/components/DataList/DataList.vue";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
 import { Resource } from "@/types/resources/Resource";
-import { ReadAnyRequest } from "@/types/services/ServiceRequest";
+import { ProductCategoryReadAnyPaginateRequest } from "@/types/services/product-category/ProductCategoryRequest";
 import { useRouter } from "vue-router";
 import { Dialog } from "@/components/Base/Headless";
 import { ViewMode } from "@/types/enums/ViewMode";
@@ -73,27 +73,30 @@ onMounted(async () => {
         router.push({ name: 'side-menu-error-code', params: { code: ErrorCode.USERLOCATION_REQUIRED } });
     }
 
-    await getProductCategories('', true, true, 1, 10);
+    await getProductCategories('', true, 1, 10);
 });
 // #endregion
 
 // #region Methods
-const getProductCategories = async (search: string, refresh: boolean, paginate: boolean, page: number, per_page: number) => {
+const getProductCategories = async (search: string, refresh: boolean, page: number, per_page: number) => {
     emits('loading-state', true);
 
     let company_id = selectedUserLocation.value.company.id;
 
-    const searchReq: ReadAnyRequest = {
-        search: search,
+    const searchReq: ProductCategoryReadAnyPaginateRequest = {
+        with_trashed: false,
+
         company_id: company_id,
+        search: search,
+        type: undefined,
+        include_id: undefined,
+
         refresh: refresh,
-        paginate: paginate,
         page: page,
         per_page: per_page,
-        with_trashed: false,
     };
 
-    let result: ServiceResponse<Collection<Array<ProductCategory>> | Resource<Array<ProductCategory>> | null> = await productCategoryServices.readAny(searchReq);
+    let result: ServiceResponse<Collection<Array<ProductCategory>> | null> = await productCategoryServices.readAnyPaginate(searchReq);
 
     if (result.success && result.data) {
         productCategoryLists.value = result.data as Collection<Array<ProductCategory>>;
@@ -105,7 +108,7 @@ const getProductCategories = async (search: string, refresh: boolean, paginate: 
 };
 
 const onDataListChanged = async (data: DataListEmittedData) => {
-    await getProductCategories(data.search.text, false, true, data.pagination.page, data.pagination.per_page);
+    await getProductCategories(data.search.text, false, data.pagination.page, data.pagination.per_page);
 };
 
 const viewSelected = (idx: number) => {
@@ -140,7 +143,7 @@ const confirmDelete = async () => {
 
     if (result.success) {
         emits('update-profile');
-        await getProductCategories('', true, true, 1, 10);
+        await getProductCategories('', true, 1, 10);
         showNotification(t('views.product_category.alert.delete_product_category.title'), t('views.product_category.alert.delete_product_category.content'));
     } else {
         showAlertPlaceholder('danger', '', result.errors as Record<string, Array<string>>);

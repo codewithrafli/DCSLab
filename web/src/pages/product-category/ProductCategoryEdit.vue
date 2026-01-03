@@ -26,6 +26,7 @@ import { useRouter } from "vue-router";
 import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
 import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
 import { ErrorCode } from "@/types/enums/ErrorCode";
+import { DropDownOption } from "@/types/models/DropDownOption";
 // #endregion
 
 // #region Interfaces
@@ -54,16 +55,17 @@ const emits = defineEmits([
 // #region Refs
 const cards = ref<Array<TwoColumnsLayoutCards>>([
     {
+        title: "views.product_category.field_groups.company_info",
+        state: CardState.Expanded,
+    },
+    {
         title: "views.product_category.field_groups.product_category_data",
         state: CardState.Expanded,
     },
     { title: "", state: CardState.Hidden, id: "button" },
 ]);
 
-const typeDDL = ref<Array<{ code: number; name: string }>>([
-    { code: 1, name: 'views.product_category.type.product' },
-    { code: 2, name: 'views.product_category.type.service' },
-]);
+const typeDDL = ref<Array<DropDownOption> | null>(null);
 
 const productCategoryForm = productCategoryService.useProductCategoryEditForm(route.params.ulid as string);
 // #endregion
@@ -86,11 +88,18 @@ onMounted(async () => {
             params: { code: ErrorCode.USERLOCATION_REQUIRED },
         });
     }
+    getDDL();
     await loadData(route.params.ulid as string);
 });
 // #endregion
 
 // #region Methods
+const getDDL = (): void => {
+    dashboardServices.getProductCategoryTypesDDL().then((result: Array<DropDownOption> | null) => {
+        typeDDL.value = result;
+    });
+};
+
 const loadData = async (ulid: string) => {
     emits("loading-state", true);
     let response: ServiceResponse<ProductCategory | null> =
@@ -98,7 +107,7 @@ const loadData = async (ulid: string) => {
 
     if (response && response.data) {
         productCategoryForm.setData({
-            company_id: selectedUserLocation.value.company.id,
+            company_id: response.data.company.id,
             code: response.data.code,
             name: response.data.name,
             type: response.data.type,
@@ -201,6 +210,16 @@ watch(
             @handle-expand-card="handleExpandCard"
         >
             <template #card-items-0>
+                <div class="p-5">
+                    <FormLabel>
+                        {{ selectedUserLocation.company.code }}
+                        <br />
+                        {{ selectedUserLocation.company.name }}
+                    </FormLabel>
+                    <FormInput type="hidden" v-model="productCategoryForm.company_id" />
+                </div>
+            </template>
+            <template #card-items-1>
                 <div class="p-5">
                     <div class="pb-4">
                         <FormLabel

@@ -99,6 +99,19 @@ Route::prefix('warehouse')->middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::prefix('product_category')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.product_category.')->group(function () {
+        Route::get('read', [ProductCategoryController::class, 'readAny'])->name('read_any');
+        Route::get('read/{product_category:ulid}', [ProductCategoryController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.product_category.')->group(function () {
+        Route::post('save', [ProductCategoryController::class, 'store'])->name('save');
+        Route::post('edit/{product_category:ulid}', [ProductCategoryController::class, 'update'])->name('edit');
+        Route::post('delete/{product_category:ulid}', [ProductCategoryController::class, 'delete'])->name('delete');
+    });
+});
+
 Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,1'], 'as' => 'api.get'], function () {
     Route::group(['prefix' => 'dashboard', 'as' => '.db'], function () {
         /* #region Extensions */
@@ -149,10 +162,6 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
         });
 
         Route::group(['prefix' => 'product', 'as' => '.product'], function () {
-            Route::group(['prefix' => 'product_category', 'as' => '.product_category'], function () {
-                Route::get('read', [ProductCategoryController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{product_category:ulid}', [ProductCategoryController::class, 'read'])->name('.read');
-            });
             Route::group(['prefix' => 'brand', 'as' => '.brand'], function () {
                 Route::get('read', [BrandController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{brand:ulid}', [BrandController::class, 'read'])->name('.read');
@@ -355,6 +364,7 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('list/payment_term_types', [CommonController::class, 'getPaymentTermTypes'])->name('.list.payment_term_types');
                 Route::get('list/rounding_types', [CommonController::class, 'getRoundingTypes'])->name('.list.rounding_types');
                 Route::get('list/record_statuses', [CommonController::class, 'getRecordStatuses'])->name('.list.record_statuses');
+                Route::get('list/product_category_types', [CommonController::class, 'getProductCategoryTypes'])->name('.list.product_category_types');
             });
         });
 
@@ -425,11 +435,6 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
         });
 
         Route::group(['prefix' => 'product', 'middleware' => ['precognitive'], 'as' => '.product'], function () {
-            Route::group(['prefix' => 'product_category', 'as' => '.product_category'], function () {
-                Route::post('save', [ProductCategoryController::class, 'store'])->name('.save');
-                Route::post('edit/{product_category:ulid}', [ProductCategoryController::class, 'update'])->name('.edit');
-                Route::post('delete/{product_category:ulid}', [ProductCategoryController::class, 'delete'])->name('.delete');
-            });
             Route::group(['prefix' => 'brand', 'as' => '.brand'], function () {
                 Route::post('save', [BrandController::class, 'store'])->name('.save');
                 Route::post('edit/{brand:ulid}', [BrandController::class, 'update'])->name('.edit');

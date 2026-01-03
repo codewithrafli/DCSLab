@@ -71,16 +71,16 @@ class AppSeed extends Command
         // (new RoleSeeder())->run(randomPermission: true, count: 5);
         // $progressBar->advance();
 
-        (new CompanySeeder())->run(companiesPerUsers: 1, userId: 0);
+        (new CompanySeeder())->run(companiesPerUser: 1, userId: null);
         $progressBar->advance();
 
-        (new BranchSeeder())->run(branchPerCompanies: 5, onlyThisCompanyId: 0);
+        (new BranchSeeder())->run(branchesPerCompany: 5, companyId: null);
         $progressBar->advance();
 
-        (new WarehouseSeeder())->run(warehousePerCompanies: 5, onlyThisCompanyId: 0);
+        (new WarehouseSeeder())->run(warehousesPerCompany: 5, companyId: null);
         $progressBar->advance();
 
-        (new ProductCategorySeeder())->run(companyId: null, qtyPerCompany: 5);
+        (new ProductCategorySeeder())->run(productCategoriesPerCompany: 5, companyId: null);
         $progressBar->advance();
 
         (new BrandSeeder())->run(companyId: null, qtyPerCompany: 5);

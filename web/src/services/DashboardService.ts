@@ -174,6 +174,31 @@ export default class DashboardService {
         }
     }
 
+    public async getProductCategoryTypesDDL(): Promise<Array<DropDownOption> | null> {
+        const ddlName = 'productCategoryTypesDDL';
+        let result: Array<DropDownOption> = [];
+
+        try {
+            if (this.cacheService.getCachedDDL(ddlName) == null) {
+                const url = route('api.get.db.common.ddl.list.product_category_types', undefined, false, this.ziggyRoute);
+
+                const response: AxiosResponse<Array<DropDownOption> | null> = await axios.get(url);
+
+                this.cacheService.setCachedDDL(ddlName, response.data);
+            }
+
+            const cachedData: Array<DropDownOption> | null = this.cacheService.getCachedDDL(ddlName);
+
+            if (cachedData != null) {
+                result = cachedData as Array<DropDownOption>;
+            }
+
+            return result;
+        } catch (e: unknown) {
+            return result;
+        }
+    }
+
     public async uploadFile(file: File): Promise<ServiceResponse<FileUpload | null>> {
         const result: ServiceResponse<FileUpload | null> = {
             success: false
