@@ -245,4 +245,16 @@ class CompanyActions
 
         return $query->doesntExist();
     }
+
+    public function isUniqueName(User $user, string $name, ?int $exceptId): bool
+    {
+        if ($user->companies->count() == 0) return true;
+
+        $query = $user->companies()->where('name', '=', $name);
+        if ($exceptId) {
+            $query->where('companies.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
 }

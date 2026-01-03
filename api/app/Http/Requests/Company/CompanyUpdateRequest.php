@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Company;
 
 use App\Enums\RecordStatusEnum;
-use App\Rules\CompanyUpdateValidCode;
 use App\Rules\CompanyUpdateValidDefault;
 use App\Rules\CompanyUpdateValidStatus;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,7 +29,7 @@ class CompanyUpdateRequest extends FormRequest
         $user = Auth::user();
 
         return [
-            'code' => ['required', 'string', 'max:255', new CompanyUpdateValidCode($user, $this->route('company'))],
+            'code' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
             'default' => ['required', 'boolean', new CompanyUpdateValidDefault($user)],

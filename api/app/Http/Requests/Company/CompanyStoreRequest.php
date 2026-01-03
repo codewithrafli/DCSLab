@@ -4,7 +4,6 @@ namespace App\Http\Requests\Company;
 
 use App\Enums\RecordStatusEnum;
 use App\Models\Company;
-use App\Rules\CompanyStoreValidCode;
 use App\Rules\CompanyStoreValidDefault;
 use App\Rules\CompanyStoreValidStatus;
 use Illuminate\Foundation\Http\FormRequest;
@@ -31,7 +30,7 @@ class CompanyStoreRequest extends FormRequest
         $user = Auth::user();
 
         return [
-            'code' => ['required', 'string', 'max:255', new CompanyStoreValidCode($user)],
+            'code' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
             'default' => ['required', 'boolean', new CompanyStoreValidDefault($user)],
