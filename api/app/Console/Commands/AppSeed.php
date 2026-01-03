@@ -83,7 +83,7 @@ class AppSeed extends Command
         (new ProductCategorySeeder())->run(productCategoriesPerCompany: 5, companyId: null);
         $progressBar->advance();
 
-        (new BrandSeeder())->run(companyId: null, qtyPerCompany: 5);
+        (new BrandSeeder())->run(brandsPerCompany: 5, companyId: null);
         $progressBar->advance();
 
         (new UnitSeeder())->run(companyId: null, qtyPerCompany: 5);

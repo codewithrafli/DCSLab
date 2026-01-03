@@ -6,17 +6,17 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class BrandFactory extends Factory
 {
+    protected $brands = [
+        'Samsung', 'Huawei', 'LV', 'Apple', 'Xiaomi', 'Oppo',
+        'Vivo', 'Google', 'OnePlus', 'Motorola', 'Nokia', 'Sony',
+        'LG', 'TCL', 'Hisense', 'Sharp',
+    ];
+
     public function definition(): array
     {
-        $brands = [
-            'Samsung', 'Huawei', 'LV', 'Apple', 'Xiaomi', 'Oppo',
-            'Vivo', 'Google', 'OnePlus', 'Motorola', 'Nokia', 'Sony',
-            'LG', 'TCL', 'Hisense', 'Sharp',
-        ];
-
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'name' => $brands[array_rand($brands)],
+            'name' => fake()->randomElement($this->brands),
         ];
     }
 
@@ -31,7 +31,7 @@ class BrandFactory extends Factory
 
     private function craftName(string $str)
     {
-        $text = fake()->randomElement(['Samsung', 'Huawei', 'LV']);
+        $text = fake()->randomElement($this->brands);
 
         return substr_replace($text, $str, random_int(0, strlen($text) - 1), 0);
     }

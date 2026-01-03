@@ -31,6 +31,10 @@ import ProductCategoryIndex from "@/pages/product-category/ProductCategoryIndex.
 import ProductCategoryList from "@/pages/product-category/ProductCategoryList.vue";
 import ProductCategoryCreate from "@/pages/product-category/ProductCategoryCreate.vue";
 import ProductCategoryEdit from "@/pages/product-category/ProductCategoryEdit.vue";
+import BrandIndex from "@/pages/brand/BrandIndex.vue";
+import BrandList from "@/pages/brand/BrandList.vue";
+import BrandCreate from "@/pages/brand/BrandCreate.vue";
+import BrandEdit from "@/pages/brand/BrandEdit.vue";
 import CustomerGroupIndex from "@/pages/customer-group/CustomerGroupIndex.vue";
 import CustomerGroupList from "@/pages/customer-group/CustomerGroupList.vue";
 import CustomerGroupCreate from "@/pages/customer-group/CustomerGroupCreate.vue";
@@ -225,6 +229,38 @@ export default [
                                 path: "/dashboard/product/product-category/edit/:ulid",
                                 name: "side-menu-product-product-category-edit",
                                 component: ProductCategoryEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
+                        ]
+                    },
+                    {
+                        path: "/dashboard/product/brand",
+                        name: "side-menu-product-brand",
+                        redirect: "/dashboard/product/brand/list",
+                        component: BrandIndex,
+                        children: [
+                            {
+                                path: "/dashboard/product/brand/list",
+                                name: "side-menu-product-brand-list",
+                                component: BrandList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/product/brand/create",
+                                name: "side-menu-product-brand-create",
+                                component: BrandCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/product/brand/edit/:ulid",
+                                name: "side-menu-product-brand-edit",
+                                component: BrandEdit,
                                 meta: {
                                     remember: true,
                                 },

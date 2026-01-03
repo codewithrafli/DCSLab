@@ -12,11 +12,6 @@ use Vinkla\Hashids\Facades\Hashids;
 
 class BrandAPIEditTest extends APITestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function test_brand_api_call_update_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
@@ -31,9 +26,9 @@ class BrandAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.brand.edit', $brand->ulid), $brandArr);
+        $api = $this->json('POST', route('api.post.brand.edit', $brand->ulid), $brandArr);
 
-        $api->assertStatus(401);
+        $api->assertUnauthorized();
     }
 
     public function test_brand_api_call_update_without_access_right_expect_unauthorized_message()
@@ -51,19 +46,9 @@ class BrandAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.brand.edit', $brand->ulid), $brandArr);
+        $api = $this->json('POST', route('api.post.brand.edit', $brand->ulid), $brandArr);
 
-        $api->assertStatus(403);
-    }
-
-    public function test_brand_api_call_update_with_script_tags_in_payload_expect_stripped()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    public function test_brand_api_call_update_with_script_tags_in_payload_expect_encoded()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $api->assertForbidden();
     }
 
     public function test_brand_api_call_update_expect_successful()
@@ -82,7 +67,7 @@ class BrandAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.brand.edit', $brand->ulid), $brandArr);
+        $api = $this->json('POST', route('api.post.brand.edit', $brand->ulid), $brandArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('brands', [
@@ -91,11 +76,6 @@ class BrandAPIEditTest extends APITestCase
             'code' => $brandArr['code'],
             'name' => $brandArr['name'],
         ]);
-    }
-
-    public function test_brand_api_call_update_with_nonexistance_branch_id_expect_failed()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
     }
 
     public function test_brand_api_call_update_and_use_existing_code_in_same_company_expect_failed()
@@ -119,9 +99,9 @@ class BrandAPIEditTest extends APITestCase
             'code' => $brand_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.brand.edit', $brand_2->ulid), $brandArr);
+        $api = $this->json('POST', route('api.post.brand.edit', $brand_2->ulid), $brandArr);
 
-        $api->assertStatus(422);
+        $api->assertUnprocessable();
         $api->assertJsonStructure([
             'errors',
         ]);
@@ -154,8 +134,39 @@ class BrandAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.brand.edit', $brand_2->ulid), $brandArr);
+        $api = $this->json('POST', route('api.post.brand.edit', $brand_2->ulid), $brandArr);
 
         $api->assertSuccessful();
+    }
+
+    public function test_brand_api_call_update_with_sql_injection_payload_expect_failed()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+
+        $brand = Brand::factory()->for($company)->create();
+
+        $brandArr = Brand::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'code' => "'; DROP TABLE brands; --",
+            'name' => "'; DROP TABLE brands; --",
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.brand.edit', $brand->ulid), $brandArr);
+
+        $api->assertSuccessful();
+
+        $this->assertDatabaseHas('brands', [
+            'id' => $brand->id,
+            'company_id' => $company->id,
+            'code' => $brandArr['code'],
+            'name' => $brandArr['name'],
+        ]);
     }
 }

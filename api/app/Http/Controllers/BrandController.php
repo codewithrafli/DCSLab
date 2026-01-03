@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Brand\BrandActions;
-use App\Http\Requests\BrandRequest;
+use App\DTOs\ExecuteDTO;
+use App\DTOs\ExecuteGetDTO;
+use App\DTOs\ExecutePaginationDTO;
+use App\Helpers\HashidsHelper;
+use App\Http\Requests\Brand\BrandStoreRequest;
+use App\Http\Requests\Brand\BrandUpdateRequest;
 use App\Http\Resources\BrandResource;
 use App\Models\Brand;
+use App\Rules\IsValidCompany;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class BrandController extends BaseController
 {
@@ -19,41 +28,106 @@ class BrandController extends BaseController
         $this->brandActions = $brandActions;
     }
 
-    public function store(BrandRequest $brandRequest)
+    public function store(BrandStoreRequest $request)
     {
-        $request = $brandRequest->validated();
+        $validatedRequest = $request->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->brandActions->create($request);
+            DB::beginTransaction();
+
+            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
+                $code = $this->brandActions->generateUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], null,
+                );
+                $validatedRequest['code'] = $code;
+            } else {
+                $isUnique = $this->brandActions->isUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], null,
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $isUniqueName = $this->brandActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], null,
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
+            $result = $this->brandActions->create($validatedRequest);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function readAny(BrandRequest $brandRequest)
+    public function readAny(Request $request)
     {
-        $request = $brandRequest->validated();
+        if (! Auth::check())  return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('viewAny', Brand::class);
+
+        if ($request->filled('company_id')) $request->merge(['company_id' => HashidsHelper::decodeId($request->company_id)]);
+        if ($request->filled('include_id')) $request->merge(['include_id' => HashidsHelper::decodeId($request->include_id)]);
+
+        $validatedRequest = $request->validate([
+            'with_trashed' => ['required', 'boolean'],
+
+            'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+            'search' => ['nullable', 'string'],
+            'include_id' => ['nullable', 'integer', 'exists:brands,id'],
+
+            'refresh' => ['required', 'boolean'],
+            'paginate' => ['nullable', 'array', 'required_without:get', 'prohibits:get'],
+            'paginate.page' => ['required_with:paginate', 'integer', 'min:1'],
+            'paginate.per_page' => ['required_with:paginate', 'integer', 'min:10'],
+            'get' => ['nullable', 'array', 'required_without:paginate', 'prohibits:paginate'],
+            'get.limit' => ['required_with:get', 'integer', 'min:10'],
+        ]);
 
         $result = null;
         $errorMsg = '';
 
         try {
             $result = $this->brandActions->readAny(
-                useCache: $request['refresh'],
-                withTrashed: $request['with_trashed'],
+                withTrashed: $validatedRequest['with_trashed'],
 
-                search: $request['search'],
-                companyId: $request['company_id'],
+                companyId: $validatedRequest['company_id'],
+                search: $validatedRequest['search'] ?? null,
+                includeId: $validatedRequest['include_id'] ?? null,
 
-                paginate: $request['paginate'],
-                page: $request['page'],
-                perPage: $request['per_page'],
-                limit: $request['limit'],
+                execute: new ExecuteDTO(
+                    useCache: $validatedRequest['refresh'],
+                    pagination: (function () use ($validatedRequest) {
+                        $pagination = null;
+                        if (isset($validatedRequest['paginate'])) {
+                            $pagination = new ExecutePaginationDTO(
+                                page: $validatedRequest['paginate']['page'],
+                                perPage: $validatedRequest['paginate']['per_page'],
+                            );
+                        }
+
+                        return $pagination;
+                    })(),
+                    get: (function () use ($validatedRequest) {
+                        $get = null;
+                        if (isset($validatedRequest['get'])) {
+                            $get = new ExecuteGetDTO(
+                                limit: $validatedRequest['get']['limit'],
+                            );
+                        }
+
+                        return $get;
+                    })()
+                )
             );
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
@@ -68,9 +142,10 @@ class BrandController extends BaseController
         }
     }
 
-    public function read(Brand $brand, BrandRequest $brandRequest)
+    public function read(Brand $brand)
     {
-        $request = $brandRequest->validated();
+        if (! Auth::check()) return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('view', $brand);
 
         $result = null;
         $errorMsg = '';
@@ -90,33 +165,64 @@ class BrandController extends BaseController
         }
     }
 
-    public function update(Brand $brand, BrandRequest $brandRequest)
+    public function update(Brand $brand, BrandUpdateRequest $request)
     {
-        $request = $brandRequest->validated();
+        $validatedRequest = $request->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->brandActions->update(
-                brand: $brand,
-                data: $request
+            DB::beginTransaction();
+
+            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
+                $code = $this->brandActions->generateUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], $brand->id,
+                );
+                $validatedRequest['code'] = $code;
+            } else {
+                $isUnique = $this->brandActions->isUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], $brand->id,
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $isUniqueName = $this->brandActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], $brand->id,
             );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
+            $result = $this->brandActions->update($brand, $validatedRequest);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function delete(Brand $brand, BrandRequest $brandRequest)
+    public function delete(Brand $brand)
     {
+        if (! Auth::check()) return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('delete', $brand);
+
         $result = false;
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->brandActions->delete($brand);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

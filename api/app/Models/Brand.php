@@ -31,7 +31,9 @@ class Brand extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('brands.code', 'like', '%'.$search.'%')
-            ->orWhere('brands.name', 'like', '%'.$search.'%');
+        return $query->where(function ($query) use ($search) {
+            $query->where('brands.code', 'like', '%'.$search.'%')
+                ->orWhere('brands.name', 'like', '%'.$search.'%');
+        });
     }
 }

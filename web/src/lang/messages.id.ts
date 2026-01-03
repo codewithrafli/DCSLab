@@ -21,6 +21,7 @@ import company from "./id/views/company.json"
 import branch from "./id/views/branch.json"
 import warehouse from "./id/views/warehouse.json"
 import product_category from "./id/views/product_category.json"
+import brand from "./id/views/brand.json"
 import customer_group from "./id/views/customer_group.json"
 import investor from "./id/views/investor.json"
 import error from "./id/views/error.json"
@@ -51,6 +52,7 @@ export default {
         "branch": branch,
         "warehouse": warehouse,
         "product_category": product_category,
+        "brand": brand,
         "customer_group": customer_group,
         "investor": investor,
         "error": error,

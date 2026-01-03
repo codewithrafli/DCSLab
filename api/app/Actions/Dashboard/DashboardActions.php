@@ -142,6 +142,12 @@ class DashboardActions
             'title' => 'components.menu.product-category',
         ];
 
+        $brand = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-product-brand',
+            'title' => 'components.menu.brand',
+        ];
+
         $root_array = [
             'icon' => 'Package',
             'pageName' => 'side-menu-product',
@@ -149,7 +155,7 @@ class DashboardActions
             'subMenu' => [],
         ];
 
-        array_push($root_array['subMenu'], $productCategory);
+        array_push($root_array['subMenu'], $productCategory, $brand);
         array_push($menu, $root_array);
 
         return $menu;

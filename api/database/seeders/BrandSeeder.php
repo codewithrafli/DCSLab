@@ -8,21 +8,17 @@ use Illuminate\Database\Seeder;
 
 class BrandSeeder extends Seeder
 {
-    public function run(?int $companyId, ?int $qtyPerCompany)
+    public function run(?int $brandsPerCompany = null, ?int $companyId = null)
     {
-        $query = Company::query();
-        if ($companyId) {
-            $query->where('id', '=', $companyId);
-        }
-        $companies = $query->get();
+        $brandsPerCompany = $brandsPerCompany ?? 5;
 
-        if (! $qtyPerCompany) {
-            $qtyPerCompany = 5;
-        }
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
+
         foreach ($companies as $company) {
-            for ($i = 0; $i < $qtyPerCompany; $i++) {
-                $brandFactory = Brand::factory()->for($company);
-                $brandFactory->create();
+            for ($i = 0; $i < $brandsPerCompany; $i++) {
+                Brand::factory()
+                    ->for($company)
+                    ->create();
             }
         }
     }
