@@ -204,7 +204,7 @@ class ProductCategoryActions
         return $code;
     }
 
-    public function isUniqueCode(int $companyId, string $code, ?int $exceptId = null): bool
+    public function isUniqueCode(int $companyId, string $code, ?int $exceptId): bool
     {
         $company = Company::find($companyId);
 
@@ -220,7 +220,7 @@ class ProductCategoryActions
         return $query->doesntExist();
     }
 
-    public function isUniqueName(int $companyId, string $name, ?int $exceptId = null): bool
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId): bool
     {
         $company = Company::find($companyId);
 

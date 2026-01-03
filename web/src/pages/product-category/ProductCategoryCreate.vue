@@ -275,7 +275,7 @@ watch(
                         variant="primary"
                         class="w-28 shadow-md"
                         :disabled="
-                            productCategoryForm.validating || productCategoryForm.hasErrors
+                            productCategoryForm.validating
                         "
                     >
                         <Lucide
