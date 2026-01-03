@@ -3,10 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Unit\UnitActions;
-use App\Http\Requests\UnitRequest;
+use App\DTOs\ExecuteDTO;
+use App\DTOs\ExecuteGetDTO;
+use App\DTOs\ExecutePaginationDTO;
+use App\Enums\UnitTypeEnum;
+use App\Helpers\HashidsHelper;
+use App\Http\Requests\Unit\UnitStoreRequest;
+use App\Http\Requests\Unit\UnitUpdateRequest;
 use App\Http\Resources\UnitResource;
 use App\Models\Unit;
+use App\Rules\IsValidCompany;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UnitController extends BaseController
 {
@@ -19,104 +29,178 @@ class UnitController extends BaseController
         $this->unitActions = $unitActions;
     }
 
-    public function store(UnitRequest $unitRequest)
+    public function store(UnitStoreRequest $request)
     {
-        $request = $unitRequest->validated();
+        $validatedRequest = $request->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->unitActions->create($request);
+            DB::beginTransaction();
+
+            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
+                $code = $this->unitActions->generateUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], null,
+                );
+                $validatedRequest['code'] = $code;
+            } else {
+                $isUnique = $this->unitActions->isUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], null,
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $isUniqueName = $this->unitActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], null,
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
+            $result = $this->unitActions->create($validatedRequest);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function readAny(UnitRequest $unitRequest)
+    public function readAny(Request $request)
     {
-        $request = $unitRequest->validated();
+        if (! Auth::check()) {
+            return response()->error(trans('rules.auth.unauthorized'), 401);
+        }
+        $this->authorize('viewAny', Unit::class);
+
+        if ($request->filled('company_id')) {
+            $request->merge(['company_id' => HashidsHelper::decodeId($request->company_id)]);
+        }
+        if ($request->filled('include_id')) {
+            $request->merge(['include_id' => HashidsHelper::decodeId($request->include_id)]);
+        }
+
+        $validatedRequest = $request->validate([
+            'with_trashed' => ['required', 'boolean'],
+
+            'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+            'search' => ['nullable', 'string'],
+            'include_id' => ['nullable', 'integer', 'exists:units,id'],
+
+            'refresh' => ['required', 'boolean'],
+            'paginate' => ['nullable', 'array', 'required_without:get', 'prohibits:get'],
+            'paginate.page' => ['required_with:paginate', 'integer', 'min:1'],
+            'paginate.per_page' => ['required_with:paginate', 'integer', 'min:10'],
+            'get' => ['nullable', 'array', 'required_without:paginate', 'prohibits:paginate'],
+            'get.limit' => ['required_with:get', 'integer', 'min:10'],
+        ]);
 
         $result = null;
         $errorMsg = '';
 
         try {
             $result = $this->unitActions->readAny(
-                useCache: $request['refresh'],
-                withTrashed: $request['with_trashed'],
+                withTrashed: $validatedRequest['with_trashed'],
 
-                search: $request['search'],
-                companyId: $request['company_id'],
+                companyId: $validatedRequest['company_id'],
+                search: $validatedRequest['search'] ?? null,
+                includeId: $validatedRequest['include_id'] ?? null,
 
-                paginate: $request['paginate'],
-                page: $request['page'],
-                perPage: $request['per_page'],
-                limit: $request['limit'],
+                execute: new ExecuteDTO(
+                    useCache: ! $validatedRequest['refresh'],
+                    pagination: isset($validatedRequest['paginate']) ? new ExecutePaginationDTO(
+                        page: $validatedRequest['paginate']['page'],
+                        perPage: $validatedRequest['paginate']['per_page'],
+                    ) : null,
+                    get: isset($validatedRequest['get']) ? new ExecuteGetDTO(
+                        limit: $validatedRequest['get']['limit'],
+                    ) : null,
+                )
             );
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
-        if (is_null($result)) {
-            return response()->error($errorMsg);
-        } else {
-            $response = UnitResource::collection($result);
-
-            return $response;
-        }
+        return is_null($result) ? response()->error($errorMsg) : response()->success(UnitResource::collection($result));
     }
 
-    public function read(Unit $unit, UnitRequest $unitRequest)
+    public function getTypes()
     {
-        $request = $unitRequest->validated();
+        return [
+            ['name' => 'views.unit.enums.unit_type.product', 'code' => UnitTypeEnum::PRODUCT->value],
+            ['name' => 'views.unit.enums.unit_type.service', 'code' => UnitTypeEnum::SERVICE->value],
+        ];
+    }
+
+    public function read(Unit $unit)
+    {
+        $this->authorize('view', $unit);
+
+        return response()->success(new UnitResource($this->unitActions->read($unit)));
+    }
+
+    public function update(UnitUpdateRequest $request, Unit $unit)
+    {
+        $validatedRequest = $request->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->unitActions->read($unit);
-        } catch (Exception $e) {
-            $errorMsg = app()->environment('production') ? '' : $e->getMessage();
-        }
+            DB::beginTransaction();
 
-        if (is_null($result)) {
-            return response()->error($errorMsg);
-        } else {
-            $response = new UnitResource($result);
+            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
+                $code = $this->unitActions->generateUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], $unit->id,
+                );
+                $validatedRequest['code'] = $code;
+            } else {
+                $isUnique = $this->unitActions->isUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], $unit->id,
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
 
-            return $response;
-        }
-    }
-
-    public function update(Unit $unit, UnitRequest $unitRequest)
-    {
-        $request = $unitRequest->validated();
-
-        $result = null;
-        $errorMsg = '';
-
-        try {
-            $result = $this->unitActions->update(
-                unit: $unit,
-                data: $request
+            $isUniqueName = $this->unitActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], $unit->id,
             );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
+            $result = $this->unitActions->update($unit, $validatedRequest);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function delete(Unit $unit, UnitRequest $unitRequest)
+    public function delete(Unit $unit)
     {
+        $this->authorize('delete', $unit);
+
         $result = false;
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->unitActions->delete($unit);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

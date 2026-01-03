@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UnitFactory extends Factory
 {
+    protected $units = [
+        'PCS', 'SET', 'BTL', 'KG', 'LITRE', 'BOX', 'PACK', 'DOZEN',
+        'METER', 'ROLL', 'CAN', 'DRUM', 'BAG', 'TUBE', 'JAR',
+    ];
+
     public function definition(): array
     {
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'name' => fake()->randomElement(['PCS', 'SET', 'BTL']),
+            'name' => fake()->randomElement($this->units),
             'description' => fake()->sentence(),
             'type' => fake()->randomElement(UnitTypeEnum::toArrayEnum()),
         ];
@@ -28,7 +33,7 @@ class UnitFactory extends Factory
 
     private function craftName(string $str)
     {
-        $text = fake()->randomElement(['PCS', 'SET', 'BTL']);
+        $text = fake()->randomElement($this->units);
 
         return substr_replace($text, $str, random_int(0, strlen($text) - 1), 0);
     }

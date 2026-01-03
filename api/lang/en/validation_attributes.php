@@ -109,7 +109,7 @@ return [
         'code' => 'Code',
         'name' => 'Name',
         'description' => 'Description',
-        'category' => 'Category',
+        'type' => 'Type',
     ],
     'product' => [
         'company' => 'Company',

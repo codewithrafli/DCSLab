@@ -13,11 +13,6 @@ use Tests\APITestCase;
 
 class UnitAPIDeleteTest extends APITestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function test_unit_api_call_delete_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
@@ -28,9 +23,9 @@ class UnitAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $unit = Unit::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.delete', $unit->ulid));
+        $api = $this->json('POST', route('api.post.unit.delete', $unit->ulid));
 
-        $api->assertStatus(401);
+        $api->assertUnauthorized();
     }
 
     public function test_unit_api_call_delete_without_access_right_expect_unauthorized_message()
@@ -44,9 +39,9 @@ class UnitAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $unit = Unit::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.delete', $unit->ulid));
+        $api = $this->json('POST', route('api.post.unit.delete', $unit->ulid));
 
-        $api->assertStatus(403);
+        $api->assertForbidden();
     }
 
     public function test_unit_api_call_delete_expect_successful()
@@ -61,7 +56,7 @@ class UnitAPIDeleteTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $unit = Unit::factory()->for($company)->create();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.delete', $unit->ulid));
+        $api = $this->json('POST', route('api.post.unit.delete', $unit->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('units', [
@@ -71,13 +66,15 @@ class UnitAPIDeleteTest extends APITestCase
 
     public function test_unit_api_call_delete_of_nonexistance_ulid_expect_not_found()
     {
-        $user = User::factory()->create();
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->create();
 
         $this->actingAs($user);
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.delete', $ulid));
+        $api = $this->json('POST', route('api.post.unit.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -88,8 +85,35 @@ class UnitAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.product.unit.delete', null));
+        $api = $this->json('POST', route('api.post.unit.delete', null));
+    }
 
-        $api->assertStatus(500);
+    public function test_unit_api_call_delete_with_sql_injection_expect_not_found()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->create();
+
+        $this->actingAs($user);
+
+        $injections = [
+            "' OR '1'='1",
+            '1 UNION SELECT username, password FROM users',
+            '1; DROP TABLE users',
+            "' OR '1'='1' --",
+            '1 OR SLEEP(5)',
+            "1; INSERT INTO logs (message) VALUES ('Injected SQL query')",
+            "1; UPDATE users SET password = 'hacked' WHERE id = 1; --",
+            "admin'--",
+            "' OR 1=1 --",
+        ];
+
+        $testIdx = random_int(0, count($injections) - 1);
+        $injection = $injections[$testIdx];
+
+        $api = $this->json('POST', route('api.post.unit.delete', $injection));
+
+        $api->assertStatus(404);
     }
 }

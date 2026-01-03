@@ -7,16 +7,12 @@ use App\Models\Company;
 use App\Models\Role;
 use App\Models\Unit;
 use App\Models\User;
+use Illuminate\Support\Facades\Config;
 use Tests\APITestCase;
 use Vinkla\Hashids\Facades\Hashids;
 
 class UnitAPICreateTest extends APITestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function test_unit_api_call_store_without_authorization_expect_unauthorized_message()
     {
         $user = User::factory()
@@ -26,11 +22,11 @@ class UnitAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $unitArr = Unit::factory()->make([
+        $payload = Unit::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.save'), $unitArr);
+        $api = $this->json('POST', route('api.post.unit.save'), $payload);
 
         $api->assertUnauthorized();
     }
@@ -45,23 +41,13 @@ class UnitAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $unitArr = Unit::factory()->make([
+        $payload = Unit::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.save'), $unitArr);
+        $api = $this->json('POST', route('api.post.unit.save'), $payload);
 
         $api->assertForbidden();
-    }
-
-    public function test_unit_api_call_store_with_script_tags_in_payload_expect_stripped()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    public function test_unit_api_call_store_with_script_tags_in_payload_expect_encoded()
-    {
-        $this->markTestSkipped('Test under construction');
     }
 
     public function test_unit_api_call_store_expect_successful()
@@ -75,25 +61,52 @@ class UnitAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $unitArr = Unit::factory()->make([
+        $payload = Unit::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.save'), $unitArr);
+        $api = $this->json('POST', route('api.post.unit.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('units', [
             'company_id' => $company->id,
-            'code' => $unitArr['code'],
-            'name' => $unitArr['name'],
-            'description' => $unitArr['description'],
-            'type' => $unitArr['type'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'description' => $payload['description'],
+            'type' => $payload['type'],
         ]);
     }
 
-    public function test_unit_api_call_store_with_nonexistance_branch_id_expect_failed()
+    public function test_unit_api_call_store_with_auto_code_expect_successful()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+
+        $payload = Unit::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'code' => Config::get('dcslab.KEYWORDS.AUTO'),
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.unit.save'), $payload);
+
+        $api->assertSuccessful();
+        $this->assertDatabaseHas('units', [
+            'company_id' => $company->id,
+            'name' => $payload['name'],
+            'description' => $payload['description'],
+            'type' => $payload['type'],
+        ]);
+
+        $this->assertDatabaseMissing('units', [
+            'company_id' => $company->id,
+            'code' => Config::get('dcslab.KEYWORDS.AUTO'),
+        ]);
     }
 
     public function test_unit_api_call_store_with_existing_code_in_same_company_expect_failed()
@@ -112,14 +125,14 @@ class UnitAPICreateTest extends APITestCase
             'code' => 'test1',
         ]);
 
-        $unitArr = Unit::factory()->make([
+        $payload = Unit::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.save'), $unitArr);
+        $api = $this->json('POST', route('api.post.unit.save'), $payload);
 
-        $api->assertStatus(422);
+        $api->assertUnprocessable();
         $api->assertJsonStructure([
             'errors',
         ]);
@@ -138,27 +151,26 @@ class UnitAPICreateTest extends APITestCase
         $companies = $user->companies()->inRandomOrder()->take(2)->get();
 
         $company_1 = $companies[0];
-
         $company_2 = $companies[1];
 
         Unit::factory()->for($company_1)->create([
             'code' => 'test1',
         ]);
 
-        $unitArr = Unit::factory()->make([
+        $payload = Unit::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.product.unit.save'), $unitArr);
+        $api = $this->json('POST', route('api.post.unit.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('units', [
             'company_id' => $company_2->id,
-            'code' => $unitArr['code'],
-            'name' => $unitArr['name'],
-            'description' => $unitArr['description'],
-            'type' => $unitArr['type'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'description' => $payload['description'],
+            'type' => $payload['type'],
         ]);
     }
 
@@ -171,10 +183,40 @@ class UnitAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $unitArr = [];
+        $payload = [];
 
-        $api = $this->json('POST', route('api.post.db.product.unit.save'), $unitArr);
+        $api = $this->json('POST', route('api.post.unit.save'), $payload);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
+    }
+
+    public function test_unit_api_call_store_with_sql_injection_payload_expect_successful()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault())
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->inRandomOrder()->first();
+
+        $payload = Unit::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'code' => "'; DROP TABLE units; --",
+            'name' => "'; DROP TABLE units; --",
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.unit.save'), $payload);
+
+        $api->assertSuccessful();
+
+        $this->assertDatabaseHas('units', [
+            'company_id' => $company->id,
+            'code' => $payload['code'],
+            'name' => $payload['name'],
+            'description' => $payload['description'],
+            'type' => $payload['type'],
+        ]);
     }
 }

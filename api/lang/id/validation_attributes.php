@@ -108,8 +108,8 @@ return [
         'company' => 'Perusahaan',
         'code' => 'Kode',
         'name' => 'Nama',
-        'description' => 'Deksripsi',
-        'category' => 'Category',
+        'description' => 'Deskripsi',
+        'type' => 'Tipe',
     ],
     'product' => [
         'company' => 'Perusahaan',

@@ -2,14 +2,13 @@
 
 namespace App\Actions\Unit;
 
+use App\DTOs\ExecuteDTO;
 use App\Models\Company;
 use App\Models\Unit;
 use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
 use Exception;
-use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 
 class UnitActions
 {
@@ -22,25 +21,21 @@ class UnitActions
 
     public function create(array $data): Unit
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
             $unit = new Unit();
             $unit->company_id = $data['company_id'];
-            $unit->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
+            $unit->code = $data['code'];
             $unit->name = $data['name'];
             $unit->description = $data['description'];
             $unit->type = $data['type'];
             $unit->save();
-
-            DB::commit();
 
             $this->flushCache();
 
             return $unit;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -49,167 +44,119 @@ class UnitActions
         }
     }
 
-    private function readAnyQuery(
-        ?bool $withTrashed,
+    public function readAny(
+        bool $withTrashed,
 
-        ?string $search,
         int $companyId,
+        ?string $search,
+        ?int $includeId,
 
-        ?int $limit
+        ?ExecuteDTO $execute
     ) {
-        $query = Unit::select('units.*')->withTrashed()
-            ->with(['company'])
-            ->join('companies', 'companies.id', '=', 'units.company_id')
-            ->where(function ($query) use ($withTrashed, $search, $companyId) {
-                if ($withTrashed == true) {
+        $query = Unit::with('company')->select('units.*')
+            ->where('units.company_id', $companyId)
+            ->withTrashed();
+
+        $query->where(function ($query) use ($withTrashed, $search, $includeId) {
+            $query->where(function ($query) use ($withTrashed, $search) {
+                $query->withoutTrashed();
+                if ($withTrashed) {
                     $query->withTrashed();
-                } else {
-                    $query->withoutTrashed();
                 }
 
                 if ($search) {
                     $query->search($search);
                 }
-
-                $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('companies.name', 'asc')
-            ->orderBy('units.name', 'asc');
+            if ($includeId) {
+                $query->orWhere('units.id', $includeId);
+            }
+        });
 
-        if ($limit) {
-            $query->limit($limit);
+        if ($includeId) {
+            $query->orderByRaw('FIELD(units.id, '.$includeId.') desc');
+        }
+        $query->orderBy('units.name', 'asc');
+
+        if ($execute) {
+            $timer_start = microtime(true);
+            $recordsCount = 0;
+
+            try {
+                $cacheParams = [
+                    $withTrashed,
+                    $companyId,
+                    empty($search) ? '[empty]' : $search,
+                    $includeId,
+                    $execute->pagination ? true : false,
+                    $execute->pagination?->page,
+                    $execute->pagination?->perPage,
+                    $execute->get?->limit,
+                ];
+
+                $cacheKey = 'readAny_'.implode('-', $cacheParams);
+
+                if ($execute->useCache) {
+                    $cacheData = $this->readFromCache($cacheKey);
+                    if ($cacheData !== Config::get('dcslab.ERROR_RETURN_VALUE')) {
+                        return $cacheData;
+                    }
+                }
+
+                if ($execute->pagination) {
+                    $result = $query->paginate(
+                        perPage: $execute->pagination->perPage,
+                        columns: ['*'],
+                        pageName: 'page',
+                        page: $execute->pagination->page
+                    );
+                } else {
+                    if ($execute->get?->limit) {
+                        $query->limit($execute->get->limit);
+                    }
+                    $result = $query->get();
+                }
+
+                $recordsCount = $result->count();
+
+                if ($execute->useCache) {
+                    $this->saveToCache($cacheKey, $result);
+                }
+
+                return $result;
+            } catch (Exception $e) {
+                $this->loggerDebug(__METHOD__, $e);
+                throw $e;
+            } finally {
+                $execution_time = microtime(true) - $timer_start;
+                $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
+            }
         }
 
         return $query;
     }
 
-    public function readAny(
-        ?bool $useCache,
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-
-        bool $paginate,
-        ?int $page,
-        ?int $perPage,
-        ?int $limit
-    ): Paginator|Collection {
-        $timer_start = microtime(true);
-        $recordsCount = 0;
-
-        try {
-            $cacheSearch = empty($search) ? '[empty]' : $search;
-            $cacheKey = 'readAny_'.$companyId.'-'.$cacheSearch.'-'.$paginate.'-'.$page.'-'.$perPage;
-            if ($useCache === true) {
-                $cacheResult = $this->readFromCache($cacheKey);
-
-                if (! is_null($cacheResult)) {
-                    return $cacheResult;
-                }
-            }
-
-            $result = null;
-
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-                search: $search,
-                companyId: $companyId,
-                limit: $paginate ? null : $limit
-            );
-
-            if ($paginate) {
-                $result = $query->paginate(perPage: $perPage, page: $page);
-            } else {
-                $result = $query->get();
-            }
-
-            $recordsCount = $result->count();
-
-            if ($useCache === true) {
-                $this->saveToCache($cacheKey, $result);
-            }
-
-            return $result;
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
-        }
-    }
-
     public function read(Unit $unit): Unit
     {
-        return $unit->load('company')->first();
-    }
-
-    public function getAllActiveUnit(
-        ?array $with,
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-        ?array $includeIds,
-
-        ?int $limit
-    ) {
-        $timer_start = microtime(true);
-
-        try {
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-
-                search: $search,
-                companyId: $companyId,
-
-                limit: $limit
-            );
-
-            if ($includeIds) {
-                $query = $query->orWhereIn('id', $includeIds);
-
-                $orders = $query->getQuery()->orders;
-                $query->reorder();
-                $query->orderByRaw('FIELD(id, '.implode(',', $includeIds).') desc');
-                if (! empty($orders)) {
-                    foreach ($orders as $order) {
-                        $query->orderBy($order['column'], $order['direction']);
-                    }
-                }
-            }
-
-            return $query->get();
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time);
-        }
+        return $unit->load('company');
     }
 
     public function update(Unit $unit, array $data): Unit
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
-            $unit->code = $this->generateUniqueCode($unit->company_id, $data['code'], $unit->id);
+            $unit->code = $data['code'];
             $unit->name = $data['name'];
             $unit->description = $data['description'];
             $unit->type = $data['type'];
             $unit->save();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $unit->refresh();
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -220,7 +167,6 @@ class UnitActions
 
     public function delete(Unit $unit): bool
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         $retval = false;
@@ -228,13 +174,10 @@ class UnitActions
         try {
             $retval = $unit->delete();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $retval;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -245,30 +188,47 @@ class UnitActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
-        if ($code == config('dcslab.KEYWORDS.AUTO')) {
-            $company = Company::find($companyId);
+        $company = Company::find($companyId);
 
-            $tryCount = 0;
-            do {
-                $count = $company->units()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'UNT'.str_pad($count, 3, '0', STR_PAD_LEFT);
-                $tryCount++;
-            } while (! $this->isUniqueCode($companyId, $code, $exceptId));
+        $tryCount = 0;
+        do {
+            $count = $company->units()->withTrashed()->count() + 1 + $tryCount;
+            $code = 'UNT'.str_pad($count, 3, '0', STR_PAD_LEFT);
+            $tryCount++;
+        } while (! $this->isUniqueCode($companyId, $code, $exceptId));
 
-            return $code;
-        } else {
-            return $code;
-        }
+        return $code;
     }
 
     public function isUniqueCode(int $companyId, string $code, ?int $exceptId): bool
     {
-        $result = Unit::whereCompanyId($companyId)->where('code', '=', $code);
+        $company = Company::find($companyId);
 
-        if ($exceptId) {
-            $result = $result->where('id', '<>', $exceptId);
+        if ($company->units()->count() == 0) {
+            return true;
         }
 
-        return $result->count() == 0 ? true : false;
+        $query = $company->units()->where('code', '=', $code);
+        if ($exceptId) {
+            $query->where('units.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId): bool
+    {
+        $company = Company::find($companyId);
+
+        if ($company->units()->count() == 0) {
+            return true;
+        }
+
+        $query = $company->units()->where('name', '=', $name);
+        if ($exceptId) {
+            $query->where('units.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
     }
 }

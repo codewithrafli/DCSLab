@@ -8,21 +8,17 @@ use Illuminate\Database\Seeder;
 
 class UnitSeeder extends Seeder
 {
-    public function run(?int $companyId, ?int $qtyPerCompany)
+    public function run(?int $unitsPerCompany = null, ?int $companyId = null)
     {
-        $query = Company::query();
-        if ($companyId) {
-            $query->where('id', '=', $companyId);
-        }
-        $companies = $query->get();
+        $unitsPerCompany = $unitsPerCompany ?? 5;
 
-        if (! $qtyPerCompany) {
-            $qtyPerCompany = 5;
-        }
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
+
         foreach ($companies as $company) {
-            for ($i = 0; $i < $qtyPerCompany; $i++) {
-                $unitFactory = Unit::factory()->for($company);
-                $unitFactory->create();
+            for ($i = 0; $i < $unitsPerCompany; $i++) {
+                Unit::factory()
+                    ->for($company)
+                    ->create();
             }
         }
     }

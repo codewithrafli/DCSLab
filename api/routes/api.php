@@ -102,6 +102,7 @@ Route::prefix('warehouse')->middleware('auth:sanctum')->group(function () {
 Route::prefix('product_category')->middleware('auth:sanctum')->group(function () {
     Route::middleware('throttle:100,1')->name('api.get.product_category.')->group(function () {
         Route::get('read', [ProductCategoryController::class, 'readAny'])->name('read_any');
+        Route::get('read/types', [ProductCategoryController::class, 'getTypes'])->name('read_types');
         Route::get('read/{product_category:ulid}', [ProductCategoryController::class, 'read'])->name('read');
     });
 
@@ -122,6 +123,20 @@ Route::prefix('brand')->middleware('auth:sanctum')->group(function () {
         Route::post('save', [BrandController::class, 'store'])->name('save');
         Route::post('edit/{brand:ulid}', [BrandController::class, 'update'])->name('edit');
         Route::post('delete/{brand:ulid}', [BrandController::class, 'delete'])->name('delete');
+    });
+});
+
+Route::prefix('unit')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.unit.')->group(function () {
+        Route::get('read', [UnitController::class, 'readAny'])->name('read_any');
+        Route::get('read/types', [UnitController::class, 'getTypes'])->name('read_types');
+        Route::get('read/{unit:ulid}', [UnitController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.unit.')->group(function () {
+        Route::post('save', [UnitController::class, 'store'])->name('save');
+        Route::post('edit/{unit:ulid}', [UnitController::class, 'update'])->name('edit');
+        Route::post('delete/{unit:ulid}', [UnitController::class, 'delete'])->name('delete');
     });
 });
 
@@ -175,10 +190,6 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
         });
 
         Route::group(['prefix' => 'product', 'as' => '.product'], function () {
-            Route::group(['prefix' => 'unit', 'as' => '.unit'], function () {
-                Route::get('read', [UnitController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{unit:ulid}', [UnitController::class, 'read'])->name('.read');
-            });
             Route::group(['prefix' => 'product', 'as' => '.product'], function () {
                 Route::get('read', [ProductController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{product:ulid}', [ProductController::class, 'read'])->name('.read');
@@ -373,7 +384,7 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('list/payment_term_types', [CommonController::class, 'getPaymentTermTypes'])->name('.list.payment_term_types');
                 Route::get('list/rounding_types', [CommonController::class, 'getRoundingTypes'])->name('.list.rounding_types');
                 Route::get('list/record_statuses', [CommonController::class, 'getRecordStatuses'])->name('.list.record_statuses');
-                Route::get('list/product_category_types', [CommonController::class, 'getProductCategoryTypes'])->name('.list.product_category_types');
+
             });
         });
 
@@ -444,12 +455,6 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
         });
 
         Route::group(['prefix' => 'product', 'middleware' => ['precognitive'], 'as' => '.product'], function () {
-
-            Route::group(['prefix' => 'unit', 'as' => '.unit'], function () {
-                Route::post('save', [UnitController::class, 'store'])->name('.save');
-                Route::post('edit/{unit:ulid}', [UnitController::class, 'update'])->name('.edit');
-                Route::post('delete/{unit:ulid}', [UnitController::class, 'delete'])->name('.delete');
-            });
             Route::group(['prefix' => 'product', 'as' => '.product'], function () {
                 Route::post('save', [ProductController::class, 'store'])->name('.save');
                 Route::post('edit/{product:ulid}', [ProductController::class, 'update'])->name('.edit');
