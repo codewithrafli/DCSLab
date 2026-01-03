@@ -232,7 +232,7 @@ watch(
             <template #card-items-button>
                 <div class="flex gap-4">
                     <Button type="submit" href="#" variant="primary" class="w-28 shadow-md"
-                        :disabled="companyForm.validating || companyForm.hasErrors">
+                        :disabled="companyForm.validating">
                         <Lucide v-if="companyForm.validating" icon="Loader" class="animate-spin" />
                         <template v-else>
                             {{ t("components.buttons.submit") }}

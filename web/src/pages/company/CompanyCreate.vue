@@ -67,7 +67,7 @@ onMounted(async () => {
 
 // #region Methods
 const loadFromCache = () => {
-    let data = cacheServices.getLastEntity('USER_CREATE') as Record<string, unknown>;
+    let data = cacheServices.getLastEntity('COMPANY_CREATE') as Record<string, unknown>;
     if (!data) return;
     companyForm.setData(data);
 };
@@ -218,7 +218,7 @@ watch(
             <template #card-items-button>
                 <div class="flex gap-4">
                     <Button type="submit" href="#" variant="primary" class="w-28 shadow-md"
-                        :disabled="companyForm.validating || companyForm.hasErrors">
+                        :disabled="companyForm.validating">
                         <Lucide v-if="companyForm.validating" icon="Loader" class="animate-spin" />
                         <template v-else>
                             {{ t("components.buttons.submit") }}

@@ -37,7 +37,6 @@ const emits = defineEmits(['mode-state', 'loading-state', 'update-profile', 'sho
 // #endregion
 
 // #region Refs
-const datalistErrors = ref<Record<string, Array<string>> | null>(null);
 const deleteUlid = ref<string>('');
 const deleteModalShow = ref<boolean>(false);
 const expandDetail = ref<number | null>(null);

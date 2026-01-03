@@ -115,9 +115,6 @@ const onSubmit = async () => {
         .then((response: any) => {
             resetForm();
             emits("update-profile");
-            emits("show-alertplaceholder", "success", "success", {
-                success: [t("components.alert_placeholder.content.success")],
-            });
             router.push({ name: "side-menu-product-brand-list" });
         })
         .catch((error: any) => {
