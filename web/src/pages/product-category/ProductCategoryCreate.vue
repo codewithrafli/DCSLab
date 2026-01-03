@@ -92,7 +92,7 @@ onMounted(async () => {
 
 // #region Methods
 const getDDL = (): void => {
-    dashboardServices.getProductCategoryTypesDDL().then((result: Array<DropDownOption> | null) => {
+    productCategoryService.getTypes().then((result: Array<DropDownOption> | null) => {
         typeDDL.value = result;
     });
 };

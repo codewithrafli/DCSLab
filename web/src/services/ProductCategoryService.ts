@@ -10,17 +10,21 @@ import ErrorHandlerService from "./ErrorHandlerService";
 import { ProductCategoryReadAnyPaginateRequest, ProductCategoryReadAnyGetRequest } from "../types/services/product-category/ProductCategoryRequest";
 import { StatusCode } from "../types/enums/StatusCode";
 import { client, useForm } from "laravel-precognition-vue";
+import CacheService from "./CacheService";
+import { DropDownOption } from "../types/models/DropDownOption";
 
 export default class ProductCategoryService {
     private ziggyRoute: Config;
     private ziggyRouteStore = useZiggyRouteStore();
 
     private errorHandlerService;
+    private cacheService;
 
     constructor() {
         this.ziggyRoute = this.ziggyRouteStore.getZiggy;
 
         this.errorHandlerService = new ErrorHandlerService();
+        this.cacheService = new CacheService();
     }
 
     public useProductCategoryCreateForm() {
@@ -194,6 +198,31 @@ export default class ProductCategoryService {
             } else {
                 return result;
             }
+        }
+    }
+
+    public async getTypes(): Promise<Array<DropDownOption> | null> {
+        const ddlName = 'productCategoryTypesDDL';
+        let result: Array<DropDownOption> = [];
+
+        try {
+            if (this.cacheService.getCachedDDL(ddlName) == null) {
+                const url = route('api.get.product_category.read_types', undefined, false, this.ziggyRoute);
+
+                const response: AxiosResponse<Array<DropDownOption> | null> = await axios.get(url);
+
+                this.cacheService.setCachedDDL(ddlName, response.data);
+            }
+
+            const cachedData: Array<DropDownOption> | null = this.cacheService.getCachedDDL(ddlName);
+
+            if (cachedData != null) {
+                result = cachedData as Array<DropDownOption>;
+            }
+
+            return result;
+        } catch (e: unknown) {
+            return result;
         }
     }
 }

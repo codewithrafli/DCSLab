@@ -148,6 +148,14 @@ class ProductCategoryController extends BaseController
         }
     }
 
+    public function getTypes()
+    {
+        return [
+            ['name' => 'views.product_category.type.product', 'code' => ProductCategoryTypeEnum::PRODUCT->value],
+            ['name' => 'views.product_category.type.service', 'code' => ProductCategoryTypeEnum::SERVICE->value],
+        ];
+    }
+
     public function read(ProductCategory $productCategory)
     {
         if (! Auth::check())  return response()->error(trans('rules.auth.unauthorized'), 401);

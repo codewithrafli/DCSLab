@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaymentTermTypeEnum;
-use App\Enums\ProductCategoryTypeEnum;
 use App\Enums\RecordStatusEnum;
 use App\Enums\RoundingTypeEnum;
 
@@ -48,14 +47,6 @@ class CommonController extends BaseController
         return [
             ['name' => 'components.dropdown.values.roundingTypeDDL.up', 'code' => RoundingTypeEnum::UP->name],
             ['name' => 'components.dropdown.values.roundingTypeDDL.down', 'code' => RoundingTypeEnum::DOWN->name],
-        ];
-    }
-
-    public function getProductCategoryTypes()
-    {
-        return [
-            ['name' => 'views.product_category.type.product', 'code' => ProductCategoryTypeEnum::PRODUCT->value],
-            ['name' => 'views.product_category.type.service', 'code' => ProductCategoryTypeEnum::SERVICE->value],
         ];
     }
 }
