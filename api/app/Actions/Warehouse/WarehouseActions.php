@@ -226,4 +226,18 @@ class WarehouseActions
 
         return $query->doesntExist();
     }
+
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId = null): bool
+    {
+        $company = Company::find($companyId);
+
+        if ($company->warehouses()->count() == 0) return true;
+
+        $query = $company->warehouses()->where('name', '=', $name);
+        if ($exceptId) {
+            $query->where('warehouses.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
 }

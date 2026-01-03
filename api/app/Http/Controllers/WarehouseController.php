@@ -55,6 +55,13 @@ class WarehouseController extends BaseController
                 }
             }
 
+            $isUniqueName = $this->warehouseActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], null,
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
             $validatedRequest['city'] = $validatedRequest['city'] ?? null;
             $validatedRequest['contact'] = $validatedRequest['contact'] ?? null;

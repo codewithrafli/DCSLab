@@ -7,8 +7,6 @@ use App\Helpers\HashidsHelper;
 use App\Models\Warehouse;
 use App\Rules\IsValidBranch;
 use App\Rules\IsValidCompany;
-use App\Rules\WarehouseUpdateValidCode;
-use App\Rules\WarehouseUpdateValidName;
 use App\Rules\WarehouseUpdateValidStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -44,8 +42,8 @@ class WarehouseUpdateRequest extends FormRequest
         return [
             'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
             'branch_id' => ['required', 'integer', 'bail', new IsValidBranch($this->input('company_id'), true)],
-            'code' => ['required', 'string', 'max:255', new WarehouseUpdateValidCode($this->input('company_id'), $this->route('warehouse'))],
-            'name' => ['required', 'string', 'max:255', new WarehouseUpdateValidName($this->input('company_id'), $this->route('warehouse'))],
+            'code' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'contact' => ['nullable', 'string', 'max:255'],
