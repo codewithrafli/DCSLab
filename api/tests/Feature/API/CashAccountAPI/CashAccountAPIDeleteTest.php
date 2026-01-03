@@ -32,7 +32,7 @@ class CashAccountAPIDeleteTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->json('POST', route('api.post.db.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.cash_account.delete', $cashAccount->ulid));
 
         $api->assertUnauthorized();
     }
@@ -51,7 +51,7 @@ class CashAccountAPIDeleteTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->json('POST', route('api.post.db.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.cash_account.delete', $cashAccount->ulid));
 
         $api->assertForbidden();
     }
@@ -71,7 +71,7 @@ class CashAccountAPIDeleteTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $api = $this->json('POST', route('api.post.db.cash_account.delete', $cashAccount->ulid));
+        $api = $this->json('POST', route('api.post.cash_account.delete', $cashAccount->ulid));
 
         $api->assertSuccessful();
         $this->assertSoftDeleted('cash_accounts', [
@@ -90,7 +90,7 @@ class CashAccountAPIDeleteTest extends APITestCase
 
         $ulid = Str::ulid()->generate();
 
-        $api = $this->json('POST', route('api.post.db.cash_account.delete', $ulid));
+        $api = $this->json('POST', route('api.post.cash_account.delete', $ulid));
 
         $api->assertStatus(404);
     }
@@ -101,6 +101,6 @@ class CashAccountAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $this->json('POST', route('api.post.db.cash_account.delete', null));
+        $this->json('POST', route('api.post.cash_account.delete', null));
     }
 }

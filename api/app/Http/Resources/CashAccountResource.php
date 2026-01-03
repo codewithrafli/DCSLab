@@ -13,7 +13,12 @@ class CashAccountResource extends JsonResource
         return [
             'id' => Hashids::encode($this->id),
             'ulid' => $this->ulid,
-            'company' => new CompanyResource($this->company),
+            $this->mergeWhen($this->relationLoaded('company'), [
+                'company' => new CompanyResource($this->whenLoaded('company')),
+            ]),
+            $this->mergeWhen($this->relationLoaded('branch'), [
+                'branch' => new BranchResource($this->whenLoaded('branch')),
+            ]),
             'code' => $this->code,
             'name' => $this->name,
             'is_bank' => $this->is_bank,

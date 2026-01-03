@@ -8,21 +8,22 @@ use Illuminate\Database\Seeder;
 
 class CashAccountSeeder extends Seeder
 {
-    public function run(?int $companyId, ?int $qtyPerCompany)
+    public function run(?int $cashAccountsPerCompany = null, ?int $companyId = null)
     {
-        $query = Company::query();
-        if ($companyId) {
-            $query->where('id', '=', $companyId);
-        }
-        $companies = $query->get();
+        $cashAccountsPerCompany = $cashAccountsPerCompany ?? 5;
 
-        if (! $qtyPerCompany) {
-            $qtyPerCompany = 5;
-        }
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
+
         foreach ($companies as $company) {
-            for ($i = 0; $i < $qtyPerCompany; $i++) {
-                $cashAccountFactory = CashAccount::factory()->for($company);
-                $cashAccountFactory->create();
+            for ($i = 0; $i < $cashAccountsPerCompany; $i++) {
+                CashAccount::factory()
+                    ->for($company)
+                    ->state(function (array $attributes, Company $company) {
+                        return [
+                            'branch_id' => $company->branches->random()->id,
+                        ];
+                    })
+                    ->create();
             }
         }
     }

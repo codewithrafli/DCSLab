@@ -26,6 +26,7 @@ import unit from "./en/views/unit.json"
 import customer_group from "./en/views/customer_group.json"
 import customer from "./en/views/customer.json"
 import investor from "./en/views/investor.json"
+import cash_account from "./en/views/cash_account.json"
 import error from "./en/views/error.json"
 
 export default {
@@ -59,6 +60,7 @@ export default {
         "customer_group": customer_group,
         "customer": customer,
         "investor": investor,
+        "cash_account": cash_account,
         "error": error,
     }
 }

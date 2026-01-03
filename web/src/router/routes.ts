@@ -47,6 +47,10 @@ import CustomerIndex from "@/pages/customer/CustomerIndex.vue";
 import CustomerList from "@/pages/customer/CustomerList.vue";
 import CustomerCreate from "@/pages/customer/CustomerCreate.vue";
 import CustomerEdit from "@/pages/customer/CustomerEdit.vue";
+import CashAccountIndex from "@/pages/cash-account/CashAccountIndex.vue";
+import CashAccountList from "@/pages/cash-account/CashAccountList.vue";
+import CashAccountCreate from "@/pages/cash-account/CashAccountCreate.vue";
+import CashAccountEdit from "@/pages/cash-account/CashAccountEdit.vue";
 
 export default [
     {
@@ -306,6 +310,43 @@ export default [
                 ]
             },
             {
+                path: "/dashboard/finance",
+                children: [
+                    {
+                        path: "/dashboard/finance/cash-account",
+                        name: "side-menu-finance-cash-account",
+                        redirect: "/dashboard/finance/cash-account/list",
+                        component: CashAccountIndex,
+                        children: [
+                            {
+                                path: "/dashboard/finance/cash-account/list",
+                                name: "side-menu-finance-cash-account-list",
+                                component: CashAccountList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/finance/cash-account/create",
+                                name: "side-menu-finance-cash-account-create",
+                                component: CashAccountCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/finance/cash-account/edit/:ulid",
+                                name: "side-menu-finance-cash-account-edit",
+                                component: CashAccountEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
                 path: "/dashboard/customer",
                 children: [
                     {
@@ -374,6 +415,7 @@ export default [
                     }
                 ]
             },
+
             {
                 path: "/dashboard/administrator",
                 name: "side-menu-administrator",

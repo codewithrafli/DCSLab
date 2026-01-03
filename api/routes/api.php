@@ -140,6 +140,19 @@ Route::prefix('unit')->middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::prefix('cash_account')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.cash_account.')->group(function () {
+        Route::get('read', [CashAccountController::class, 'readAny'])->name('read_any');
+        Route::get('read/{cash_account:ulid}', [CashAccountController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.cash_account.')->group(function () {
+        Route::post('save', [CashAccountController::class, 'store'])->name('save');
+        Route::post('edit/{cash_account:ulid}', [CashAccountController::class, 'update'])->name('edit');
+        Route::post('delete/{cash_account:ulid}', [CashAccountController::class, 'delete'])->name('delete');
+    });
+});
+
 Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,1'], 'as' => 'api.get'], function () {
     Route::group(['prefix' => 'dashboard', 'as' => '.db'], function () {
         /* #region Extensions */
@@ -155,11 +168,6 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
                 Route::get('read', [InvestorController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{investor:ulid}', [InvestorController::class, 'read'])->name('.read');
             });
-        });
-
-        Route::group(['prefix' => 'cash_account', 'as' => '.cash_account'], function () {
-            Route::get('read', [CashAccountController::class, 'readAny'])->name('.read_any');
-            Route::get('read/{cash_account:ulid}', [CashAccountController::class, 'read'])->name('.read');
         });
 
         Route::group(['prefix' => 'capital', 'as' => '.capital'], function () {
@@ -413,12 +421,6 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('edit/{investor:ulid}', [InvestorController::class, 'update'])->name('.edit');
                 Route::post('delete/{investor:ulid}', [InvestorController::class, 'delete'])->name('.delete');
             });
-        });
-
-        Route::group(['prefix' => 'cash_account', 'middleware' => ['precognitive'], 'as' => '.cash_account'], function () {
-            Route::post('save', [CashAccountController::class, 'store'])->name('.save');
-            Route::post('edit/{cash_account:ulid}', [CashAccountController::class, 'update'])->name('.edit');
-            Route::post('delete/{cash_account:ulid}', [CashAccountController::class, 'delete'])->name('.delete');
         });
 
         Route::group(['prefix' => 'capital', 'middleware' => ['precognitive'], 'as' => '.capital'], function () {

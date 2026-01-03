@@ -31,11 +31,11 @@ class CashAccountAPIEditTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $cashAccountArr = CashAccount::factory()->make([
+        $payload = CashAccount::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.cash_account.edit', $cashAccount->ulid), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount->ulid), $payload);
 
         $api->assertUnauthorized();
     }
@@ -54,23 +54,75 @@ class CashAccountAPIEditTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $cashAccountArr = CashAccount::factory()->make([
+        $payload = CashAccount::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.cash_account.edit', $cashAccount->ulid), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount->ulid), $payload);
 
         $api->assertForbidden();
     }
 
     public function test_cash_account_api_call_update_with_script_tags_in_payload_expect_stripped()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
+
+        $payload = CashAccount::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'branch_id' => Hashids::encode($branch->id),
+            'name' => '<script>alert("xss")</script>',
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount->ulid), $payload);
+
+        $api->assertSuccessful();
+        $this->assertDatabaseHas('cash_accounts', [
+            'id' => $cashAccount->id,
+            'company_id' => $company->id,
+            'name' => 'alert("xss")',
+        ]);
     }
 
     public function test_cash_account_api_call_update_with_script_tags_in_payload_expect_encoded()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
+
+        $payload = CashAccount::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'branch_id' => Hashids::encode($branch->id),
+            'name' => '<script>alert("xss")</script>',
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount->ulid), $payload, ['X-Sanitizer-Mode' => 'encode']);
+
+        $api->assertSuccessful();
+        $this->assertDatabaseHas('cash_accounts', [
+            'id' => $cashAccount->id,
+            'company_id' => $company->id,
+            'name' => '&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;',
+        ]);
     }
 
     public function test_cash_account_api_call_update_expect_successful()
@@ -88,24 +140,46 @@ class CashAccountAPIEditTest extends APITestCase
             'branch_id' => $branch->id,
         ]);
 
-        $cashAccountArr = CashAccount::factory()->make([
+        $payload = CashAccount::factory()->make([
             'company_id' => Hashids::encode($company->id),
+            'branch_id' => Hashids::encode($branch->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.cash_account.edit', $cashAccount->ulid), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount->ulid), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('cash_accounts', [
             'id' => $cashAccount->id,
             'company_id' => $company->id,
-            'code' => $cashAccountArr['code'],
-            'name' => $cashAccountArr['name'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
         ]);
     }
 
     public function test_cash_account_api_call_update_with_nonexistance_branch_id_expect_failed()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
+            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
+            ->create();
+
+        $this->actingAs($user);
+
+        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
+        $branch = $company->branches()->inRandomOrder()->first();
+        $cashAccount = CashAccount::factory()->for($company)->create([
+            'branch_id' => $branch->id,
+        ]);
+
+        $payload = CashAccount::factory()->make([
+            'company_id' => Hashids::encode($company->id),
+            'branch_id' => Hashids::encode($company->id + 999), // Invalid Branch ID
+        ])->toArray();
+
+        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount->ulid), $payload);
+
+        $api->assertStatus(422);
+        $api->assertJsonValidationErrors(['branch_id']);
     }
 
     public function test_cash_account_api_call_update_and_use_existing_code_in_same_company_expect_failed()
@@ -127,12 +201,13 @@ class CashAccountAPIEditTest extends APITestCase
         $cashAccount_1 = $cashAccounts[0];
         $cashAccount_2 = $cashAccounts[1];
 
-        $cashAccountArr = CashAccount::factory()->make([
+        $payload = CashAccount::factory()->make([
             'company_id' => Hashids::encode($company->id),
+            'branch_id' => Hashids::encode($branch->id),
             'code' => $cashAccount_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.cash_account.edit', $cashAccount_2->ulid), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount_2->ulid), $payload);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -166,12 +241,13 @@ class CashAccountAPIEditTest extends APITestCase
             'branch_id' => $branch_2->id,
         ]);
 
-        $cashAccountArr = CashAccount::factory()->make([
+        $payload = CashAccount::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
+            'branch_id' => Hashids::encode($branch_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.cash_account.edit', $cashAccount_2->ulid), $cashAccountArr);
+        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount_2->ulid), $payload);
 
         $api->assertSuccessful();
     }

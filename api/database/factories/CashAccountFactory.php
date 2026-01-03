@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CashAccountFactory extends Factory
 {
+    protected $cashAccounts = [
+        'Cash', 'Bank', 'Giro',
+    ];
+
     public function definition(): array
     {
-        $cashAccounts = [
-            'Cash', 'Bank', 'Giro',
-        ];
-
         return [
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
-            'name' => $cashAccounts[array_rand($cashAccounts)],
+            'name' => fake()->randomElement($this->cashAccounts),
             'is_bank' => fake()->boolean(),
             'is_active' => fake()->boolean(),
             'remarks' => fake()->sentence(),

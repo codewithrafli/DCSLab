@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Database\Seeders\BranchSeeder;
 use Database\Seeders\BrandSeeder;
+use Database\Seeders\CashAccountSeeder;
 use Database\Seeders\CompanySeeder;
 use Database\Seeders\CustomerGroupSeeder;
 use Database\Seeders\ProductCategorySeeder;
@@ -87,6 +88,9 @@ class AppSeed extends Command
         $progressBar->advance();
 
         (new UnitSeeder())->run(unitsPerCompany: 5, companyId: null);
+        $progressBar->advance();
+
+        (new CashAccountSeeder())->run(cashAccountsPerCompany: 5, companyId: null);
         $progressBar->advance();
 
         // (new ProductSeeder())->run(companyId: null, qtyPerCompany: 5);
