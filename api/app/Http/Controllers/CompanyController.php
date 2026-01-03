@@ -152,9 +152,7 @@ class CompanyController extends BaseController
         if (is_null($result)) {
             return response()->error($errorMsg);
         } else {
-            $response = CompanyResource::collection($result);
-
-            return $response;
+            return CompanyResource::collection($result);
         }
     }
 

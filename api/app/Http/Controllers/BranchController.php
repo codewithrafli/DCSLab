@@ -157,9 +157,7 @@ class BranchController extends BaseController
         if (is_null($result)) {
             return response()->error($errorMsg);
         } else {
-            $response = BranchResource::collection($result);
-
-            return $response;
+            return BranchResource::collection($result);
         }
     }
 

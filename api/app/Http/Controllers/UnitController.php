@@ -126,7 +126,11 @@ class UnitController extends BaseController
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
-        return is_null($result) ? response()->error($errorMsg) : response()->success(UnitResource::collection($result));
+        if (is_null($result)) {
+            return response()->error($errorMsg);
+        } else {
+            return UnitResource::collection($result);
+        }
     }
 
     public function getTypes()

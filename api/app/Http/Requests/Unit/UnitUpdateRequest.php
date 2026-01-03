@@ -59,8 +59,10 @@ class UnitUpdateRequest extends FormRequest
 
     public function prepareForValidation()
     {
-        $this->merge([
-            'company_id' => $this->filled('company_id') ? HashidsHelper::decodeId($this->company_id) : null,
-        ]);
+        if ($this->has('company_id')) {
+            $this->merge([
+                'company_id' => HashidsHelper::decodeId($this->company_id),
+            ]);
+        }
     }
 }
