@@ -51,8 +51,8 @@ class WarehouseActions
     public function readAny(
         bool $withTrashed,
 
-        int $companyId,
         ?string $search,
+        int $companyId,
         ?int $branchId,
         ?int $status,
         ?int $includeId,
@@ -95,16 +95,16 @@ class WarehouseActions
 
             try {
                 $cacheParams = [
-                    $withTrashed,
-                    $companyId,
+                    $withTrashed ? 'true' : 'false',
                     empty($search) ? '[empty]' : $search,
-                    $branchId,
-                    $status,
-                    $includeId,
-                    $execute->pagination ? true : false,
-                    $execute->pagination?->page,
-                    $execute->pagination?->perPage,
-                    $execute->get?->limit,
+                    $companyId,
+                    $branchId ?? '[null]',
+                    $status ?? '[null]',
+                    $includeId ?? '[null]',
+                    $execute->pagination ? 'true' : 'false',
+                    $execute->pagination?->page ?? '[null]',
+                    $execute->pagination?->perPage ?? '[null]',
+                    $execute->get?->limit ?? '[null]',
                 ];
 
                 $cacheKey = 'readAny_'.implode('-', $cacheParams);

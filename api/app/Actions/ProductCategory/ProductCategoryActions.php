@@ -46,8 +46,8 @@ class ProductCategoryActions
     public function readAny(
         bool $withTrashed,
 
-        int $companyId,
         ?string $search,
+        int $companyId,
         ?int $type,
         ?int $includeId,
 
@@ -89,15 +89,15 @@ class ProductCategoryActions
 
             try {
                 $cacheParams = [
-                    $withTrashed,
-                    $companyId,
+                    $withTrashed ? 'true' : 'false',
                     empty($search) ? '[empty]' : $search,
-                    $type,
-                    $includeId,
-                    $execute->pagination ? true : false,
-                    $execute->pagination?->page,
-                    $execute->pagination?->perPage,
-                    $execute->get?->limit,
+                    $companyId,
+                    $type ?? '[null]',
+                    $includeId ?? '[null]',
+                    $execute->pagination ? 'true' : 'false',
+                    $execute->pagination?->page ?? '[null]',
+                    $execute->pagination?->perPage ?? '[null]',
+                    $execute->get?->limit ?? '[null]',
                 ];
 
                 $cacheKey = 'readAny_'.implode('-', $cacheParams);

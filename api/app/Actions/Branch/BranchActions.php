@@ -53,8 +53,8 @@ class BranchActions
     public function readAny(
         bool $withTrashed,
 
-        int $companyId,
         ?string $search,
+        int $companyId,
         ?bool $isMain,
         ?int $status,
         ?int $includeId,
@@ -97,16 +97,16 @@ class BranchActions
 
             try {
                 $cacheParams = [
-                    $withTrashed,
-                    $companyId,
+                    $withTrashed ? 'true' : 'false',
                     empty($search) ? '[empty]' : $search,
-                    $isMain,
-                    $status,
-                    $includeId,
-                    $execute->pagination ? true : false,
-                    $execute->pagination?->page,
-                    $execute->pagination?->perPage,
-                    $execute->get?->limit,
+                    $companyId,
+                    is_null($isMain) ? '[null]' : ($isMain ? 'true' : 'false'),
+                    $status ?? '[null]',
+                    $includeId ?? '[null]',
+                    $execute->pagination ? 'true' : 'false',
+                    $execute->pagination?->page ?? '[null]',
+                    $execute->pagination?->perPage ?? '[null]',
+                    $execute->get?->limit ?? '[null]',
                 ];
 
                 $cacheKey = 'readAny_'.implode('-', $cacheParams);

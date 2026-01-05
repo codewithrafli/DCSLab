@@ -94,15 +94,15 @@ class CompanyActions
             try {
                 $cacheParams = [
                     $user->id,
-                    $withTrashed,
+                    $withTrashed ? 'true' : 'false',
                     empty($search) ? '[empty]' : $search,
-                    $default,
-                    $status,
-                    $includeId,
-                    $execute->pagination ? true : false,
-                    $execute->pagination?->page,
-                    $execute->pagination?->perPage,
-                    $execute->get?->limit,
+                    is_null($default) ? '[null]' : ($default ? 'true' : 'false'),
+                    $status ?? '[null]',
+                    $includeId ?? '[null]',
+                    $execute->pagination ? 'true' : 'false',
+                    $execute->pagination?->page ?? '[null]',
+                    $execute->pagination?->perPage ?? '[null]',
+                    $execute->get?->limit ?? '[null]',
                 ];
 
                 $cacheKey = 'readAny_'.implode('-', $cacheParams);
