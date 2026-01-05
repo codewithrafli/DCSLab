@@ -49,17 +49,13 @@ class ProductCategoryController extends BaseController
                 $isUnique = $this->productCategoryActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->productCategoryActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], null,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $result = $this->productCategoryActions->create($validatedRequest);
 
@@ -196,17 +192,13 @@ class ProductCategoryController extends BaseController
                 $isUnique = $this->productCategoryActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $productCategory->id,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->productCategoryActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], $productCategory->id,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $result = $this->productCategoryActions->update(
                 productCategory: $productCategory,

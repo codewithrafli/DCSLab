@@ -48,17 +48,13 @@ class CompanyController extends BaseController
                 $isUnique = $this->companyActions->isUniqueCode(
                     Auth::user(), $validatedRequest['code'], null,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->companyActions->isUniqueName(
                 Auth::user(), $validatedRequest['name'], null,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
 
@@ -198,17 +194,13 @@ class CompanyController extends BaseController
                 $isUnique = $this->companyActions->isUniqueCode(
                     Auth::user(), $validatedRequest['code'], $company->id,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->companyActions->isUniqueName(
                 Auth::user(), $validatedRequest['name'], $company->id,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
 

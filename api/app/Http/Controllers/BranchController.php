@@ -49,17 +49,13 @@ class BranchController extends BaseController
                 $isUnique = $this->branchActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->branchActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], null,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
             $validatedRequest['city'] = $validatedRequest['city'] ?? null;
@@ -203,17 +199,13 @@ class BranchController extends BaseController
                 $isUnique = $this->branchActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $branch->id,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->branchActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], $branch->id,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
             $validatedRequest['city'] = $validatedRequest['city'] ?? null;

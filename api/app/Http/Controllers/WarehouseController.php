@@ -50,17 +50,13 @@ class WarehouseController extends BaseController
                 $isUnique = $this->warehouseActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->warehouseActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], null,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
             $validatedRequest['city'] = $validatedRequest['city'] ?? null;
@@ -201,9 +197,7 @@ class WarehouseController extends BaseController
                 $isUnique = $this->warehouseActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $warehouse->id,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;

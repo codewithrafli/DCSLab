@@ -48,17 +48,13 @@ class UnitController extends BaseController
                 $isUnique = $this->unitActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->unitActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], null,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $result = $this->unitActions->create($validatedRequest);
 
@@ -167,17 +163,13 @@ class UnitController extends BaseController
                 $isUnique = $this->unitActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $unit->id,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->unitActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], $unit->id,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $result = $this->unitActions->update($unit, $validatedRequest);
 

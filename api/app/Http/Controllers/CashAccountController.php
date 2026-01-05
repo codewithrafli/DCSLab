@@ -48,17 +48,13 @@ class CashAccountController extends BaseController
                 $isUnique = $this->cashAccountActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->cashAccountActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], null,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $result = $this->cashAccountActions->create($validatedRequest);
 
@@ -163,17 +159,13 @@ class CashAccountController extends BaseController
                 $isUnique = $this->cashAccountActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $cashAccount->id,
                 );
-                if (! $isUnique) {
-                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
-                }
+                if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
             $isUniqueName = $this->cashAccountActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], $cashAccount->id,
             );
-            if (! $isUniqueName) {
-                return response()->error(['name' => [trans('rules.unique_name')]], 422);
-            }
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $result = $this->cashAccountActions->update($cashAccount, $validatedRequest);
 
