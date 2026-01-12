@@ -35,17 +35,34 @@ const onlyNumber = (string: string) => {
   }
 };
 
-const formatCurrency = (number: number) => {
-  if (number) {
-    const formattedNumber = number.toString().replace(/\D/g, "");
-    const rest = formattedNumber.length % 3;
-    let currency = formattedNumber.substr(0, rest);
-    const thousand = formattedNumber.substr(rest).match(/\d{3}/g);
+const formatCurrency = (number: number | string) => {
+  if (number !== null && number !== undefined && number !== "") {
+    // Convert to string and handle decimals
+    let numStr = number.toString();
+    
+    // Split integer and decimal parts if exists
+    let [integerPart, decimalPart] = numStr.split('.');
+    
+    // Remove non-digit characters from integer part
+    integerPart = integerPart.replace(/\D/g, "");
+    
+    const rest = integerPart.length % 3;
+    let currency = integerPart.substr(0, rest);
+    const thousand = integerPart.substr(rest).match(/\d{3}/g);
     let separator;
 
     if (thousand) {
       separator = rest ? "." : "";
       currency += separator + thousand.join(".");
+    }
+
+    // Add decimal part back if it exists and is not zero
+    if (decimalPart) {
+      // Remove trailing zeros
+      decimalPart = decimalPart.replace(/0+$/, '');
+      if (decimalPart.length > 0) {
+        currency += "," + decimalPart;
+      }
     }
 
     return currency;

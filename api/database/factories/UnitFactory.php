@@ -9,7 +9,8 @@ class UnitFactory extends Factory
 {
     protected $units = [
         'PCS', 'SET', 'BTL', 'KG', 'LITRE', 'BOX', 'PACK', 'DOZEN',
-        'METER', 'ROLL', 'CAN', 'DRUM', 'BAG', 'TUBE', 'JAR',
+        'METER', 'ROLL', 'CAN', 'DRUM', 'BAG', 'TUBE', 'JAR', 'GRAM',
+        'LSN', 'KRT', 'BKS', 'SLOP',
     ];
 
     public function definition(): array

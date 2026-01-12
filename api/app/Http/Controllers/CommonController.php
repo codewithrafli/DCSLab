@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\PaymentTermTypeEnum;
 use App\Enums\RecordStatusEnum;
 use App\Enums\RoundingTypeEnum;
+use Illuminate\Http\Request;
 
 class CommonController extends BaseController
 {
@@ -21,13 +22,18 @@ class CommonController extends BaseController
         ];
     }
 
-    public function getStatus()
+    public function getStatus(Request $request)
     {
-        return [
+        $statuses = [
             ['name' => 'components.dropdown.values.statusDDL.active', 'code' => RecordStatusEnum::ACTIVE->name],
             ['name' => 'components.dropdown.values.statusDDL.inactive', 'code' => RecordStatusEnum::INACTIVE->name],
-            ['name' => 'components.dropdown.values.statusDDL.deleted', 'code' => RecordStatusEnum::DELETED->name],
         ];
+
+        if ($request->boolean('show_deleted', true)) {
+            $statuses[] = ['name' => 'components.dropdown.values.statusDDL.deleted', 'code' => RecordStatusEnum::DELETED->name];
+        }
+
+        return $statuses;
     }
 
     public function getPaymentTermTypes()

@@ -7,6 +7,12 @@ use App\Actions\System\SystemActions;
 use App\Actions\User\UserActions;
 use App\Enums\RecordStatusEnum;
 use App\Enums\UserRolesEnum;
+use Database\Seeders\BranchSeeder;
+use Database\Seeders\BrandSeeder;
+use Database\Seeders\CompanySeeder;
+use Database\Seeders\ProductCategorySeeder;
+use Database\Seeders\UnitSeeder;
+use Database\Seeders\WarehouseSeeder;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
@@ -46,6 +52,14 @@ class AppInstall extends Command
                 $this->defaultInstallation();
                 break;
         }
+
+        (new CompanySeeder())->run();
+        (new BranchSeeder())->run();
+        (new WarehouseSeeder())->run();
+
+        (new ProductCategorySeeder())->run();
+        (new BrandSeeder())->run();
+        (new UnitSeeder())->run();
 
         $this->info('Done!');
 

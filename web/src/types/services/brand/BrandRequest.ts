@@ -1,8 +1,8 @@
 export interface BrandReadAnyPaginateRequest {
     with_trashed: boolean,
 
-    company_id: string,
     search?: string | null,
+    company_id: string,
     include_id?: string,
 
     refresh: boolean,
@@ -13,8 +13,8 @@ export interface BrandReadAnyPaginateRequest {
 export interface BrandReadAnyGetRequest {
     with_trashed: boolean,
 
-    company_id: string,
     search?: string | null,
+    company_id: string,
     include_id?: string,
 
     refresh: boolean,

@@ -14,7 +14,7 @@ class WarehouseSeeder extends Seeder
      */
     public function run(?int $warehousesPerCompany = null, ?int $companyId = null)
     {
-        $warehousesPerCompany = $warehousesPerCompany ?? 3;
+        $warehousesPerCompany = $warehousesPerCompany ?? 1;
 
         $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
 

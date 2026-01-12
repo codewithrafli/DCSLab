@@ -1,8 +1,8 @@
 export interface BranchReadAnyPaginateRequest {
     with_trashed: boolean,
     
-    company_id: string,
     search?: string | null,
+    company_id: string,
     is_main?: boolean,
     status?: string | number,
     include_id?: string,
@@ -15,8 +15,8 @@ export interface BranchReadAnyPaginateRequest {
 export interface BranchReadAnyGetRequest {
     with_trashed: boolean,
     
-    company_id: string,
     search?: string | null,
+    company_id: string,
     is_main?: boolean,
     status?: string | number,
     include_id?: string,

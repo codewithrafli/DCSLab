@@ -15,7 +15,7 @@ class BranchSeeder extends Seeder
      */
     public function run(?int $branchesPerCompany = null, ?int $companyId = null)
     {
-        $branchesPerCompany = $branchesPerCompany ?? 3;
+        $branchesPerCompany = $branchesPerCompany ?? 1;
 
         $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
 

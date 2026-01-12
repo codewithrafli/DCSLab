@@ -65,6 +65,15 @@ const init = (
       Array.isArray(selectedItems) ? [...selectedItems] : selectedItems
     );
   });
+
+  // On search (debounced)
+  const debouncedSearch = _.debounce((query: string) => {
+    emit("search", query);
+  }, 500);
+
+  clonedEl.TomSelect.on("type", function (query: string) {
+    debouncedSearch(query);
+  });
 };
 
 const getOptions = (

@@ -15,7 +15,7 @@ class CompanySeeder extends Seeder
      */
     public function run(?int $companiesPerUser = null, ?int $userId = null)
     {
-        $companiesPerUser = $companiesPerUser ?? 3;
+        $companiesPerUser = $companiesPerUser ?? 1;
 
         $users = $userId ? User::where('id', $userId)->get() : User::all();
 

@@ -1,8 +1,8 @@
 export interface UnitReadAnyPaginateRequest {
     with_trashed: boolean,
 
-    company_id: string,
     search?: string | null,
+    company_id: string,
     include_id?: string,
 
     refresh: boolean,
@@ -13,8 +13,8 @@ export interface UnitReadAnyPaginateRequest {
 export interface UnitReadAnyGetRequest {
     with_trashed: boolean,
 
-    company_id: string,
     search?: string | null,
+    company_id: string,
     include_id?: string,
 
     refresh: boolean,
