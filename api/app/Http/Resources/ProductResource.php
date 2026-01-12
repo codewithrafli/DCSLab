@@ -16,8 +16,7 @@ class ProductResource extends JsonResource
             'ulid' => $this->ulid,
             'company' => new CompanyResource($this->company),
             'code' => $this->code,
-            'is_manufacturer_sku' => $this->is_manufacturer_sku,
-            'product_category' => new ProductCategoryResource($this->productCategory),
+            'category' => new ProductCategoryResource($this->category),
             'brand' => new BrandResource($this->brand),
             'name' => $this->name,
             'slug' => $this->slug,
@@ -26,10 +25,10 @@ class ProductResource extends JsonResource
             'is_price_include_vat' => $this->is_price_include_vat,
             'is_use_serial_number' => $this->is_use_serial_number,
             'is_expirable' => $this->is_expirable,
-            'point' => $this->point,
             'remarks' => $this->remarks,
-            'product_type' => $this->product_type,
+            'type' => $this->type,
             'status' => $this->setStatus($this->status, $this->deleted_at),
+            'product_units' => ProductUnitResource::collection($this->whenLoaded('productUnits')),
         ];
     }
 

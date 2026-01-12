@@ -16,11 +16,14 @@ class ProductUnit extends Model
     protected $fillable = [
         'company_id',
         'product_id',
-        'unit_id',
         'code',
+        'is_manufacturer_sku',
+        'unit_id',
+        'price',
         'is_base',
         'conversion_value',
         'is_primary_unit',
+        'point',
         'remarks',
     ];
 
@@ -28,8 +31,10 @@ class ProductUnit extends Model
     {
         return [
             'is_base' => 'boolean',
-            'conversion_value' => 'decimal',
+            'is_manufacturer_sku' => 'boolean',
+            'conversion_value' => 'decimal:2',
             'is_primary_unit' => 'boolean',
+            'point' => 'integer',
         ];
     }
 
@@ -80,8 +85,9 @@ class ProductUnit extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('product_units.code', 'like', '%'.$search.'%')
-            ->orWhere('product_units.conversion_value', 'like', '%'.$search.'%')
-            ->orWhere('product_units.remarks', 'like', '%'.$search.'%');
+        return $query->where(function ($query) use ($search) {
+            $query->where('product_units.code', 'like', '%'.$search.'%')
+                ->orWhere('product_units.remarks', 'like', '%'.$search.'%');
+        });
     }
 }

@@ -27,6 +27,8 @@ import customer_group from "./en/views/customer_group.json"
 import customer from "./en/views/customer.json"
 import investor from "./en/views/investor.json"
 import cash_account from "./en/views/cash_account.json"
+import product_service from "./en/views/product_service.json"
+import product from "./en/views/product.json"
 import error from "./en/views/error.json"
 
 export default {
@@ -57,6 +59,8 @@ export default {
         "product_category": product_category,
         "brand": brand,
         "unit": unit,
+        "product_service": product_service,
+        "product": product,
         "customer_group": customer_group,
         "customer": customer,
         "investor": investor,

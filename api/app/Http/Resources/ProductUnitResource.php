@@ -14,12 +14,16 @@ class ProductUnitResource extends JsonResource
             'id' => Hashids::encode($this->id),
             'ulid' => $this->ulid,
             'company' => new CompanyResource($this->company),
-            'product' => new ProductResource($this->product),
-            'unit' => new UnitResource($this->unit),
+            'product' => new ProductResource($this->whenLoaded('product')),
             'code' => $this->code,
+            'is_manufacturer_sku' => $this->is_manufacturer_sku,
+            'unit' => new UnitResource($this->unit),
+            'price' => $this->price,
             'is_base' => $this->is_base,
             'conversion_value' => $this->conversion_value,
+            'base_unit_price' => $this->conversion_value > 0 ? $this->price / $this->conversion_value : 0,
             'is_primary_unit' => $this->is_primary_unit,
+            'point' => $this->point,
             'remarks' => $this->remarks,
         ];
     }

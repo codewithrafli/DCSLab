@@ -155,6 +155,18 @@ class DashboardActions
             'title' => 'components.menu.unit',
         ];
 
+        $productService = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-product-product-service',
+            'title' => 'components.menu.product-service',
+        ];
+
+        $product = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-product-product',
+            'title' => 'components.menu.product',
+        ];
+
         $root_array = [
             'icon' => 'Package',
             'pageName' => 'side-menu-product',
@@ -162,7 +174,7 @@ class DashboardActions
             'subMenu' => [],
         ];
 
-        array_push($root_array['subMenu'], $productCategory, $brand, $unit);
+        array_push($root_array['subMenu'], $productCategory, $brand, $unit, $product, $productService);
         array_push($menu, $root_array);
 
         return $menu;

@@ -74,13 +74,13 @@ export default class DashboardService {
         }
     }
 
-    public async getStatusDDL(): Promise<Array<DropDownOption> | null> {
-        const ddlName = 'statusDDL';
+    public async getStatusDDL(showDeleted: boolean = true): Promise<Array<DropDownOption> | null> {
+        const ddlName = showDeleted ? 'statusDDL_with_deleted' : 'statusDDL_no_deleted';
         let result: Array<DropDownOption> = [];
 
         try {
             if (this.cacheService.getCachedDDL(ddlName) == null) {
-                const url = route('api.get.db.common.ddl.list.statuses', undefined, false, this.ziggyRoute);
+                const url = route('api.get.db.common.ddl.list.statuses', { show_deleted: showDeleted }, false, this.ziggyRoute);
 
                 const response: AxiosResponse<Array<DropDownOption> | null> = await axios.get(url);
 

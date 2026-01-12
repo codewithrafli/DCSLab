@@ -2,14 +2,18 @@
 
 namespace App\Actions\ProductUnit;
 
+use App\DTOs\ExecuteDTO;
+use App\DTOs\ProductUnitCreatePhysicalDTO;
+use App\DTOs\ProductUnitCreateServiceDTO;
+use App\DTOs\ProductUnitUpdatePhysicalDTO;
+use App\DTOs\ProductUnitUpdateServiceDTO;
 use App\Models\Company;
+use App\Models\Product;
 use App\Models\ProductUnit;
 use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
 use Exception;
-use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 
 class ProductUnitActions
 {
@@ -20,30 +24,32 @@ class ProductUnitActions
     {
     }
 
-    public function create(array $data): ProductUnit
+    public function createPhysical(ProductUnitCreatePhysicalDTO $data): ProductUnit
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
-            $productUnit = new ProductUnit();
-            $productUnit->company_id = $data['company_id'];
-            $productUnit->product_id = $data['product_id'];
-            $productUnit->unit_id = $data['unit_id'];
-            $productUnit->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
-            $productUnit->is_base = $data['is_base'];
-            $productUnit->conversion_value = $data['conversion_value'];
-            $productUnit->is_primary_unit = $data['is_primary_unit'];
-            $productUnit->remarks = $data['remarks'];
-            $productUnit->save();
+            if ($data->isBase) $this->resetBaseUnit($data->companyId, $data->productId);
+            if ($data->isPrimaryUnit) $this->resetPrimaryUnit($data->companyId, $data->productId);
 
-            DB::commit();
+            $productUnit = new ProductUnit();
+            $productUnit->company_id = $data->companyId;
+            $productUnit->product_id = $data->productId;
+            $productUnit->code = $this->generateUniqueCode($data->companyId, $data->code, null);
+            $productUnit->is_manufacturer_sku = $data->isManufacturerSKU;
+            $productUnit->unit_id = $data->unitId;
+            $productUnit->price = $data->price;
+            $productUnit->is_base = $data->isBase;
+            $productUnit->conversion_value = $data->conversionValue;
+            $productUnit->is_primary_unit = $data->isPrimaryUnit;
+            $productUnit->point = $data->point;
+            $productUnit->remarks = $data->remarks;
+            $productUnit->save();
 
             $this->flushCache();
 
             return $productUnit;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -52,139 +58,183 @@ class ProductUnitActions
         }
     }
 
-    private function readAnyQuery(
-        ?bool $withTrashed,
+    public function createService(ProductUnitCreateServiceDTO $data): ProductUnit
+    {
+        $timer_start = microtime(true);
+
+        try {
+            $product = Product::findOrFail($data->productId);
+
+            $productUnit = new ProductUnit();
+            $productUnit->company_id = $data->companyId;
+            $productUnit->product_id = $data->productId;
+            $productUnit->code = $product->code;
+            $productUnit->is_manufacturer_sku = false;
+            $productUnit->unit_id = $data->unitId;
+            $productUnit->price = $data->price;
+            $productUnit->is_base = true;
+            $productUnit->conversion_value = 1;
+            $productUnit->is_primary_unit = true;
+            $productUnit->point = $data->point;
+            $productUnit->remarks = $data->remarks;
+            $productUnit->save();
+
+            $this->flushCache();
+
+            return $productUnit;
+        } catch (Exception $e) {
+            $this->loggerDebug(__METHOD__, $e);
+            throw $e;
+        } finally {
+            $execution_time = microtime(true) - $timer_start;
+            $this->loggerPerformance(__METHOD__, $execution_time);
+        }
+    }
+
+    public function readAny(
+        bool $withTrashed,
 
         ?string $search,
         int $companyId,
+        ?int $productId,
+        ?int $unitId,
+        ?bool $isBase,
+        ?bool $isPrimaryUnit,
+        ?int $includeId,
 
-        ?int $limit
+        ?ExecuteDTO $execute
     ) {
-        $query = ProductUnit::select('product_units.*')->withTrashed()
-            ->with(['company'])
-            ->join('companies', 'companies.id', '=', 'product_units.company_id')
-            ->where(function ($query) use ($withTrashed, $search, $companyId) {
-                if ($withTrashed == true) {
+        $query = ProductUnit::with(['company', 'unit', 'product'])->select('product_units.*')
+            ->where('product_units.company_id', $companyId)
+            ->withTrashed();
+
+        $query->where(function ($query) use ($withTrashed, $search, $productId, $unitId, $isBase, $isPrimaryUnit, $includeId) {
+            $query->where(function ($query) use ($withTrashed, $search, $productId, $unitId, $isBase, $isPrimaryUnit) {
+                $query->withoutTrashed();
+                if ($withTrashed) {
                     $query->withTrashed();
-                } else {
-                    $query->withoutTrashed();
                 }
 
                 if ($search) {
                     $query->search($search);
                 }
 
-                $query->whereCompanyId($companyId);
+                if ($productId) {
+                    $query->where('product_units.product_id', $productId);
+                }
+
+                if ($unitId) {
+                    $query->where('product_units.unit_id', $unitId);
+                }
+
+                if (! is_null($isBase)) {
+                    $query->where('product_units.is_base', $isBase);
+                }
+
+                if (! is_null($isPrimaryUnit)) {
+                    $query->where('product_units.is_primary_unit', $isPrimaryUnit);
+                }
             });
 
-        $query->orderBy('companies.name', 'asc')
-            ->orderBy('product_units.name', 'asc');
+            if ($includeId) {
+                $query->orWhere('product_units.id', $includeId);
+            }
+        });
 
-        if ($limit) {
-            $query->limit($limit);
+        if ($includeId) {
+            $query->orderByRaw('FIELD(product_units.id, '.$includeId.') desc');
+        }
+        $query->orderBy('product_units.conversion_value', 'asc');
+
+        if ($execute) {
+            $timer_start = microtime(true);
+            $recordsCount = 0;
+
+            try {
+                $cacheParams = [
+                    $withTrashed ? 'true' : 'false',
+                    empty($search) ? '[empty]' : $search,
+                    $companyId,
+                    $productId ?? '[null]',
+                    $unitId ?? '[null]',
+                    is_null($isBase) ? '[null]' : ($isBase ? 'true' : 'false'),
+                    is_null($isPrimaryUnit) ? '[null]' : ($isPrimaryUnit ? 'true' : 'false'),
+                    $includeId ?? '[null]',
+                    $execute->pagination ? 'true' : 'false',
+                    $execute->pagination?->page ?? '[null]',
+                    $execute->pagination?->perPage ?? '[null]',
+                    $execute->get?->limit ?? '[null]',
+                ];
+
+                $cacheKey = 'readAny_'.implode('-', $cacheParams);
+
+                if ($execute->useCache) {
+                    $cacheData = $this->readFromCache($cacheKey);
+                    if ($cacheData !== Config::get('dcslab.ERROR_RETURN_VALUE')) {
+                        return $cacheData;
+                    }
+                }
+
+                if ($execute->pagination) {
+                    $result = $query->paginate(
+                        perPage: $execute->pagination->perPage,
+                        columns: ['*'],
+                        pageName: 'page',
+                        page: $execute->pagination->page
+                    );
+                } else {
+                    if ($execute->get?->limit) {
+                        $query->limit($execute->get->limit);
+                    }
+                    $result = $query->get();
+                }
+
+                $recordsCount = $result->count();
+
+                if ($execute->useCache) {
+                    $this->saveToCache($cacheKey, $result);
+                }
+
+                return $result;
+            } catch (Exception $e) {
+                $this->loggerDebug(__METHOD__, $e);
+                throw $e;
+            } finally {
+                $execution_time = microtime(true) - $timer_start;
+                $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
+            }
         }
 
         return $query;
     }
 
-    public function readAny(
-        ?bool $useCache,
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-
-        bool $paginate,
-        ?int $page,
-        ?int $perPage,
-        ?int $limit
-    ): Paginator|Collection {
-        $timer_start = microtime(true);
-        $recordsCount = 0;
-
-        try {
-            $cacheSearch = empty($search) ? '[empty]' : $search;
-            $cacheKey = 'readAny_'.$companyId.'-'.$cacheSearch.'-'.$paginate.'-'.$page.'-'.$perPage;
-            if ($useCache === true) {
-                $cacheResult = $this->readFromCache($cacheKey);
-
-                if (! is_null($cacheResult)) {
-                    return $cacheResult;
-                }
-            }
-
-            $result = null;
-
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-                search: $search,
-                companyId: $companyId,
-                limit: $paginate ? null : $limit
-            );
-
-            if ($paginate) {
-                $result = $query->paginate(perPage: $perPage, page: $page);
-            } else {
-                $result = $query->get();
-            }
-
-            $recordsCount = $result->count();
-
-            if ($useCache === true) {
-                $this->saveToCache($cacheKey, $result);
-            }
-
-            return $result;
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
-        }
-    }
-
     public function read(ProductUnit $productUnit): ProductUnit
     {
-        return $productUnit->load('company', 'unit', 'product')->first();
+        return $productUnit->load('company', 'unit', 'product');
     }
 
-    public function getAllActiveProductUnit(
-        ?array $with,
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-        ?array $includeIds,
-
-        ?int $limit
-    ) {
+    public function updatePhysical(ProductUnit $productUnit, ProductUnitUpdatePhysicalDTO $data): ProductUnit
+    {
         $timer_start = microtime(true);
 
         try {
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
+            if ($data->isBase) $this->resetBaseUnit($productUnit->company_id, $productUnit->product_id);
+            if ($data->isPrimaryUnit)  $this->resetPrimaryUnit($productUnit->company_id, $productUnit->product_id);
 
-                search: $search,
-                companyId: $companyId,
+            $productUnit->code = $this->generateUniqueCode($productUnit->company_id, $data->code, $productUnit->id);
+            $productUnit->is_manufacturer_sku = $data->isManufacturerSku;
+            $productUnit->unit_id = $data->unitId;
+            $productUnit->price = $data->price;
+            $productUnit->is_base = $data->isBase;
+            $productUnit->conversion_value = $data->conversionValue;
+            $productUnit->is_primary_unit = $data->isPrimaryUnit;
+            $productUnit->point = $data->point;
+            $productUnit->remarks = $data->remarks;
+            $productUnit->save();
 
-                limit: $limit
-            );
+            $this->flushCache();
 
-            if ($includeIds) {
-                $query = $query->orWhereIn('id', $includeIds);
-
-                $orders = $query->getQuery()->orders;
-                $query->reorder();
-                $query->orderByRaw('FIELD(id, '.implode(',', $includeIds).') desc');
-                if (! empty($orders)) {
-                    foreach ($orders as $order) {
-                        $query->orderBy($order['column'], $order['direction']);
-                    }
-                }
-            }
-
-            return $query->get();
+            return $productUnit->refresh();
         } catch (Exception $e) {
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
@@ -194,26 +244,26 @@ class ProductUnitActions
         }
     }
 
-    public function update(ProductUnit $productUnit, array $data): ProductUnit
+    public function updateService(ProductUnit $productUnit, ProductUnitUpdateServiceDTO $data): ProductUnit
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
-            $productUnit->code = $this->generateUniqueCode($productUnit->company_id, $data['code'], $productUnit->id);
-            $productUnit->is_base = $data['is_base'];
-            $productUnit->conversion_value = $data['conversion_value'];
-            $productUnit->is_primary_unit = $data['is_primary_unit'];
-            $productUnit->remarks = $data['remarks'];
+            $productUnit->code = $productUnit->product->code;
+            $productUnit->is_manufacturer_sku = false;
+            $productUnit->unit_id = $data->unitId;
+            $productUnit->price = $data->price;
+            $productUnit->is_base = true;
+            $productUnit->conversion_value = 1;
+            $productUnit->is_primary_unit = true;
+            $productUnit->point = $data->point;
+            $productUnit->remarks = $data->remarks;
             $productUnit->save();
-
-            DB::commit();
 
             $this->flushCache();
 
             return $productUnit->refresh();
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -224,7 +274,6 @@ class ProductUnitActions
 
     public function delete(ProductUnit $productUnit): bool
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         $retval = false;
@@ -232,13 +281,10 @@ class ProductUnitActions
         try {
             $retval = $productUnit->delete();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $retval;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -247,32 +293,75 @@ class ProductUnitActions
         }
     }
 
+    public function resetBaseUnit(int $companyId, int $productId): void
+    {
+        ProductUnit::where('company_id', $companyId)
+            ->where('product_id', $productId)
+            ->update(['is_base' => false]);
+    }
+
+    public function resetPrimaryUnit(int $companyId, int $productId): void
+    {
+        ProductUnit::where('company_id', $companyId)
+            ->where('product_id', $productId)
+            ->update(['is_primary_unit' => false]);
+    }
+
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
-        if ($code == config('dcslab.KEYWORDS.AUTO')) {
-            $company = Company::find($companyId);
+        if ($code != Config::get('dcslab.KEYWORDS.AUTO')) return $code;
 
-            $tryCount = 0;
-            do {
-                $count = $company->brands()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'PU'.str_pad($count, 3, '0', STR_PAD_LEFT);
-                $tryCount++;
-            } while (! $this->isUniqueCode($companyId, $code, $exceptId));
+        $company = Company::find($companyId);
 
-            return $code;
-        } else {
-            return $code;
-        }
+        $tryCount = 0;
+        do {
+            $count = $company->productUnits()->withTrashed()->count() + 1 + $tryCount;
+            $code = 'PU'.str_pad($count, 3, '0', STR_PAD_LEFT);
+            $tryCount++;
+        } while (! $this->isUniqueCode($companyId, $code, $exceptId));
+
+        return $code;
     }
 
     public function isUniqueCode(int $companyId, string $code, ?int $exceptId): bool
     {
-        $result = ProductUnit::whereCompanyId($companyId)->where('code', '=', $code);
+        $company = Company::find($companyId);
 
-        if ($exceptId) {
-            $result = $result->where('id', '<>', $exceptId);
+        if ($company->productUnits()->count() == 0) {
+            return true;
         }
 
-        return $result->count() == 0 ? true : false;
+        $query = $company->productUnits()->where('code', '=', $code);
+        if ($exceptId) {
+            $query->where('product_units.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
+    public function isUniqueUnit(int $companyId, int $productId, int $unitId, ?int $exceptId): bool
+    {
+        $query = ProductUnit::where('company_id', $companyId)
+            ->where('product_id', $productId)
+            ->where('unit_id', $unitId);
+
+        if ($exceptId) {
+            $query->where('id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
+    public function isUniqueConversionValue(int $companyId, int $productId, float $conversionValue, ?int $exceptId): bool
+    {
+        $query = ProductUnit::where('company_id', $companyId)
+            ->where('product_id', $productId)
+            ->where('conversion_value', $conversionValue);
+
+        if ($exceptId) {
+            $query->where('id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
     }
 }

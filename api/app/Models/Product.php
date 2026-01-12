@@ -8,7 +8,6 @@ use App\Traits\BootableModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -19,7 +18,6 @@ class Product extends Model
     protected $fillable = [
         'company_id',
         'code',
-        'is_manufacturer_sku',
         'category_id',
         'brand_id',
         'name',
@@ -29,7 +27,6 @@ class Product extends Model
         'is_price_include_vat',
         'is_use_serial_number',
         'is_expirable',
-        'point',
         'remarks',
         'type',
         'status',
@@ -38,37 +35,14 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'is_manufacturer_sku' => 'boolean',
             'is_taxable' => 'boolean',
             'vat_rate' => 'decimal:8',
             'is_price_include_vat' => 'boolean',
             'is_use_serial_number' => 'boolean',
             'is_expirable' => 'boolean',
-            'has_expiry_date' => 'boolean',
-            'point' => 'integer',
             'type' => ProductTypeEnum::class,
             'status' => RecordStatusEnum::class,
         ];
-    }
-
-    public function getCalculatedSlugAttribute(): string
-    {
-        if ($this->slug == 'AUTO') {
-            $slug = $this->name.'-'.$this->code;
-
-            return Str::slug($slug);
-        }
-
-        return $this->slug;
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($model) {
-            $model->slug = $model->getCalculatedSlugAttribute();
-        });
     }
 
     public function company()
@@ -123,8 +97,10 @@ class Product extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('products.code', 'like', '%'.$search.'%')
-            ->orWhere('products.name', 'like', '%'.$search.'%')
-            ->orWhere('products.remarks', 'like', '%'.$search.'%');
+        return $query->where(function ($query) use ($search) {
+            $query->where('products.code', 'like', '%'.$search.'%')
+                ->orWhere('products.name', 'like', '%'.$search.'%')
+                ->orWhere('products.remarks', 'like', '%'.$search.'%');
+        });
     }
 }

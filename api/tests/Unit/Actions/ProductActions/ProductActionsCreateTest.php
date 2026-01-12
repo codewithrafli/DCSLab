@@ -37,28 +37,39 @@ class ProductActionsCreateTest extends ActionsTestCase
 
         $productArr = Product::factory()
             ->for($company)
-            ->for($productCategory)
+            ->for($productCategory, 'category')
             ->for($brand)
             ->make()->toArray();
+
+        $productUnit = \App\Models\ProductUnit::factory()->make([
+            'company_id' => $company->id,
+            'unit_id' => \App\Models\Unit::factory()->create(['company_id' => $company->id])->id,
+            'point' => 50,
+        ])->toArray();
+        $productArr['product_units'] = [$productUnit];
 
         $result = $this->productActions->create($productArr);
 
         $this->assertDatabaseHas('products', [
             'id' => $result->id,
             'company_id' => $productArr['company_id'],
-            'product_category_id' => $productArr['product_category_id'],
+            'category_id' => $productArr['category_id'],
             'brand_id' => $productArr['brand_id'],
             'code' => $productArr['code'],
             'name' => $productArr['name'],
-            'product_type' => $productArr['product_type'],
-            'taxable_supply' => $productArr['taxable_supply'],
-            'standard_rated_supply' => $productArr['standard_rated_supply'],
-            'price_include_vat' => $productArr['price_include_vat'],
-            'point' => $productArr['point'],
-            'use_serial_number' => $productArr['use_serial_number'],
-            'has_expiry_date' => $productArr['has_expiry_date'],
+            'type' => $productArr['type'],
+            'is_taxable' => $productArr['is_taxable'],
+            'vat_rate' => $productArr['vat_rate'],
+            'is_price_include_vat' => $productArr['is_price_include_vat'],
+            'is_use_serial_number' => $productArr['is_use_serial_number'],
+            'is_expirable' => $productArr['is_expirable'],
             'status' => $productArr['status'],
             'remarks' => $productArr['remarks'],
+        ]);
+
+        $this->assertDatabaseHas('product_units', [
+            'product_id' => $result->id,
+            'point' => 50,
         ]);
     }
 

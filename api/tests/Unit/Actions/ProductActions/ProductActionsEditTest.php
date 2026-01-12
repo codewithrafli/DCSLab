@@ -38,32 +38,51 @@ class ProductActionsEditTest extends ActionsTestCase
 
         $product = Product::factory()
             ->for($company)
-            ->for($productCategory)
+            ->for($productCategory, 'category')
             ->for($brand);
 
         $product = $product->create();
 
+        $productUnit = \App\Models\ProductUnit::factory()->for($product)->create(['point' => 10]);
+
         $productArr = $product->toArray();
+        $productArr['product_units'] = [
+            [
+                'id' => $productUnit->id,
+                'code' => $productUnit->code,
+                'unit_id' => $productUnit->unit_id,
+                'is_manufacturer_sku' => $productUnit->is_manufacturer_sku,
+                'is_base' => $productUnit->is_base,
+                'conversion_value' => $productUnit->conversion_value,
+                'is_primary_unit' => $productUnit->is_primary_unit,
+                'point' => 100,
+                'remarks' => $productUnit->remarks,
+            ],
+        ];
 
         $result = $this->productActions->update($product, $productArr);
 
         $this->assertInstanceOf(Product::class, $result);
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
-            'product_category_id' => $productArr['product_category_id'],
+            'category_id' => $productArr['category_id'],
             'brand_id' => $productArr['brand_id'],
             'company_id' => $product->company_id,
             'code' => $productArr['code'],
             'name' => $productArr['name'],
-            'product_type' => $productArr['product_type'],
-            'taxable_supply' => $productArr['taxable_supply'],
-            'standard_rated_supply' => $productArr['standard_rated_supply'],
-            'price_include_vat' => $productArr['price_include_vat'],
-            'point' => $productArr['point'],
-            'use_serial_number' => $productArr['use_serial_number'],
-            'has_expiry_date' => $productArr['has_expiry_date'],
+            'type' => $productArr['type'],
+            'is_taxable' => $productArr['is_taxable'],
+            'vat_rate' => $productArr['vat_rate'],
+            'is_price_include_vat' => $productArr['is_price_include_vat'],
+            'is_use_serial_number' => $productArr['is_use_serial_number'],
+            'is_expirable' => $productArr['is_expirable'],
             'status' => $productArr['status'],
             'remarks' => $productArr['remarks'],
+        ]);
+
+        $this->assertDatabaseHas('product_units', [
+            'id' => $productUnit->id,
+            'point' => 100,
         ]);
     }
 

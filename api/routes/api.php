@@ -140,6 +140,21 @@ Route::prefix('unit')->middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::prefix('product')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.product.')->group(function () {
+        Route::get('read', [ProductController::class, 'readAny'])->name('read_any');
+        Route::get('read/{product:ulid}', [ProductController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.product.')->group(function () {
+        Route::post('save/physical', [ProductController::class, 'storePhysical'])->name('save.physical');
+        Route::post('save/service', [ProductController::class, 'storeService'])->name('save.service');
+        Route::post('edit/physical/{product:ulid}', [ProductController::class, 'updatePhysical'])->name('edit.physical');
+        Route::post('edit/service/{product:ulid}', [ProductController::class, 'updateService'])->name('edit.service');
+        Route::post('delete/{product:ulid}', [ProductController::class, 'delete'])->name('delete');
+    });
+});
+
 Route::prefix('cash_account')->middleware('auth:sanctum')->group(function () {
     Route::middleware('throttle:100,1')->name('api.get.cash_account.')->group(function () {
         Route::get('read', [CashAccountController::class, 'readAny'])->name('read_any');
@@ -194,13 +209,6 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'non_capital_withdrawal', 'as' => '.non_capital_withdrawal'], function () {
                 Route::get('read', [NonCapitalWithdrawalController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{non _capital_withdrawal:ulid}', [NonCapitalWithdrawalController::class, 'read'])->name('.read');
-            });
-        });
-
-        Route::group(['prefix' => 'product', 'as' => '.product'], function () {
-            Route::group(['prefix' => 'product', 'as' => '.product'], function () {
-                Route::get('read', [ProductController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{product:ulid}', [ProductController::class, 'read'])->name('.read');
             });
         });
 
@@ -453,14 +461,6 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [NonCapitalWithdrawalController::class, 'store'])->name('.save');
                 Route::post('edit/{non_capital_withdrawal:ulid}', [NonCapitalWithdrawalController::class, 'update'])->name('.edit');
                 Route::post('delete/{non_capital_withdrawal:ulid}', [NonCapitalWithdrawalController::class, 'delete'])->name('.delete');
-            });
-        });
-
-        Route::group(['prefix' => 'product', 'middleware' => ['precognitive'], 'as' => '.product'], function () {
-            Route::group(['prefix' => 'product', 'as' => '.product'], function () {
-                Route::post('save', [ProductController::class, 'store'])->name('.save');
-                Route::post('edit/{product:ulid}', [ProductController::class, 'update'])->name('.edit');
-                Route::post('delete/{product:ulid}', [ProductController::class, 'delete'])->name('.delete');
             });
         });
 

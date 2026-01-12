@@ -3,6 +3,7 @@
 return [
     'unique_code' => 'Code sudah pernah dipakai',
     'unique_name' => 'Nama sudah pernah dipakai',
+    'unique_slug' => 'Slug sudah pernah dipakai',
     'valid_dropdown' => 'Nilai tidak valid',
     'valid_company' => 'Perusahaan tidak valid',
     'valid_branch' => 'Cabang tidak valid',

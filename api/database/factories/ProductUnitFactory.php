@@ -12,10 +12,15 @@ class ProductUnitFactory extends Factory
     public function definition(): array
     {
         return [
+            'company_id' => \App\Models\Company::factory(),
+            'product_id' => \App\Models\Product::factory(),
+            'unit_id' => \App\Models\Unit::factory(),
             'code' => strtoupper(fake()->lexify()).fake()->numerify(),
+            'is_manufacturer_sku' => fake()->boolean(),
             'is_base' => fake()->boolean(),
             'conversion_value' => fake()->numberBetween(1, 1000),
             'is_primary_unit' => fake()->boolean(),
+            'point' => fake()->numberBetween(0, 100),
             'remarks' => fake()->sentence(),
         ];
     }
@@ -29,6 +34,15 @@ class ProductUnitFactory extends Factory
             return [
                 'product_id' => $encode ? Hashids::encode($product->id) : $product->id,
                 'unit_id' => $encode ? Hashids::encode($unit->id) : $unit->id,
+            ];
+        });
+    }
+
+    public function setIsManufacturerSku(?bool $isManufacturerSku = null)
+    {
+        return $this->state(function (array $attributes) use ($isManufacturerSku) {
+            return [
+                'is_manufacturer_sku' => is_null($isManufacturerSku) ? true : $isManufacturerSku,
             ];
         });
     }

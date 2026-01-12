@@ -14,9 +14,25 @@ class UnitSeeder extends Seeder
 
         $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
 
+        $requiredUnits = ['PCS', 'GRAM', 'METER', 'PACK', 'LSN', 'KRT', 'BKS', 'SLOP'];
+
         foreach ($companies as $company) {
-            for ($i = 0; $i < $unitsPerCompany; $i++) {
+            foreach ($requiredUnits as $unitName) {
+                $exists = Unit::where('company_id', $company->id)->where('name', $unitName)->exists();
+                if (! $exists) {
+                    Unit::factory()
+                        ->for($company)
+                        ->create([
+                            'name' => $unitName,
+                            'code' => $unitName,
+                        ]);
+                }
+            }
+
+            $currentCount = Unit::where('company_id', $company->id)->count();
+            if ($currentCount < $unitsPerCompany) {
                 Unit::factory()
+                    ->count($unitsPerCompany - $currentCount)
                     ->for($company)
                     ->create();
             }

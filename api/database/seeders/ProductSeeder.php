@@ -3,7 +3,8 @@
 namespace Database\Seeders;
 
 use App\Actions\Product\ProductActions;
-use App\Enums\UnitType;
+use App\Enums\ProductTypeEnum;
+use App\Enums\UnitTypeEnum;
 use App\Models\Brand;
 use App\Models\Company;
 use App\Models\Product;
@@ -59,7 +60,7 @@ class ProductSeeder extends Seeder
             ]);
 
         $units = Unit::whereRelation('company', 'id', $company_id->id)
-            ->where('type', '=', UnitType::PRODUCT->value)
+            ->where('type', '=', UnitTypeEnum::PRODUCT->value)
             ->inRandomOrder()->get();
         $shuffledUnits = $units->shuffle();
 
@@ -83,7 +84,9 @@ class ProductSeeder extends Seeder
         $productActions = new ProductActions();
 
         $data = $this->make(encode: false)->toArray();
-        $product = $productActions->create($data);
+        $product = ($data['type'] ?? null) === ProductTypeEnum::SERVICE->value
+            ? $productActions->createService($data)
+            : $productActions->createProduct($data);
 
         $product = Product::with('company', 'productCategory', 'brand', 'productUnits.unit')->find($product->id);
 

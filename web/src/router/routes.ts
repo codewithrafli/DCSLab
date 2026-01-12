@@ -31,6 +31,14 @@ import ProductCategoryIndex from "@/pages/product-category/ProductCategoryIndex.
 import ProductCategoryList from "@/pages/product-category/ProductCategoryList.vue";
 import ProductCategoryCreate from "@/pages/product-category/ProductCategoryCreate.vue";
 import ProductCategoryEdit from "@/pages/product-category/ProductCategoryEdit.vue";
+import ProductServiceIndex from "@/pages/product-service/ProductServiceIndex.vue";
+import ProductServiceList from "@/pages/product-service/ProductServiceList.vue";
+import ProductServiceCreate from "@/pages/product-service/ProductServiceCreate.vue";
+import ProductServiceEdit from "@/pages/product-service/ProductServiceEdit.vue";
+import ProductIndex from "@/pages/product/ProductIndex.vue";
+import ProductList from "@/pages/product/ProductList.vue";
+import ProductCreate from "@/pages/product/ProductCreate.vue";
+import ProductEdit from "@/pages/product/ProductEdit.vue";
 import BrandIndex from "@/pages/brand/BrandIndex.vue";
 import BrandList from "@/pages/brand/BrandList.vue";
 import BrandCreate from "@/pages/brand/BrandCreate.vue";
@@ -301,6 +309,70 @@ export default [
                                 path: "/dashboard/product/unit/edit/:ulid",
                                 name: "side-menu-product-unit-edit",
                                 component: UnitEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
+                        ]
+                    },
+                    {
+                        path: "/dashboard/product/product",
+                        name: "side-menu-product-product",
+                        redirect: "/dashboard/product/product/list",
+                        component: ProductIndex,
+                        children: [
+                            {
+                                path: "/dashboard/product/product/list",
+                                name: "side-menu-product-product-list",
+                                component: ProductList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/product/product/create",
+                                name: "side-menu-product-product-create",
+                                component: ProductCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/product/product/edit/:ulid",
+                                name: "side-menu-product-product-edit",
+                                component: ProductEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
+                        ]
+                    },
+                    {
+                        path: "/dashboard/product/product-service",
+                        name: "side-menu-product-product-service",
+                        redirect: "/dashboard/product/product-service/list",
+                        component: ProductServiceIndex,
+                        children: [
+                            {
+                                path: "/dashboard/product/product-service/list",
+                                name: "side-menu-product-product-service-list",
+                                component: ProductServiceList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/product/product-service/create",
+                                name: "side-menu-product-product-service-create",
+                                component: ProductServiceCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/product/product-service/edit/:ulid",
+                                name: "side-menu-product-product-service-edit",
+                                component: ProductServiceEdit,
                                 meta: {
                                     remember: true,
                                 },

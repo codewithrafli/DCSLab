@@ -17,6 +17,7 @@
     "brand": "Brand",
     "unit": "Unit",
     "product": "Product",
+    "product-service": "Product Service",
     "service": "Service",
     "supplier": "Supplier",
     "finance": "Finance",
