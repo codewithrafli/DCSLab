@@ -44,6 +44,7 @@
         "other_unit": "Satuan Lain",
         "conversion_value": "Nilai Konversi",
         "unit_code": "Kode Satuan",
+        "is_primary_unit": "Satuan Utama",
         "is_manufacturer_sku": "Manufacture SKU",
         "price": "Harga",
         "point": "Poin",

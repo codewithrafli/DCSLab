@@ -29,7 +29,7 @@ class ProductUnitActions
         $timer_start = microtime(true);
 
         try {
-            if ($data->isBase) $this->resetBaseUnit($data->companyId, $data->productId);
+            if ($data->conversionValue === 1) $this->resetBaseUnit($data->companyId, $data->productId);
             if ($data->isPrimaryUnit) $this->resetPrimaryUnit($data->companyId, $data->productId);
 
             $productUnit = new ProductUnit();
@@ -39,7 +39,7 @@ class ProductUnitActions
             $productUnit->is_manufacturer_sku = $data->isManufacturerSKU;
             $productUnit->unit_id = $data->unitId;
             $productUnit->price = $data->price;
-            $productUnit->is_base = $data->isBase;
+            $productUnit->is_base = $data->conversionValue === 1;
             $productUnit->conversion_value = $data->conversionValue;
             $productUnit->is_primary_unit = $data->isPrimaryUnit;
             $productUnit->point = $data->point;
@@ -218,14 +218,14 @@ class ProductUnitActions
         $timer_start = microtime(true);
 
         try {
-            if ($data->isBase) $this->resetBaseUnit($productUnit->company_id, $productUnit->product_id);
+            if ($data->conversionValue === 1) $this->resetBaseUnit($productUnit->company_id, $productUnit->product_id);
             if ($data->isPrimaryUnit)  $this->resetPrimaryUnit($productUnit->company_id, $productUnit->product_id);
 
             $productUnit->code = $this->generateUniqueCode($productUnit->company_id, $data->code, $productUnit->id);
             $productUnit->is_manufacturer_sku = $data->isManufacturerSku;
             $productUnit->unit_id = $data->unitId;
             $productUnit->price = $data->price;
-            $productUnit->is_base = $data->isBase;
+            $productUnit->is_base = $data->conversionValue === 1;
             $productUnit->conversion_value = $data->conversionValue;
             $productUnit->is_primary_unit = $data->isPrimaryUnit;
             $productUnit->point = $data->point;

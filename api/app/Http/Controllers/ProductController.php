@@ -72,11 +72,49 @@ class ProductController extends BaseController
             if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             if ($validatedRequest['slug'] !== config('dcslab.KEYWORDS.AUTO')) {
-                $isUniqueSlug = $this->productPhysicalActions->isUniqueSlug(...);
+                $isUniqueSlug = $this->productPhysicalActions->isUniqueSlug(
+                    $validatedRequest['company_id'], $validatedRequest['slug'], null
+                );
                 if (! $isUniqueSlug) return response()->error(['slug' => [trans('rules.unique_slug')]], 422);
             }
 
+            if (! (bool) $validatedRequest['is_taxable'] && (float) $validatedRequest['vat_rate'] > 0) {
+                return response()->error(['vat_rate' => [trans('rules.product.vat.must_be_zero_if_not_taxable')]], 422);
+            }
+
             if (! array_key_exists('remarks', $validatedRequest)) $validatedRequest['remarks'] = null;
+
+            $units = $validatedRequest['product_units'];
+
+            $unitCodes = array_map(fn ($u) => $u['code'], $units);
+            $unitCodes = array_filter($unitCodes, fn ($code) => $code !== config('dcslab.KEYWORDS.AUTO'));
+            $duplicateUnitCodes = array_filter(array_count_values($unitCodes), fn ($c) => $c > 1);
+            if (! empty($duplicateUnitCodes)) {
+                return response()->error(['product_units.code' => [trans('rules.product.unit.duplicate_code')]], 422);
+            }
+
+            $unitIds = array_map(fn ($u) => $u['unit_id'], $units);
+            $dupUnitIds = array_filter(array_count_values($unitIds), fn ($c) => $c > 1);
+            if (! empty($dupUnitIds)) {
+                return response()->error(['product_units.unit_id' => [trans('rules.product.unit.duplicate_unit')]], 422);
+            }
+
+            $conversionValues = array_map(fn ($u) => (string) $u['conversion_value'], $units);
+            $dupConversion = array_filter(array_count_values($conversionValues), fn ($c) => $c > 1);
+            if (! empty($dupConversion)) {
+                return response()->error(['product_units.conversion_value' => [trans('rules.product.unit.duplicate_conversion')]], 422);
+            }
+
+            $baseUnits = array_filter($units, fn ($u) => (float) $u['conversion_value'] == 1.0);
+            $baseCount = count($baseUnits);
+            if ($baseCount !== 1) {
+                return response()->error(['product_units.conversion_value' => [trans('rules.product.unit.single_base')]], 422);
+            }
+
+            $primaryCount = count(array_filter($units, fn ($u) => (bool) $u['is_primary_unit']));
+            if ($primaryCount !== 1) {
+                return response()->error(['product_units.is_primary_unit' => [trans('rules.product.unit.single_primary')]], 422);
+            }
 
             foreach ($validatedRequest['product_units'] as $index => $productUnit) {
                 if (! array_key_exists('remarks', $productUnit)) {
@@ -287,24 +325,79 @@ class ProductController extends BaseController
         try {
             DB::beginTransaction();
 
-            $isUniqueCode = $this->productPhysicalActions->isUniqueCode(
-                $validatedRequest['company_id'], $validatedRequest['code'], $product->id,
-            );
-            if (! $isUniqueCode) return response()->error(['code' => [trans('rules.unique_code')]], 422);
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUniqueCode = $this->productPhysicalActions->isUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], $product->id,
+                );
+                if (! $isUniqueCode) return response()->error(['code' => [trans('rules.unique_code')]], 422);
+            }
 
             $isUniqueName = $this->productPhysicalActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], $product->id
             );
             if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
-            $isUniqueSlug = $this->productPhysicalActions->isUniqueSlug(
-                $validatedRequest['company_id'], $validatedRequest['slug'], $product->id
-            );
-            if (! $isUniqueSlug) return response()->error(['slug' => [trans('rules.unique_slug')]], 422);
+            if ($validatedRequest['slug'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUniqueSlug = $this->productPhysicalActions->isUniqueSlug(
+                    $validatedRequest['company_id'], $validatedRequest['slug'], $product->id
+                );
+                if (! $isUniqueSlug) return response()->error(['slug' => [trans('rules.unique_slug')]], 422);
+            }
+
+            if (! (bool) $validatedRequest['is_taxable'] && (float) $validatedRequest['vat_rate'] > 0) {
+                return response()->error(['vat_rate' => [trans('rules.product.vat.must_be_zero_if_not_taxable')]], 422);
+            }
+            if ((bool) $validatedRequest['is_taxable']) {
+                $vat = (float) $validatedRequest['vat_rate'];
+                if ($vat < 0 || $vat > 100) {
+                    return response()->error(['vat_rate' => [trans('rules.product.vat.out_of_range')]], 422);
+                }
+            }
 
             if (! array_key_exists('remarks', $validatedRequest)) $validatedRequest['remarks'] = null;
 
             if (! array_key_exists('delete_product_unit_ids', $validatedRequest)) $validatedRequest['delete_product_unit_ids'] = null;
+
+            // Prevent deleting base unit
+            if (! empty($validatedRequest['delete_product_unit_ids'])) {
+                $deletedUnits = $product->productUnits()->whereIn('id', $validatedRequest['delete_product_unit_ids'])->get();
+                if ($deletedUnits->contains(fn ($unit) => (bool) $unit->is_base)) {
+                    return response()->error(['delete_product_unit_ids' => [trans('rules.product.unit.cannot_delete_base_unit')]], 422);
+                }
+            }
+
+            // Custom validations for product units
+            $units = $validatedRequest['product_units'];
+
+            $unitCodes = array_map(fn ($u) => $u['code'], $units);
+            $unitCodes = array_filter($unitCodes, fn ($code) => $code !== config('dcslab.KEYWORDS.AUTO'));
+            $dupUnitCodes = array_filter(array_count_values($unitCodes), fn ($c) => $c > 1);
+            if (! empty($dupUnitCodes)) {
+                return response()->error(['product_units.code' => [trans('rules.product.unit.duplicate_code')]], 422);
+            }
+
+            $unitIds = array_map(fn ($u) => $u['unit_id'], $units);
+            $dupUnitIds = array_filter(array_count_values($unitIds), fn ($c) => $c > 1);
+            if (! empty($dupUnitIds)) {
+                return response()->error(['product_units.unit_id' => [trans('rules.product.unit.duplicate_unit')]], 422);
+            }
+
+            $conversionValues = array_map(fn ($u) => (string) $u['conversion_value'], $units);
+            $dupConversion = array_filter(array_count_values($conversionValues), fn ($c) => $c > 1);
+            if (! empty($dupConversion)) {
+                return response()->error(['product_units.conversion_value' => [trans('rules.product.unit.duplicate_conversion')]], 422);
+            }
+
+            $baseUnits = array_filter($units, fn ($u) => (float) $u['conversion_value'] == 1.0);
+            $baseCount = count($baseUnits);
+            if ($baseCount !== 1) {
+                return response()->error(['product_units.conversion_value' => [trans('rules.product.unit.single_base')]], 422);
+            }
+
+            $primaryCount = count(array_filter($units, fn ($u) => (bool) $u['is_primary_unit']));
+            if ($primaryCount !== 1) {
+                return response()->error(['product_units.is_primary_unit' => [trans('rules.product.unit.single_primary')]], 422);
+            }
 
             foreach ($validatedRequest['product_units'] as $index => $productUnit) {
                 if (! array_key_exists('remarks', $productUnit)) {

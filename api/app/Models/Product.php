@@ -98,7 +98,9 @@ class Product extends Model
     public function scopeSearch($query, string $search)
     {
         return $query->where(function ($query) use ($search) {
-            $query->where('products.code', 'like', '%'.$search.'%')
+            $query->whereHas('brand', fn ($q) => $q->search($search))
+                ->orWhereHas('category', fn ($q) => $q->search($search))
+                ->orWhere('products.code', 'like', '%'.$search.'%')
                 ->orWhere('products.name', 'like', '%'.$search.'%')
                 ->orWhere('products.remarks', 'like', '%'.$search.'%');
         });

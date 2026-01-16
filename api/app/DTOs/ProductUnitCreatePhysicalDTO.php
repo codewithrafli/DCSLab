@@ -11,7 +11,6 @@ final class ProductUnitCreatePhysicalDTO
         public readonly bool $isManufacturerSKU,
         public readonly int $unitId,
         public readonly float $price,
-        public readonly bool $isBase,
         public readonly float $conversionValue,
         public readonly bool $isPrimaryUnit,
         public readonly int $point,
