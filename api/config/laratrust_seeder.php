@@ -46,6 +46,8 @@ return [
             'brand' => 'c,r,ra,u,d',
             'unit' => 'c,r,ra,u,d',
             'product' => 'c,r,ra,u,d',
+            'stock_adjustment_category' => 'c,r,ra,u,d',
+
             'customer_group' => 'c,r,ra,u,d',
             'customer_address' => 'c,r,ra,u,d',
             'customer' => 'c,r,ra,u,d',

@@ -1,51 +1,44 @@
 import axios from "../axios";
 import { useZiggyRouteStore } from "../stores/ziggy-route";
 import { route, Config } from "ziggy-js";
-import { CashAccount } from "../types/models/CashAccount";
+import { StockAdjustmentCategory } from "../types/models/StockAdjustmentCategory";
 import { Resource } from "../types/resources/Resource";
 import { Collection } from "../types/resources/Collection";
 import { ServiceResponse } from "../types/services/ServiceResponse";
 import { AxiosError, AxiosResponse, isAxiosError } from "axios";
 import ErrorHandlerService from "./ErrorHandlerService";
-import { CashAccountReadAnyPaginateRequest, CashAccountReadAnyGetRequest } from "../types/services/cash_account/CashAccountRequest";
+import { StockAdjustmentCategoryReadAnyPaginateRequest, StockAdjustmentCategoryReadAnyGetRequest } from "../types/services/stock-adjustment-category/StockAdjustmentCategoryRequest";
 import { StatusCode } from "../types/enums/StatusCode";
 import { client, useForm } from "laravel-precognition-vue";
-import CacheService from "./CacheService";
 
-export default class CashAccountService {
+export default class StockAdjustmentCategoryService {
     private ziggyRoute: Config;
     private ziggyRouteStore = useZiggyRouteStore();
 
     private errorHandlerService;
-    private cacheService;
 
     constructor() {
         this.ziggyRoute = this.ziggyRouteStore.getZiggy;
 
         this.errorHandlerService = new ErrorHandlerService();
-        this.cacheService = new CacheService();
     }
 
-    public useCashAccountCreateForm() {
-        const url = route('api.post.cash_account.save', undefined, true, this.ziggyRoute);
+    public useStockAdjustmentCategoryCreateForm() {
+        const url = route('api.post.stock_adjustment_category.save', undefined, true, this.ziggyRoute);
 
         client.axios().defaults.withCredentials = true;
         client.axios().defaults.withXSRFToken = true;
         const form = useForm('post', url, {
             company_id: '',
-            branch_id: '',
             code: '_AUTO_',
             name: '',
-            is_bank: false,
-            is_active: true,
-            remarks: '',
         });
 
         return form;
     }
 
-    public async readAnyPaginate(args: CashAccountReadAnyPaginateRequest): Promise<ServiceResponse<Collection<Array<CashAccount>> | null>> {
-        const result: ServiceResponse<Collection<Array<CashAccount>> | null> = {
+    public async readAnyPaginate(args: StockAdjustmentCategoryReadAnyPaginateRequest): Promise<ServiceResponse<Collection<Array<StockAdjustmentCategory>> | null>> {
+        const result: ServiceResponse<Collection<Array<StockAdjustmentCategory>> | null> = {
             success: false
         }
 
@@ -54,7 +47,6 @@ export default class CashAccountService {
             queryParams['with_trashed'] = args.with_trashed ? 1 : 0;            
             queryParams['company_id'] = args.company_id;
 
-            if (args.branch_id) queryParams['branch_id'] = args.branch_id;
             queryParams['search'] = args.search ? args.search : '';
             if (args.include_id) queryParams['include_id'] = args.include_id;
 
@@ -64,11 +56,11 @@ export default class CashAccountService {
                 per_page: args.per_page
             };
 
-            const url = route('api.get.cash_account.read_any', {
+            const url = route('api.get.stock_adjustment_category.read_any', {
                 _query: queryParams
             }, false, this.ziggyRoute);
 
-            const response: AxiosResponse<Collection<Array<CashAccount>>> = await axios.get(url);
+            const response: AxiosResponse<Collection<Array<StockAdjustmentCategory>>> = await axios.get(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
@@ -87,16 +79,15 @@ export default class CashAccountService {
         }
     }
 
-    public async readAnyGet(args: CashAccountReadAnyGetRequest): Promise<ServiceResponse<Resource<Array<CashAccount>> | null>> {
-        const result: ServiceResponse<Resource<Array<CashAccount>> | null> = {
+    public async readAnyGet(args: StockAdjustmentCategoryReadAnyGetRequest): Promise<ServiceResponse<Resource<Array<StockAdjustmentCategory>> | null>> {
+        const result: ServiceResponse<Resource<Array<StockAdjustmentCategory>> | null> = {
             success: false
         }
 
         try {
             const queryParams: Record<string, any> = {};
             queryParams['with_trashed'] = args.with_trashed ? 1 : 0;            
-            queryParams['company_id'] = args.company_id;            
-            if (args.branch_id) queryParams['branch_id'] = args.branch_id;
+            queryParams['company_id'] = args.company_id;
             
             queryParams['search'] = args.search ? args.search : '';
             if (args.include_id) queryParams['include_id'] = args.include_id;
@@ -106,11 +97,11 @@ export default class CashAccountService {
                 limit: args.limit
             };
 
-            const url = route('api.get.cash_account.read_any', {
+            const url = route('api.get.stock_adjustment_category.read_any', {
                 _query: queryParams
             }, false, this.ziggyRoute);
 
-            const response: AxiosResponse<Resource<Array<CashAccount>>> = await axios.get(url);
+            const response: AxiosResponse<Resource<Array<StockAdjustmentCategory>>> = await axios.get(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
@@ -129,17 +120,17 @@ export default class CashAccountService {
         }
     }
 
-    public async read(ulid: string): Promise<ServiceResponse<CashAccount | null>> {
-        const result: ServiceResponse<CashAccount | null> = {
+    public async read(ulid: string): Promise<ServiceResponse<StockAdjustmentCategory | null>> {
+        const result: ServiceResponse<StockAdjustmentCategory | null> = {
             success: false
         }
 
         try {
-            const url = route('api.get.cash_account.read', {
-                cash_account: ulid
+            const url = route('api.get.stock_adjustment_category.read', {
+                stock_adjustment_category: ulid
             }, false, this.ziggyRoute);
 
-            const response: AxiosResponse<Resource<CashAccount>> = await axios.get(url);
+            const response: AxiosResponse<Resource<StockAdjustmentCategory>> = await axios.get(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
@@ -158,9 +149,9 @@ export default class CashAccountService {
         }
     }
 
-    public useCashAccountEditForm(ulid: string) {
-        const url = route('api.post.cash_account.edit', {
-            cash_account: ulid
+    public useStockAdjustmentCategoryEditForm(ulid: string) {
+        const url = route('api.post.stock_adjustment_category.edit', {
+            stock_adjustment_category: ulid
         }, true, this.ziggyRoute);
 
         client.axios().defaults.withCredentials = true;
@@ -169,9 +160,6 @@ export default class CashAccountService {
             company_id: '',
             code: '_AUTO_',
             name: '',
-            is_bank: false,
-            is_active: true,
-            remarks: '',
         });
 
         return form;
@@ -183,8 +171,8 @@ export default class CashAccountService {
         }
 
         try {
-            const url = route('api.post.cash_account.delete', {
-                cash_account: ulid
+            const url = route('api.post.stock_adjustment_category.delete', {
+                stock_adjustment_category: ulid
             }, false, this.ziggyRoute);
 
             const response: AxiosResponse<any> = await axios.post(url);
@@ -205,3 +193,4 @@ export default class CashAccountService {
         }
     }
 }
+

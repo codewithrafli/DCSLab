@@ -49,6 +49,7 @@ use App\Http\Controllers\SaleReceiptProductUnitController;
 use App\Http\Controllers\SaleReceiptProductUnitSerialController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StockAdjustmentCategoryController;
 use App\Http\Controllers\StockTransferController;
 use App\Http\Controllers\StockTransferProductUnitController;
 use App\Http\Controllers\StockTransferProductUnitSerialController;
@@ -152,6 +153,19 @@ Route::prefix('product')->middleware('auth:sanctum')->group(function () {
         Route::post('edit/physical/{product:ulid}', [ProductController::class, 'updatePhysical'])->name('edit.physical');
         Route::post('edit/service/{product:ulid}', [ProductController::class, 'updateService'])->name('edit.service');
         Route::post('delete/{product:ulid}', [ProductController::class, 'delete'])->name('delete');
+    });
+});
+
+Route::prefix('stock_adjustment_category')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.stock_adjustment_category.')->group(function () {
+        Route::get('read', [StockAdjustmentCategoryController::class, 'readAny'])->name('read_any');
+        Route::get('read/{stock_adjustment_category:ulid}', [StockAdjustmentCategoryController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.stock_adjustment_category.')->group(function () {
+        Route::post('save', [StockAdjustmentCategoryController::class, 'store'])->name('save');
+        Route::post('edit/{stock_adjustment_category:ulid}', [StockAdjustmentCategoryController::class, 'update'])->name('edit');
+        Route::post('delete/{stock_adjustment_category:ulid}', [StockAdjustmentCategoryController::class, 'delete'])->name('delete');
     });
 });
 

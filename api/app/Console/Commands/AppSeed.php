@@ -10,6 +10,7 @@ use Database\Seeders\CustomerGroupSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\RoleSeeder;
+use Database\Seeders\StockAdjustmentCategorySeeder;
 use Database\Seeders\UnitSeeder;
 use Database\Seeders\UserSeeder;
 use Database\Seeders\WarehouseSeeder;
@@ -88,6 +89,9 @@ class AppSeed extends Command
         $progressBar->advance();
 
         (new UnitSeeder())->run(unitsPerCompany: 5, companyId: null);
+        $progressBar->advance();
+
+        (new StockAdjustmentCategorySeeder())->run(stockAdjustmentCategoriesPerCompany: 5, companyId: null);
         $progressBar->advance();
 
         (new CashAccountSeeder())->run(cashAccountsPerCompany: 5, companyId: null);

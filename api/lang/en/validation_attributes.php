@@ -72,6 +72,12 @@ return [
             'remarks' => 'Product Unit Remarks',
         ],
     ],
+    'stock_adjustment_category' => [
+        'company' => 'Company',
+        'code' => 'Code',
+        'name' => 'Name',
+    ],
+
     'investor' => [
         'company' => 'Company',
         'code' => 'Code',

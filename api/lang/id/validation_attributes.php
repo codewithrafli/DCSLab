@@ -72,6 +72,12 @@ return [
             'remarks' => 'Catatan Product Satuan',
         ],
     ],
+    'stock_adjustment_category' => [
+        'company' => 'Perusahaan',
+        'code' => 'Kode',
+        'name' => 'Nama',
+    ],
+
     'investor' => [
         'company' => 'Perusahaan',
         'code' => 'Kode',

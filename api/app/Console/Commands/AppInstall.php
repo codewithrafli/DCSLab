@@ -11,6 +11,7 @@ use Database\Seeders\BranchSeeder;
 use Database\Seeders\BrandSeeder;
 use Database\Seeders\CompanySeeder;
 use Database\Seeders\ProductCategorySeeder;
+use Database\Seeders\StockAdjustmentCategorySeeder;
 use Database\Seeders\UnitSeeder;
 use Database\Seeders\WarehouseSeeder;
 use Exception;
@@ -60,6 +61,8 @@ class AppInstall extends Command
         (new ProductCategorySeeder())->run();
         (new BrandSeeder())->run();
         (new UnitSeeder())->run();
+
+        (new StockAdjustmentCategorySeeder())->run();
 
         $this->info('Done!');
 

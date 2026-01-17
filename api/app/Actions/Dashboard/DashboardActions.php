@@ -48,6 +48,7 @@ class DashboardActions
         $menu = $this->createMenu_Company($menu, $hasOnlyUserRole, $hasOnlyAdminRole, $hasCompany, $hasDevRole);
         $menu = $this->createMenu_Product($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Finance($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
+        $menu = $this->createMenu_StockAdjustment($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Customer($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Administrator($menu, $hasAdminRole, $hasDevRole);
         $menu = $this->createMenu_DevTool($menu, $hasDevRole);
@@ -180,6 +181,56 @@ class DashboardActions
         return $menu;
     }
 
+    private function createMenu_Finance(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
+    {
+        if ($hasOnlyUserRole) {
+            return $menu;
+        }
+
+        $cashAccount = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-finance-cash-account',
+            'title' => 'components.menu.cash-account',
+        ];
+
+        $root_array = [
+            'icon' => 'DollarSign',
+            'pageName' => 'side-menu-finance',
+            'title' => 'components.menu.finance',
+            'subMenu' => [],
+        ];
+
+        array_push($root_array['subMenu'], $cashAccount);
+        array_push($menu, $root_array);
+
+        return $menu;
+    }
+
+    private function createMenu_StockAdjustment(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
+    {
+        if ($hasOnlyUserRole || $hasOnlyAdminRole) {
+            return $menu;
+        }
+
+        $stockAdjustmentCategory = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-stock-adjustment-stock-adjustment-category',
+            'title' => 'components.menu.stock-adjustment-category',
+        ];
+
+        $root_array = [
+            'icon' => 'RefreshCw',
+            'pageName' => 'side-menu-stock-adjustment',
+            'title' => 'components.menu.stock-adjustment',
+            'subMenu' => [],
+        ];
+
+        array_push($root_array['subMenu'], $stockAdjustmentCategory);
+        array_push($menu, $root_array);
+
+        return $menu;
+    }
+
     private function createMenu_Customer(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
     {
         if ($hasOnlyUserRole || $hasOnlyAdminRole) {
@@ -206,31 +257,6 @@ class DashboardActions
         ];
 
         array_push($root_array['subMenu'], $customerGroup, $customer);
-        array_push($menu, $root_array);
-
-        return $menu;
-    }
-
-    private function createMenu_Finance(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
-    {
-        if ($hasOnlyUserRole) {
-            return $menu;
-        }
-
-        $cashAccount = [
-            'icon' => 'ChevronRight',
-            'pageName' => 'side-menu-finance-cash-account',
-            'title' => 'components.menu.cash-account',
-        ];
-
-        $root_array = [
-            'icon' => 'DollarSign',
-            'pageName' => 'side-menu-finance',
-            'title' => 'components.menu.finance',
-            'subMenu' => [],
-        ];
-
-        array_push($root_array['subMenu'], $cashAccount);
         array_push($menu, $root_array);
 
         return $menu;

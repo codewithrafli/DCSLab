@@ -75,6 +75,11 @@ class Company extends Model
         return $this->hasMany(ProductUnit::class);
     }
 
+    public function stockAdjustmentCategories()
+    {
+        return $this->hasMany(StockAdjustmentCategory::class);
+    }
+
     public function customers()
     {
         return $this->hasMany(Customer::class);

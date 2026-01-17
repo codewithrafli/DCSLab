@@ -21,6 +21,8 @@
     "service": "Service",
     "supplier": "Supplier",
     "finance": "Finance",
+    "stock-adjustment": "Stock Adjustment",
+    "stock-adjustment-category": "Stock Adjustment Category",
     "purchase-management": "Purchase Management",
     "purchase-order": "Purchase Order",
     "administrator": "Administrator",
