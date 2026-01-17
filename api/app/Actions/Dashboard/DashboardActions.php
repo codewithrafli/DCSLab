@@ -45,9 +45,7 @@ class DashboardActions
         $showDemoMenu = false;
 
         $menu = $this->createMenu_Dashboard($menu, $showDemoMenu);
-        $menu = $this->createMenu_Company($menu, $hasOnlyUserRole, $hasOnlyAdminRole, $hasCompany, $hasDevRole);
-        $menu = $this->createMenu_Product($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
-        $menu = $this->createMenu_Finance($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
+        $menu = $this->createMenu_MasterData($menu, $hasOnlyUserRole, $hasOnlyAdminRole, $hasCompany, $hasDevRole);
         $menu = $this->createMenu_StockAdjustment($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Customer($menu, $hasOnlyUserRole, $hasOnlyAdminRole);
         $menu = $this->createMenu_Administrator($menu, $hasAdminRole, $hasDevRole);
@@ -90,11 +88,25 @@ class DashboardActions
         return $menu;
     }
 
-    private function createMenu_Company(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole, bool $hasCompany, bool $hasDevRole): array
+    private function createMenu_MasterData(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole, bool $hasCompany, bool $hasDevRole): array
     {
         if ($hasOnlyUserRole || $hasOnlyAdminRole) {
             return $menu;
         }
+
+        $root_array = [
+            'icon' => 'Database',
+            'pageName' => 'side-menu-master-data',
+            'title' => 'components.menu.master-data',
+            'subMenu' => [],
+        ];
+
+        $companyManagement = [
+            'icon' => 'Umbrella',
+            'pageName' => 'side-menu-company',
+            'title' => 'components.menu.company-management',
+            'subMenu' => [],
+        ];
 
         $company = [
             'icon' => 'ChevronRight',
@@ -114,29 +126,24 @@ class DashboardActions
             'title' => 'components.menu.warehouse',
         ];
 
-        $root_array = [
-            'icon' => 'Umbrella',
-            'pageName' => 'side-menu-company',
-            'title' => 'components.menu.company-management',
-            'subMenu' => [],
+        if ($hasCompany || $hasDevRole) {
+            array_push($companyManagement['subMenu'], $company, $branches, $warehouse);
+        } else {
+            array_push($companyManagement['subMenu'], $company);
+        }
+
+        $cashAccount = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-finance-cash-account',
+            'title' => 'components.menu.cash-account',
         ];
 
-        if ($hasCompany || $hasDevRole) {
-            array_push($root_array['subMenu'], $company, $branches, $warehouse);
-        } else {
-            array_push($root_array['subMenu'], $company);
-        }
-
-        array_push($menu, $root_array);
-
-        return $menu;
-    }
-
-    private function createMenu_Product(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
-    {
-        if ($hasOnlyUserRole || $hasOnlyAdminRole) {
-            return $menu;
-        }
+        $productManagement = [
+            'icon' => 'Package',
+            'pageName' => 'side-menu-product',
+            'title' => 'components.menu.product-management',
+            'subMenu' => [],
+        ];
 
         $productCategory = [
             'icon' => 'ChevronRight',
@@ -168,39 +175,30 @@ class DashboardActions
             'title' => 'components.menu.product',
         ];
 
-        $root_array = [
-            'icon' => 'Package',
-            'pageName' => 'side-menu-product',
-            'title' => 'components.menu.product-management',
+        array_push($productManagement['subMenu'], $productCategory, $brand, $unit, $product, $productService);
+
+        $customerManagement = [
+            'icon' => 'Users',
+            'pageName' => 'side-menu-customer',
+            'title' => 'components.menu.customer-management',
             'subMenu' => [],
         ];
 
-        array_push($root_array['subMenu'], $productCategory, $brand, $unit, $product, $productService);
-        array_push($menu, $root_array);
-
-        return $menu;
-    }
-
-    private function createMenu_Finance(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
-    {
-        if ($hasOnlyUserRole) {
-            return $menu;
-        }
-
-        $cashAccount = [
+        $customerGroup = [
             'icon' => 'ChevronRight',
-            'pageName' => 'side-menu-finance-cash-account',
-            'title' => 'components.menu.cash-account',
+            'pageName' => 'side-menu-customer-group',
+            'title' => 'components.menu.customer-group',
         ];
 
-        $root_array = [
-            'icon' => 'DollarSign',
-            'pageName' => 'side-menu-finance',
-            'title' => 'components.menu.finance',
-            'subMenu' => [],
+        $customer = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-customer',
+            'title' => 'components.menu.customer',
         ];
 
-        array_push($root_array['subMenu'], $cashAccount);
+        array_push($customerManagement['subMenu'], $customerGroup, $customer);
+
+        array_push($root_array['subMenu'], $companyManagement, $cashAccount, $productManagement, $customerManagement);
         array_push($menu, $root_array);
 
         return $menu;
@@ -233,32 +231,6 @@ class DashboardActions
 
     private function createMenu_Customer(array $menu, bool $hasOnlyUserRole, bool $hasOnlyAdminRole): array
     {
-        if ($hasOnlyUserRole || $hasOnlyAdminRole) {
-            return $menu;
-        }
-
-        $customerGroup = [
-            'icon' => 'ChevronRight',
-            'pageName' => 'side-menu-customer-group',
-            'title' => 'components.menu.customer-group',
-        ];
-
-        $customer = [
-            'icon' => 'ChevronRight',
-            'pageName' => 'side-menu-customer',
-            'title' => 'components.menu.customer',
-        ];
-
-        $root_array = [
-            'icon' => 'Users',
-            'pageName' => 'side-menu-customer',
-            'title' => 'components.menu.customer-management',
-            'subMenu' => [],
-        ];
-
-        array_push($root_array['subMenu'], $customerGroup, $customer);
-        array_push($menu, $root_array);
-
         return $menu;
     }
 
