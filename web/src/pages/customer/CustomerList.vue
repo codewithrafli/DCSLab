@@ -6,13 +6,12 @@ import { useI18n } from "vue-i18n";
 import Button from "@/components/Base/Button";
 import Lucide from "@/components/Base/Lucide";
 import Table from "@/components/Base/Table";
-import CustomerService from "@/services/CustomerService"; // Changed to CustomerService
-import { Customer } from "@/types/models/Customer"; // Changed to Customer
+import CustomerService from "@/services/CustomerService";
+import { Customer } from "@/types/models/Customer";
 import { Collection } from "@/types/resources/Collection";
 import { DataListEmittedData } from "@/components/DataList/DataList.vue";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
-import { Resource } from "@/types/resources/Resource";
-import { ReadAnyRequest } from "@/types/services/ServiceRequest";
+import { CustomerReadAnyPaginateRequest } from "@/types/services/customer/CustomerRequest";
 import { useRouter } from "vue-router";
 import { Dialog } from "@/components/Base/Headless";
 import { ViewMode } from "@/types/enums/ViewMode";
@@ -28,7 +27,7 @@ import { ErrorCode } from "@/types/enums/ErrorCode";
 // #region Declarations
 const { t } = useI18n();
 const router = useRouter();
-const customerService = new CustomerService(); // Changed to CustomerService
+const customerService = new CustomerService();
 const selectedUserLocationStore = useSelectedUserLocationStore();
 // #endregion
 
@@ -47,7 +46,6 @@ const deleteUlid = ref<string>("");
 const deleteModalShow = ref<boolean>(false);
 const expandDetail = ref<number | null>(null);
 const customerLists = ref<Collection<Array<Customer>> | null>({
-  // Changed to customerLists
   data: [],
   meta: {
     current_page: 0,
@@ -87,7 +85,7 @@ onMounted(async () => {
     });
   }
 
-  await getCustomers("", true, true, 1, 10); // Changed to getCustomers
+  await getCustomers("", true, 1, 10);
 });
 // #endregion
 
@@ -95,31 +93,28 @@ onMounted(async () => {
 const getCustomers = async (
   search: string,
   refresh: boolean,
-  paginate: boolean,
   page: number,
   per_page: number
 ) => {
-  // Renamed to getCustomers
   emits("loading-state", true);
 
-  let company_id = selectedUserLocation.value.company.id;
+  const company_id = selectedUserLocation.value.company.id;
 
-  const searchReq: ReadAnyRequest = {
-    search: search,
+  const searchReq: CustomerReadAnyPaginateRequest = {
+    with_trashed: false,
     company_id: company_id,
+    search: search,
+    status: null,
+    include_id: undefined,
     refresh: refresh,
-    paginate: paginate,
     page: page,
     per_page: per_page,
-    with_trashed: false,
   };
 
-  let result: ServiceResponse<
-    Collection<Array<Customer>> | Resource<Array<Customer>> | null
-  > = await customerService.readAny(searchReq); // Changed to customerService
+  const result: ServiceResponse<Collection<Array<Customer>> | null> = await customerService.readAnyPaginate(searchReq);
 
   if (result.success && result.data) {
-    customerLists.value = result.data as Collection<Array<Customer>>; // Changed to customerLists
+    customerLists.value = result.data;
   } else {
     showAlertPlaceholder(
       "danger",
@@ -132,13 +127,12 @@ const getCustomers = async (
 };
 
 const onDataListChanged = async (data: DataListEmittedData) => {
-  await getCustomers(
-    data.search.text,
-    false,
-    true,
-    data.pagination.page,
-    data.pagination.per_page
-  ); // Changed to getCustomers
+    await getCustomers(
+      data.search.text,
+      false,
+      data.pagination.page,
+      data.pagination.per_page
+    );
 };
 
 const viewSelected = (idx: number) => {
@@ -150,7 +144,7 @@ const viewSelected = (idx: number) => {
 };
 
 const editSelected = (itemIdx: number) => {
-  if (!customerLists.value) return; // Changed to customerLists
+  if (!customerLists.value) return;
 
   let ulid = customerLists.value.data[itemIdx].ulid;
 
@@ -161,7 +155,7 @@ const editSelected = (itemIdx: number) => {
 };
 
 const deleteSelected = (itemIdx: number) => {
-  if (!customerLists.value) return; // Changed to customerLists
+  if (!customerLists.value) return;
 
   let itemUlid = customerLists.value.data[itemIdx].ulid;
 
@@ -179,10 +173,10 @@ const confirmDelete = async () => {
 
   if (result.success) {
     emits("update-profile");
-    await getCustomers("", true, true, 1, 10); // Changed to getCustomers
+    await getCustomers("", true, 1, 10);
     showNotification(
-      t("views.customer.alert.delete_customer.title"),
-      t("views.customer.alert.delete_customer.content")
+      t("views.customer.alert.delete.title"),
+      t("views.customer.alert.delete.message")
     ); // Changed translation path
   } else {
     showAlertPlaceholder(

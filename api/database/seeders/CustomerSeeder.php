@@ -8,30 +8,20 @@ use Illuminate\Database\Seeder;
 
 class CustomerSeeder extends Seeder
 {
-    // public function run(?int $companyId, ?int $qtyPerCompany)
-    // {
-    //     $query = Company::query();
-    //     if ($companyId) $query->where('id', '=', $companyId);
-    //     $companies = $query->get();
-
-    //     if (! $qtyPerCompany) $qtyPerCompany = 5;
-    //     foreach ($companies as $company) {
-    //         for ($i = 0; $i < $qtyPerCompany; $i++) {
-    //             $customerFactory = Customer::factory()->for($company);
-    //             $customerFactory->create();
-    //         }
-    //     }
-    // }
-    public function run()
+    public function run(?int $customersPerCompany = null, ?int $companyId = null)
     {
         $query = Company::query();
+        if ($companyId) {
+            $query->where('id', $companyId);
+        }
         $companies = $query->get();
 
-        $qtyPerCompany = 5;
+        $customersPerCompany = $customersPerCompany ?? 5;
         foreach ($companies as $company) {
-            for ($i = 0; $i < $qtyPerCompany; $i++) {
-                $customerFactory = Customer::factory()->for($company);
-                $customerFactory->create();
+            for ($i = 0; $i < $customersPerCompany; $i++) {
+                Customer::factory()
+                    ->for($company)
+                    ->create();
             }
         }
     }

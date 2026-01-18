@@ -10,6 +10,8 @@ use App\Enums\UserRolesEnum;
 use Database\Seeders\BranchSeeder;
 use Database\Seeders\BrandSeeder;
 use Database\Seeders\CompanySeeder;
+use Database\Seeders\CustomerGroupSeeder;
+use Database\Seeders\CustomerSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\StockAdjustmentCategorySeeder;
 use Database\Seeders\UnitSeeder;
@@ -61,6 +63,9 @@ class AppInstall extends Command
         (new ProductCategorySeeder())->run();
         (new BrandSeeder())->run();
         (new UnitSeeder())->run();
+
+        (new CustomerGroupSeeder())->run();
+        (new CustomerSeeder())->run();
 
         (new StockAdjustmentCategorySeeder())->run();
 

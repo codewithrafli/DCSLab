@@ -18,14 +18,14 @@ return new class extends Migration
             $table->boolean('is_member');
             $table->string('name');
             $table->foreignId('group_id')->nullable()->references('id')->on('customer_groups');
-            $table->string('zone');
+            $table->string('zone')->nullable();
             $table->integer('max_open_invoice')->default(0);
             $table->decimal('max_outstanding_invoice', 30, 8)->default(0);
             $table->integer('max_invoice_age')->default(0);
-            $table->string('payment_term_type');
+            $table->string('payment_term_type')->nullable();
             $table->integer('payment_term')->default(0);
             $table->boolean('taxable_enterprise');
-            $table->string('tax_id');
+            $table->string('tax_id')->nullable();
             $table->boolean('status');
             $table->string('remarks')->nullable();
 

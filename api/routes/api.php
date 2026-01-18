@@ -182,6 +182,19 @@ Route::prefix('customer_group')->middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::prefix('customer')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.customer.')->group(function () {
+        Route::get('read', [CustomerController::class, 'readAny'])->name('read_any');
+        Route::get('read/{customer:ulid}', [CustomerController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.customer.')->group(function () {
+        Route::post('save', [CustomerController::class, 'store'])->name('save');
+        Route::post('edit/{customer:ulid}', [CustomerController::class, 'update'])->name('edit');
+        Route::post('delete/{customer:ulid}', [CustomerController::class, 'delete'])->name('delete');
+    });
+});
+
 Route::prefix('stock_adjustment_category')->middleware('auth:sanctum')->group(function () {
     Route::middleware('throttle:100,1')->name('api.get.stock_adjustment_category.')->group(function () {
         Route::get('read', [StockAdjustmentCategoryController::class, 'readAny'])->name('read_any');

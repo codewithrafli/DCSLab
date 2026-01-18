@@ -2,6 +2,7 @@
 
 namespace App\Actions\Customer;
 
+use App\DTOs\ExecuteDTO;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Traits\CacheHelper;
@@ -9,6 +10,7 @@ use App\Traits\LoggerHelper;
 use Exception;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
 class CustomerActions
@@ -61,145 +63,199 @@ class CustomerActions
         }
     }
 
-    private function readAnyQuery(
-        ?bool $withTrashed,
-
-        ?string $search,
+    public function readAny(
+        bool $withTrashed,
         int $companyId,
 
-        ?int $limit
-    ) {
-        $query = Customer::select('customers.*')->withTrashed()
-            ->with(['company', 'user', 'group'])
-            ->join('companies', 'companies.id', '=', 'customers.company_id')
-            ->where(function ($query) use ($withTrashed, $search, $companyId) {
-                if ($withTrashed == true) {
+        ?string $search,
+        ?bool $isMember,
+        ?int $groupId,
+        ?string $zone,
+        ?int $maxOpenInvoice,
+        ?float $maxOutstandingInvoice,
+        ?int $maxInvoiceAge,
+        ?int $paymentTermType,
+        ?int $paymentTerm,
+        ?bool $taxableEnterprise,
+        ?string $taxId,
+        ?int $status,
+        ?int $includeId,
+
+        ?ExecuteDTO $execute
+    ): Paginator|Collection {
+        $query = Customer::with(['company', 'user', 'group'])
+            ->select('customers.*')
+            ->where('customers.company_id', $companyId)
+            ->withTrashed();
+
+        $query->where(function ($query) use (
+            $withTrashed,
+            $search,
+            $isMember,
+            $groupId,
+            $zone,
+            $maxOpenInvoice,
+            $maxOutstandingInvoice,
+            $maxInvoiceAge,
+            $paymentTermType,
+            $paymentTerm,
+            $taxableEnterprise,
+            $taxId,
+            $status,
+            $includeId
+        ) {
+            $query->where(function ($query) use (
+                $withTrashed,
+                $search,
+                $isMember,
+                $groupId,
+                $zone,
+                $maxOpenInvoice,
+                $maxOutstandingInvoice,
+                $maxInvoiceAge,
+                $paymentTermType,
+                $paymentTerm,
+                $taxableEnterprise,
+                $taxId,
+                $status
+            ) {
+                $query->withoutTrashed();
+                if ($withTrashed) {
                     $query->withTrashed();
-                } else {
-                    $query->withoutTrashed();
                 }
 
                 if ($search) {
                     $query->search($search);
                 }
 
-                $query->whereCompanyId($companyId);
+                if (! is_null($isMember)) {
+                    $query->where('customers.is_member', $isMember);
+                }
+
+                if (! is_null($groupId)) {
+                    $query->where('customers.group_id', $groupId);
+                }
+
+                if (! is_null($zone)) {
+                    $query->where('customers.zone', $zone);
+                }
+
+                if (! is_null($maxOpenInvoice)) {
+                    $query->where('customers.max_open_invoice', $maxOpenInvoice);
+                }
+
+                if (! is_null($maxOutstandingInvoice)) {
+                    $query->where('customers.max_outstanding_invoice', $maxOutstandingInvoice);
+                }
+
+                if (! is_null($maxInvoiceAge)) {
+                    $query->where('customers.max_invoice_age', $maxInvoiceAge);
+                }
+
+                if (! is_null($paymentTermType)) {
+                    $query->where('customers.payment_term_type', $paymentTermType);
+                }
+
+                if (! is_null($paymentTerm)) {
+                    $query->where('customers.payment_term', $paymentTerm);
+                }
+
+                if (! is_null($taxableEnterprise)) {
+                    $query->where('customers.taxable_enterprise', $taxableEnterprise);
+                }
+
+                if (! is_null($taxId)) {
+                    $query->where('customers.tax_id', $taxId);
+                }
+
+                if (! is_null($status)) {
+                    $query->where('customers.status', $status);
+                }
             });
 
-        $query->orderBy('companies.name', 'asc')
-            ->orderBy('customers.name', 'asc');
+            if ($includeId) {
+                $query->orWhere('customers.id', $includeId);
+            }
+        });
 
-        if ($limit) {
-            $query->limit($limit);
+        if ($includeId) {
+            $query->orderByRaw('FIELD(customers.id, '.$includeId.') desc');
         }
+        $query->orderBy('customers.name', 'asc');
 
-        return $query;
-    }
+        if ($execute) {
+            $timer_start = microtime(true);
+            $recordsCount = 0;
 
-    public function readAny(
-        ?bool $useCache,
-        ?bool $withTrashed,
+            try {
+                $cacheParams = [
+                    $withTrashed ? 'true' : 'false',
+                    empty($search) ? '[empty]' : $search,
+                    $companyId,
+                    is_null($isMember) ? '[null]' : ($isMember ? 'true' : 'false'),
+                    $groupId ?? '[null]',
+                    is_null($zone) || $zone === '' ? '[empty]' : $zone,
+                    $maxOpenInvoice ?? '[null]',
+                    $maxOutstandingInvoice ?? '[null]',
+                    $maxInvoiceAge ?? '[null]',
+                    $paymentTermType ?? '[null]',
+                    $paymentTerm ?? '[null]',
+                    is_null($taxableEnterprise) ? '[null]' : ($taxableEnterprise ? 'true' : 'false'),
+                    is_null($taxId) || $taxId === '' ? '[empty]' : $taxId,
+                    $status ?? '[null]',
+                    $includeId ?? '[null]',
+                    $execute->pagination ? 'true' : 'false',
+                    $execute->pagination?->page ?? '[null]',
+                    $execute->pagination?->perPage ?? '[null]',
+                    $execute->get?->limit ?? '[null]',
+                ];
 
-        ?string $search,
-        int $companyId,
+                $cacheKey = 'readAny_'.implode('-', $cacheParams);
 
-        bool $paginate,
-        ?int $page,
-        ?int $perPage,
-        ?int $limit
-    ): Paginator|Collection {
-        $timer_start = microtime(true);
-        $recordsCount = 0;
-
-        try {
-            $cacheSearch = empty($search) ? '[empty]' : $search;
-            $cacheKey = 'readAny_'.$companyId.'-'.$cacheSearch.'-'.$paginate.'-'.$page.'-'.$perPage;
-            if ($useCache === true) {
-                $cacheResult = $this->readFromCache($cacheKey);
-
-                if (! is_null($cacheResult)) {
-                    return $cacheResult;
+                if ($execute->useCache) {
+                    $cacheData = $this->readFromCache($cacheKey);
+                    if ($cacheData !== Config::get('dcslab.ERROR_RETURN_VALUE')) {
+                        return $cacheData;
+                    }
                 }
+
+                if ($execute->pagination) {
+                    $result = $query->paginate(
+                        perPage: $execute->pagination->perPage,
+                        columns: ['*'],
+                        pageName: 'page',
+                        page: $execute->pagination->page
+                    );
+                } else {
+                    if ($execute->get?->limit) {
+                        $query->limit($execute->get->limit);
+                    }
+
+                    $result = $query->get();
+                }
+
+                $recordsCount = $result->count();
+
+                if ($execute->useCache) {
+                    $this->saveToCache($cacheKey, $result);
+                }
+
+                return $result;
+            } catch (Exception $e) {
+                $this->loggerDebug(__METHOD__, $e);
+                throw $e;
+            } finally {
+                $execution_time = microtime(true) - $timer_start;
+                $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
             }
-
-            $result = null;
-
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-                search: $search,
-                companyId: $companyId,
-                limit: $paginate ? null : $limit
-            );
-
-            if ($paginate) {
-                $result = $query->paginate(perPage: $perPage, page: $page);
-            } else {
-                $result = $query->get();
-            }
-
-            $recordsCount = $result->count();
-
-            if ($useCache === true) {
-                $this->saveToCache($cacheKey, $result);
-            }
-
-            return $result;
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
         }
+
+        return $query->get();
     }
 
     public function read(Customer $customer): Customer
     {
         return $customer->load('company', 'user', 'group');
-    }
-
-    public function getAllActive(
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-        ?array $includeIds,
-
-        ?int $limit
-    ) {
-        $timer_start = microtime(true);
-
-        try {
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-
-                search: $search,
-                companyId: $companyId,
-
-                limit: $limit
-            );
-
-            if ($includeIds) {
-                $query = $query->orWhereIn('id', $includeIds);
-
-                $orders = $query->getQuery()->orders;
-                $query->reorder();
-                $query->orderByRaw('FIELD(id, '.implode(',', $includeIds).') desc');
-                if (! empty($orders)) {
-                    foreach ($orders as $order) {
-                        $query->orderBy($order['column'], $order['direction']);
-                    }
-                }
-            }
-
-            return $query->get();
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time);
-        }
     }
 
     public function update(Customer $customer, array $data): Customer

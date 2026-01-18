@@ -11,7 +11,14 @@ import TomSelect from "tom-select";
 import _ from "lodash";
 
 const setValue = (el: TomSelectElement, props: TomSelectProps) => {
-  if (props.modelValue.length) {
+  const hasValue =
+    props.modelValue !== undefined &&
+    props.modelValue !== null &&
+    (Array.isArray(props.modelValue)
+      ? props.modelValue.length > 0
+      : String(props.modelValue).length > 0);
+
+  if (hasValue) {
     if (Array.isArray(props.modelValue)) {
       for (const value of props.modelValue) {
         const selectedOption = Array.from(el).find(

@@ -7,9 +7,12 @@ import { Collection } from "../types/resources/Collection";
 import { ServiceResponse } from "../types/services/ServiceResponse";
 import { AxiosError, AxiosResponse, isAxiosError } from "axios";
 import ErrorHandlerService from "./ErrorHandlerService";
-import { ReadAnyRequest } from "../types/services/ServiceRequest";
 import { StatusCode } from "../types/enums/StatusCode";
 import { client, useForm } from "laravel-precognition-vue";
+import {
+    CustomerReadAnyPaginateRequest,
+    CustomerReadAnyGetRequest,
+} from "../types/services/customer/CustomerRequest";
 
 export default class CustomerService {
     private ziggyRoute: Config;
@@ -28,9 +31,8 @@ export default class CustomerService {
         client.axios().defaults.withCredentials = true;
         client.axios().defaults.withXSRFToken = true;
         const form = useForm('post', url, {
-            company_id: '0',
-            user_id: '0',
-            group_id: '0',
+            company_id: '',
+            group_id: '',
             code: '_AUTO_',
             name: '',
             zone: '',
@@ -49,24 +51,33 @@ export default class CustomerService {
         return form;
     }
 
-    public async readAny(args: ReadAnyRequest): Promise<ServiceResponse<Collection<Array<Customer>> | Resource<Array<Customer>> | null>> {
-        const result: ServiceResponse<Collection<Array<Customer>> | Resource<Array<Customer>> | null> = {
-            success: false
-        }
+    public async readAnyPaginate(args: CustomerReadAnyPaginateRequest): Promise<ServiceResponse<Collection<Array<Customer>> | null>> {
+        const result: ServiceResponse<Collection<Array<Customer>> | null> = {
+            success: false,
+        };
 
         try {
-            const queryParams: Record<string, string | number | boolean> = {};
-            queryParams['search'] = args.search ? args.search : '';
-            if (args.company_id) queryParams['company_id'] = args.company_id;
-            queryParams['refresh'] = args.refresh;
-            queryParams['paginate'] = args.paginate;
-            if (args.page) queryParams['page'] = args.page;
-            if (args.per_page) queryParams['per_page'] = args.per_page;
-            queryParams['with_trashed'] = args.with_trashed ?? false;
+            const queryParams: Record<string, any> = {};
+            queryParams["with_trashed"] = args.with_trashed ? 1 : 0;
+            queryParams["company_id"] = args.company_id;
+            queryParams["search"] = args.search ? args.search : "";
+            if (args.status !== undefined && args.status !== null) queryParams["status"] = args.status;
+            if (args.include_id) queryParams["include_id"] = args.include_id;
 
-            const url = route('api.get.db.customer.customer.read_any', {
-                _query: queryParams
-            }, false, this.ziggyRoute);
+            queryParams["refresh"] = args.refresh;
+            queryParams["paginate"] = {
+                page: args.page,
+                per_page: args.per_page,
+            };
+
+            const url = route(
+                "api.get.db.customer.customer.read_any",
+                {
+                    _query: queryParams,
+                },
+                false,
+                this.ziggyRoute,
+            );
 
             const response: AxiosResponse<Collection<Array<Customer>>> = await axios.get(url);
 
@@ -77,7 +88,53 @@ export default class CustomerService {
 
             return result;
         } catch (e: unknown) {
-            if (e instanceof Error && e.message.includes('Ziggy error')) {
+            if (e instanceof Error && e.message.includes("Ziggy error")) {
+                return this.errorHandlerService.generateZiggyUrlErrorServiceResponse(e.message);
+            } else if (isAxiosError(e)) {
+                return this.errorHandlerService.generateAxiosErrorServiceResponse(e as AxiosError);
+            } else {
+                return result;
+            }
+        }
+    }
+
+    public async readAnyGet(args: CustomerReadAnyGetRequest): Promise<ServiceResponse<Resource<Array<Customer>> | null>> {
+        const result: ServiceResponse<Resource<Array<Customer>> | null> = {
+            success: false,
+        };
+
+        try {
+            const queryParams: Record<string, any> = {};
+            queryParams["with_trashed"] = args.with_trashed ? 1 : 0;
+            queryParams["company_id"] = args.company_id;
+            queryParams["search"] = args.search ? args.search : "";
+            if (args.status !== undefined && args.status !== null) queryParams["status"] = args.status;
+            if (args.include_id) queryParams["include_id"] = args.include_id;
+
+            queryParams["refresh"] = args.refresh;
+            queryParams["get"] = {
+                limit: args.limit,
+            };
+
+            const url = route(
+                "api.get.db.customer.customer.read_any",
+                {
+                    _query: queryParams,
+                },
+                false,
+                this.ziggyRoute,
+            );
+
+            const response: AxiosResponse<Resource<Array<Customer>>> = await axios.get(url);
+
+            if (response.status == StatusCode.OK) {
+                result.success = true;
+                result.data = response.data;
+            }
+
+            return result;
+        } catch (e: unknown) {
+            if (e instanceof Error && e.message.includes("Ziggy error")) {
                 return this.errorHandlerService.generateZiggyUrlErrorServiceResponse(e.message);
             } else if (isAxiosError(e)) {
                 return this.errorHandlerService.generateAxiosErrorServiceResponse(e as AxiosError);
@@ -122,9 +179,8 @@ export default class CustomerService {
         client.axios().defaults.withCredentials = true;
         client.axios().defaults.withXSRFToken = true;
         const form = useForm('post', url, {
-            company_id: '0',
-            user_id: '0',
-            group_id: '0',
+            company_id: '',
+            group_id: '',
             code: '_AUTO_',
             name: '',
             zone: '',

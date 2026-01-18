@@ -47,9 +47,9 @@
         "status": "Status"
     },
     "alert": {
-        "delete_customer_group": {
+        "delete": {
             "title": "Hapus Pelanggan",
-            "content": "Pelanggan Berhasil Dihapus"
+            "message": "Pelanggan Berhasil Dihapus"
         }
     }
 }

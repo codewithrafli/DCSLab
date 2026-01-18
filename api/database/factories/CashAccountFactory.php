@@ -13,7 +13,7 @@ class CashAccountFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => strtoupper(fake()->lexify()).fake()->numerify(),
+            'code' => strtoupper(fake()->lexify()).' '.fake()->numerify(),
             'name' => fake()->randomElement($this->cashAccounts),
             'is_bank' => fake()->boolean(),
             'is_active' => fake()->boolean(),

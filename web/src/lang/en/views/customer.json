@@ -47,9 +47,9 @@
         "status": "Status"
     },
     "alert": {
-        "delete_customer_group": {
+        "delete": {
             "title": "Delete Customer",
-            "content": "Customer Deleted Successfully"
+            "message": "Customer Deleted Successfully"
         }
     }
 }

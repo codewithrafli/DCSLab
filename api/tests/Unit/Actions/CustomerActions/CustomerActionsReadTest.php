@@ -3,6 +3,9 @@
 namespace Tests\Unit\Actions\CustomerActions;
 
 use App\Actions\Customer\CustomerActions;
+use App\DTOs\ExecuteDTO;
+use App\DTOs\ExecuteGetDTO;
+use App\DTOs\ExecutePaginationDTO;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\User;
@@ -32,16 +35,18 @@ class CustomerActionsReadTest extends ActionsTestCase
         $company = $user->companies()->inRandomOrder()->first();
 
         $result = $this->customerActions->readAny(
-            companyId: $company->id,
-            useCache: true,
             withTrashed: false,
-
+            companyId: $company->id,
             search: '',
-
-            paginate: true,
-            page: 1,
-            perPage: 10,
-            limit: null
+            includeId: null,
+            execute: new ExecuteDTO(
+                useCache: true,
+                pagination: new ExecutePaginationDTO(
+                    page: 1,
+                    perPage: 10,
+                ),
+                get: null,
+            )
         );
 
         $this->assertInstanceOf(Paginator::class, $result);
@@ -57,16 +62,17 @@ class CustomerActionsReadTest extends ActionsTestCase
         $company = $user->companies()->inRandomOrder()->first();
 
         $result = $this->customerActions->readAny(
-            companyId: $company->id,
-            useCache: true,
             withTrashed: false,
-
+            companyId: $company->id,
             search: '',
-
-            paginate: false,
-            page: null,
-            perPage: null,
-            limit: 10
+            includeId: null,
+            execute: new ExecuteDTO(
+                useCache: true,
+                pagination: null,
+                get: new ExecuteGetDTO(
+                    limit: 10,
+                ),
+            )
         );
 
         $this->assertInstanceOf(Collection::class, $result);
@@ -77,16 +83,17 @@ class CustomerActionsReadTest extends ActionsTestCase
         $maxId = Company::max('id') + 1;
 
         $result = $this->customerActions->readAny(
-            companyId: $maxId,
-            useCache: true,
             withTrashed: false,
-
+            companyId: $maxId,
             search: '',
-
-            paginate: false,
-            page: null,
-            perPage: null,
-            limit: 10
+            includeId: null,
+            execute: new ExecuteDTO(
+                useCache: true,
+                pagination: null,
+                get: new ExecuteGetDTO(
+                    limit: 10,
+                ),
+            )
         );
 
         $this->assertInstanceOf(Collection::class, $result);
@@ -115,16 +122,18 @@ class CustomerActionsReadTest extends ActionsTestCase
         $company = $user->companies()->inRandomOrder()->first();
 
         $result = $this->customerActions->readAny(
-            companyId: $company->id,
-            useCache: true,
             withTrashed: false,
-
+            companyId: $company->id,
             search: 'testing',
-
-            paginate: true,
-            page: 1,
-            perPage: 10,
-            limit: null
+            includeId: null,
+            execute: new ExecuteDTO(
+                useCache: true,
+                pagination: new ExecutePaginationDTO(
+                    page: 1,
+                    perPage: 10,
+                ),
+                get: null,
+            )
         );
 
         $this->assertInstanceOf(Paginator::class, $result);

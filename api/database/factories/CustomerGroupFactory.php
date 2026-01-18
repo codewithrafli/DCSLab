@@ -18,7 +18,7 @@ class CustomerGroupFactory extends Factory
         ];
 
         return [
-            'code' => strtoupper(fake()->lexify()).fake()->numerify(),
+            'code' => strtoupper(fake()->lexify()).' '.fake()->numerify(),
             'name' => fake()->randomElement($names).Str::random(3),
             'max_open_invoice' => fake()->numberBetween(1, 100),
             'max_outstanding_invoice' => fake()->numberBetween(0, 100) * 10000,

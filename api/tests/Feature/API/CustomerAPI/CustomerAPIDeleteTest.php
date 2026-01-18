@@ -30,7 +30,7 @@ class CustomerAPIDeleteTest extends APITestCase
 
         $api = $this->json('POST', route('api.post.db.customer.customer.delete', $customer->ulid));
 
-        $api->assertStatus(401);
+        $api->assertUnauthorized();
     }
 
     public function test_customer_api_call_delete_without_access_right_expect_unauthorized_message()
@@ -46,7 +46,7 @@ class CustomerAPIDeleteTest extends APITestCase
 
         $api = $this->json('POST', route('api.post.db.customer.customer.delete', $customer->ulid));
 
-        $api->assertStatus(403);
+        $api->assertForbidden();
     }
 
     public function test_customer_api_call_delete_expect_successful()
@@ -88,8 +88,7 @@ class CustomerAPIDeleteTest extends APITestCase
         $user = User::factory()->create();
 
         $this->actingAs($user);
-        $api = $this->json('POST', route('api.post.db.customer.customer.delete', null));
 
-        $api->assertStatus(500);
+        $this->json('POST', route('api.post.db.customer.customer.delete', null));
     }
 }

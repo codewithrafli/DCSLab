@@ -11,7 +11,7 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => strtoupper(fake()->lexify()).fake()->numerify(),
+            'code' => strtoupper(fake()->lexify()).' '.fake()->numerify(),
             'is_member' => fake()->boolean(),
             'name' => fake()->name(),
             'zone' => fake()->city(),

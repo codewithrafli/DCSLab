@@ -17,6 +17,7 @@ import {
   FormInputCode,
   FormSwitch,
   FormErrorMessages,
+  FormTomSelect,
 } from "@/components/Base/Form";
 import { TwoColumnsLayoutCards } from "@/components/Base/Form/FormLayout/TwoColumnsLayout.vue";
 import { CardState } from "@/types/enums/CardState";
@@ -31,6 +32,7 @@ import { Customer } from "@/types/models/Customer";
 import { CustomerGroup } from "@/types/models/CustomerGroup";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
 import { Collection } from "@/types/resources/Collection";
+import { AxiosError, isAxiosError } from "axios";
 // #endregion
 
 // #region Declarations
@@ -73,8 +75,9 @@ const cards = ref<Array<TwoColumnsLayoutCards>>([
 
 const statusDDL = ref<Array<DropDownOption> | null>(null);
 const paymentTermTypeDDL = ref<Array<DropDownOption> | null>(null);
-const customerGroupDDL = ref<Array<CustomerGroup> | null>(null);
+const customerGroupDDL = ref<Array<DropDownOption> | null>(null);
 const isDDLLoading = ref<boolean>(false);
+const selectedGroupName = ref<string>("");
 
 const customerForm = customerService.useCustomerEditForm(
   route.params.ulid as string
@@ -120,8 +123,8 @@ const loadData = async (ulid: string) => {
   if (response && response.data) {
     customerForm.setData({
       company_id: response.data.company.id,
-      user_id: response.data.user?.id ?? "0",
-      group_id: response.data.group?.id ?? "0",
+      user_id: response.data.user?.id ?? "",
+      group_id: response.data.group?.id ?? "",
       code: response.data.code,
       name: response.data.name,
       zone: response.data.zone,
@@ -136,43 +139,65 @@ const loadData = async (ulid: string) => {
       status: response.data.status,
       remarks: response.data.remarks,
     });
+    selectedGroupName.value = response.data.group?.name ?? "";
   }
   emits("loading-state", false);
 };
 
-const getDDL = async (): Promise<void> => {
-  isDDLLoading.value = true;
-
-  dashboardServices
-    .getStatusDDL()
-    .then((result: Array<DropDownOption> | null) => {
-      statusDDL.value = result;
-    });
-
-  dashboardServices
-    .getPaymentTermTypesDDL()
-    .then((result: Array<DropDownOption> | null) => {
-      paymentTermTypeDDL.value = result;
-    });
-
+const getCustomerGroupDDL = async (search = ""): Promise<void> => {
   const result = await customerGroupService.readAnyGet({
     with_trashed: false,
-
     company_id: selectedUserLocation.value?.company.id,
-    search: "",
+    search,
     include_id: undefined,
-
     refresh: false,
     limit: 10,
   });
 
   if (result.success && result.data) {
-    customerGroupDDL.value = (
-      result.data as Collection<Array<CustomerGroup>>
-    ).data;
+    const collection = result.data as Collection<Array<CustomerGroup>>;
+    customerGroupDDL.value = collection.data.map((item: CustomerGroup) => ({
+      code: item.id,
+      name: item.name,
+    }));
   }
+};
 
-  isDDLLoading.value = false;
+const getDDL = async (): Promise<void> => {
+  isDDLLoading.value = true;
+
+  try {
+    await Promise.all([
+      (async () => {
+        const result = await dashboardServices.getStatusDDL();
+        statusDDL.value = result;
+      })(),
+      (async () => {
+        const result = await dashboardServices.getPaymentTermTypesDDL();
+        paymentTermTypeDDL.value = result;
+      })(),
+      getCustomerGroupDDL(),
+    ]);
+  } catch (error) {
+    console.error("Error loading DDLs:", error);
+  } finally {
+    isDDLLoading.value = false;
+  }
+};
+
+const updateGroupName = (newGroupId?: string) => {
+  const groupId = newGroupId ?? (customerForm.group_id as string);
+  if (!groupId) {
+    selectedGroupName.value = "";
+    return;
+  }
+  const group = customerGroupDDL.value?.find((g) => g.code === groupId);
+  selectedGroupName.value = group ? group.name : "";
+};
+
+const clearGroup = () => {
+  customerForm.setData({ group_id: "" });
+  selectedGroupName.value = "";
 };
 
 const handleExpandCard = (index: number) => {
@@ -201,10 +226,8 @@ const onSubmit = async () => {
       router.push({ name: "side-menu-customer-list" });
     })
     .catch((error) => {
-      const errorList: Record<
-        string,
-        Array<string>
-      > = convertErrorTypeToAlertListType(error as Error);
+      const errorList: Record<string, Array<string>> =
+        convertErrorTypeToAlertListType(error);
       showAlertPlaceholder("danger", "", errorList);
     })
     .finally(() => {
@@ -240,9 +263,43 @@ const showAlertPlaceholder = (
   emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
+const convertErrorTypeToAlertListType = (error: unknown) => {
   const record: Record<string, Array<string>> = {};
-  record.error = [error.message];
+
+  const anyError = error as any;
+  const response = isAxiosError(error)
+    ? (error as AxiosError).response
+    : anyError?.response;
+
+  if (response && response.data) {
+    const data = response.data as any;
+
+    if (data.errors && typeof data.errors === "object") {
+      for (const key of Object.keys(data.errors)) {
+        const value = data.errors[key];
+
+        if (Array.isArray(value)) {
+          record[key] = value;
+        } else if (value !== undefined && value !== null) {
+          record[key] = [String(value)];
+        }
+      }
+
+      return record;
+    }
+
+    if (data.message) {
+      record.error = [String(data.message)];
+      return record;
+    }
+  }
+
+  if (error instanceof Error && error.message) {
+    record.error = [error.message];
+  } else {
+    record.error = ["Unknown error"];
+  }
+
   return record;
 };
 // #endregion
@@ -306,24 +363,48 @@ watch(
               >
                 {{ t("views.customer.fields.group") }}
               </FormLabel>
-              <FormSelect
-                v-model="customerForm.group_id"
-                :class="{
-                  'border-danger': customerForm.invalid('group_id'),
-                }"
-                @change="customerForm.validate('group_id')"
-              >
-                <option value="0" disabled>
-                  {{ t("components.dropdown.placeholder") }}
-                </option>
-                <option
-                  v-for="cg in customerGroupDDL"
-                  :key="cg.id"
-                  :value="cg.id"
+              <div>
+                <div
+                  v-if="customerForm.group_id && selectedGroupName"
+                  class="relative"
                 >
-                  {{ cg.name }}
-                </option>
-              </FormSelect>
+                  <div
+                    class="form-control border rounded-md px-3 py-2 bg-slate-50 dark:bg-darkmode-800 text-slate-700 dark:text-slate-300"
+                  >
+                    {{ selectedGroupName }}
+                  </div>
+                  <button
+                    type="button"
+                    class="absolute right-3 top-2.5 text-slate-500 hover:text-danger"
+                    @click="clearGroup"
+                  >
+                    <Lucide icon="X" class="w-4 h-4" />
+                  </button>
+                </div>
+                <FormTomSelect
+                  v-else
+                  v-model="customerForm.group_id"
+                  :class="{
+                    'border-danger': customerForm.invalid('group_id'),
+                  }"
+                  @update:model-value="(val) => {
+                    updateGroupName(val as string);
+                    customerForm.validate('group_id');
+                  }"
+                  @search="getCustomerGroupDDL"
+                  :options="{
+                    placeholder: t('components.dropdown.placeholder'),
+                  }"
+                >
+                  <option
+                    v-for="cg in customerGroupDDL"
+                    :key="cg.code"
+                    :value="cg.code"
+                  >
+                    {{ cg.name }}
+                  </option>
+                </FormTomSelect>
+              </div>
               <FormErrorMessages :messages="customerForm.errors.group_id" />
             </div>
             <div class="pb-4">
@@ -570,7 +651,7 @@ watch(
             href="#"
             variant="primary"
             class="w-28 shadow-md"
-            :disabled="customerForm.validating || customerForm.hasErrors"
+            :disabled="customerForm.validating"
           >
             <Lucide
               v-if="customerForm.validating"
