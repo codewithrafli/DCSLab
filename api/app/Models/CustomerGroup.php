@@ -36,17 +36,20 @@ class CustomerGroup extends Model
         'remarks',
     ];
 
-    protected $casts = [
-        'max_outstanding_invoice' => 'decimal:8',
-        'payment_term_type' => PaymentTermTypeEnum::class,
-        'selling_point' => 'integer',
-        'selling_point_multiple' => 'decimal:8',
-        'price_markup_percent' => 'decimal:8',
-        'price_markup_nominal' => 'decimal:8',
-        'price_markdown_percent' => 'decimal:8',
-        'price_markdown_nominal' => 'decimal:8',
-        'rounding_type' => RoundingTypeEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'max_outstanding_invoice' => 'decimal:8',
+            'payment_term_type' => PaymentTermTypeEnum::class,
+            'selling_point' => 'integer',
+            'selling_point_multiple' => 'decimal:8',
+            'price_markup_percent' => 'decimal:8',
+            'price_markup_nominal' => 'decimal:8',
+            'price_markdown_percent' => 'decimal:8',
+            'price_markdown_nominal' => 'decimal:8',
+            'rounding_type' => RoundingTypeEnum::class,
+        ];
+    }
 
     public function company()
     {
@@ -60,8 +63,10 @@ class CustomerGroup extends Model
 
     public function scopeSearch($query, string $search)
     {
-        return $query->where('customer_groups.code', 'like', '%'.$search.'%')
-            ->orWhere('customer_groups.name', 'like', '%'.$search.'%')
-            ->orWhere('customer_groups.remarks', 'like', '%'.$search.'%');
+        return $query->where(function ($query) use ($search) {
+            $query->where('customer_groups.code', 'like', '%'.$search.'%')
+                ->orWhere('customer_groups.name', 'like', '%'.$search.'%')
+                ->orWhere('customer_groups.remarks', 'like', '%'.$search.'%');
+        });
     }
 }

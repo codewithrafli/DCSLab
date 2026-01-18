@@ -100,6 +100,19 @@ Route::prefix('warehouse')->middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::prefix('cash_account')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.cash_account.')->group(function () {
+        Route::get('read', [CashAccountController::class, 'readAny'])->name('read_any');
+        Route::get('read/{cash_account:ulid}', [CashAccountController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.cash_account.')->group(function () {
+        Route::post('save', [CashAccountController::class, 'store'])->name('save');
+        Route::post('edit/{cash_account:ulid}', [CashAccountController::class, 'update'])->name('edit');
+        Route::post('delete/{cash_account:ulid}', [CashAccountController::class, 'delete'])->name('delete');
+    });
+});
+
 Route::prefix('product_category')->middleware('auth:sanctum')->group(function () {
     Route::middleware('throttle:100,1')->name('api.get.product_category.')->group(function () {
         Route::get('read', [ProductCategoryController::class, 'readAny'])->name('read_any');
@@ -156,6 +169,19 @@ Route::prefix('product')->middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::prefix('customer_group')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.customer_group.')->group(function () {
+        Route::get('read', [CustomerGroupController::class, 'readAny'])->name('read_any');
+        Route::get('read/{customer_group:ulid}', [CustomerGroupController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.customer_group.')->group(function () {
+        Route::post('save', [CustomerGroupController::class, 'store'])->name('save');
+        Route::post('edit/{customer_group:ulid}', [CustomerGroupController::class, 'update'])->name('edit');
+        Route::post('delete/{customer_group:ulid}', [CustomerGroupController::class, 'delete'])->name('delete');
+    });
+});
+
 Route::prefix('stock_adjustment_category')->middleware('auth:sanctum')->group(function () {
     Route::middleware('throttle:100,1')->name('api.get.stock_adjustment_category.')->group(function () {
         Route::get('read', [StockAdjustmentCategoryController::class, 'readAny'])->name('read_any');
@@ -166,19 +192,6 @@ Route::prefix('stock_adjustment_category')->middleware('auth:sanctum')->group(fu
         Route::post('save', [StockAdjustmentCategoryController::class, 'store'])->name('save');
         Route::post('edit/{stock_adjustment_category:ulid}', [StockAdjustmentCategoryController::class, 'update'])->name('edit');
         Route::post('delete/{stock_adjustment_category:ulid}', [StockAdjustmentCategoryController::class, 'delete'])->name('delete');
-    });
-});
-
-Route::prefix('cash_account')->middleware('auth:sanctum')->group(function () {
-    Route::middleware('throttle:100,1')->name('api.get.cash_account.')->group(function () {
-        Route::get('read', [CashAccountController::class, 'readAny'])->name('read_any');
-        Route::get('read/{cash_account:ulid}', [CashAccountController::class, 'read'])->name('read');
-    });
-
-    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.cash_account.')->group(function () {
-        Route::post('save', [CashAccountController::class, 'store'])->name('save');
-        Route::post('edit/{cash_account:ulid}', [CashAccountController::class, 'update'])->name('edit');
-        Route::post('delete/{cash_account:ulid}', [CashAccountController::class, 'delete'])->name('delete');
     });
 });
 
@@ -227,11 +240,6 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
         });
 
         Route::group(['prefix' => 'customer', 'as' => '.customer'], function () {
-            Route::group(['prefix' => 'customer_group', 'as' => '.customer_group'], function () {
-                Route::get('read', [CustomerGroupController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{customer_group:ulid}', [CustomerGroupController::class, 'read'])->name('.read');
-            });
-
             Route::group(['prefix' => 'customer', 'as' => '.customer'], function () {
                 Route::get('read', [CustomerController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{customer:ulid}', [CustomerController::class, 'read'])->name('.read');
@@ -479,11 +487,6 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
         });
 
         Route::group(['prefix' => 'customer', 'middleware' => ['precognitive'], 'as' => '.customer'], function () {
-            Route::group(['prefix' => 'customer_group', 'as' => '.customer_group'], function () {
-                Route::post('save', [CustomerGroupController::class, 'store'])->name('.save');
-                Route::post('edit/{customer_group:ulid}', [CustomerGroupController::class, 'update'])->name('.edit');
-                Route::post('delete/{customer_group:ulid}', [CustomerGroupController::class, 'delete'])->name('.delete');
-            });
             Route::group(['prefix' => 'customer', 'as' => '.customer'], function () {
                 Route::post('save', [CustomerController::class, 'store'])->name('.save');
                 Route::post('edit/{customer:ulid}', [CustomerController::class, 'update'])->name('.edit');

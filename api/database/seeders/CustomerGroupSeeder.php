@@ -8,21 +8,17 @@ use Illuminate\Database\Seeder;
 
 class CustomerGroupSeeder extends Seeder
 {
-    public function run(?int $companyId = null, ?int $qtyPerCompany = null)
+    public function run(?int $customerGroupsPerCompany = null, ?int $companyId = null)
     {
-        $query = Company::query();
-        if ($companyId) {
-            $query->where('id', '=', $companyId);
-        }
-        $companies = $query->get();
+        $customerGroupsPerCompany = $customerGroupsPerCompany ?? 5;
 
-        if (! $qtyPerCompany) {
-            $qtyPerCompany = 5;
-        }
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
+
         foreach ($companies as $company) {
-            for ($i = 0; $i < $qtyPerCompany; $i++) {
-                $customerGroupFactory = CustomerGroup::factory()->for($company);
-                $customerGroupFactory->create();
+            for ($i = 0; $i < $customerGroupsPerCompany; $i++) {
+                CustomerGroup::factory()
+                    ->for($company)
+                    ->create();
             }
         }
     }

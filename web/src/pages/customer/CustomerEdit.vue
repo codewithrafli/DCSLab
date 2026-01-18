@@ -155,12 +155,15 @@ const getDDL = async (): Promise<void> => {
       paymentTermTypeDDL.value = result;
     });
 
-  const result = await customerGroupService.readAny({
+  const result = await customerGroupService.readAnyGet({
+    with_trashed: false,
+
     company_id: selectedUserLocation.value?.company.id,
     search: "",
+    include_id: undefined,
+
     refresh: false,
-    paginate: false,
-    with_trashed: false,
+    limit: 10,
   });
 
   if (result.success && result.data) {

@@ -11,8 +11,7 @@ import { CustomerGroup } from "@/types/models/CustomerGroup";
 import { Collection } from "@/types/resources/Collection";
 import { DataListEmittedData } from "@/components/DataList/DataList.vue";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
-import { Resource } from "@/types/resources/Resource";
-import { ReadAnyRequest } from "@/types/services/ServiceRequest";
+import { CustomerGroupReadAnyPaginateRequest } from "@/types/services/customer-group/CustomerGroupRequest";
 import { useRouter } from "vue-router";
 import { Dialog } from "@/components/Base/Headless";
 import { ViewMode } from "@/types/enums/ViewMode";
@@ -83,17 +82,19 @@ const getCustomerGroups = async (search: string, refresh: boolean, paginate: boo
 
     let company_id = selectedUserLocation.value.company.id;
 
-    const searchReq: ReadAnyRequest = {
-        search: search,
+    const searchReq: CustomerGroupReadAnyPaginateRequest = {
+        with_trashed: false,
+
         company_id: company_id,
+        search: search,
+        include_id: undefined,
+
         refresh: refresh,
-        paginate: paginate,
         page: page,
         per_page: per_page,
-        with_trashed: false,
     };
 
-    let result: ServiceResponse<Collection<Array<CustomerGroup>> | Resource<Array<CustomerGroup>> | null> = await customerGroupServices.readAny(searchReq);
+    let result: ServiceResponse<Collection<Array<CustomerGroup>> | null> = await customerGroupServices.readAnyPaginate(searchReq);
 
     if (result.success && result.data) {
         customerGroupLists.value = result.data as Collection<Array<CustomerGroup>>;

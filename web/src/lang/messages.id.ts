@@ -13,8 +13,8 @@ import file_upload from "./id/components/file-upload.json";
 
 import login from "./id/views/login.json";
 import register from "./id/views/register.json";
-import forgot_password from "./en/views/forgot_password.json";
-import reset_password from "./en/views/reset_password.json";
+import forgot_password from "./id/views/forgot_password.json";
+import reset_password from "./id/views/reset_password.json";
 import profile from "./id/views/profile.json";
 import user from "./id/views/user.json";
 import company from "./id/views/company.json"

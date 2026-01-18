@@ -2,14 +2,13 @@
 
 namespace App\Actions\CustomerGroup;
 
+use App\DTOs\ExecuteDTO;
 use App\Models\Company;
 use App\Models\CustomerGroup;
 use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
 use Exception;
-use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 
 class CustomerGroupActions
 {
@@ -22,7 +21,6 @@ class CustomerGroupActions
 
     public function create(array $data): CustomerGroup
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
@@ -47,13 +45,10 @@ class CustomerGroupActions
             $customerGroup->remarks = $data['remarks'];
             $customerGroup->save();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $customerGroup;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -62,96 +57,104 @@ class CustomerGroupActions
         }
     }
 
-    private function readAnyQuery(
-        ?bool $withTrashed,
-
-        ?string $search,
+    public function readAny(
+        bool $withTrashed,
         int $companyId,
 
-        ?int $limit
+        ?string $search,
+        ?int $includeId,
+
+        ?ExecuteDTO $execute
     ) {
-        $query = CustomerGroup::select('customer_groups.*')->withTrashed()
-            ->with(['company'])
-            ->join('companies', 'companies.id', '=', 'customer_groups.company_id')
-            ->where(function ($query) use ($withTrashed, $search, $companyId) {
-                if ($withTrashed == true) {
+        $query = CustomerGroup::with(['company'])->select('customer_groups.*')
+            ->where('customer_groups.company_id', $companyId)
+            ->withTrashed();
+
+        $query->where(function ($query) use (
+            $withTrashed,
+            $search,
+            $includeId,
+        ) {
+            $query->where(function ($query) use (
+                $withTrashed,
+                $search,
+            ) {
+                $query->withoutTrashed();
+                if ($withTrashed) {
                     $query->withTrashed();
-                } else {
-                    $query->withoutTrashed();
                 }
 
                 if ($search) {
                     $query->search($search);
                 }
-
-                $query->whereCompanyId($companyId);
             });
 
-        $query->orderBy('companies.name', 'asc')
-            ->orderBy('customer_groups.name', 'asc');
+            if ($includeId) {
+                $query->orWhere('customer_groups.id', $includeId);
+            }
+        });
 
-        if ($limit) {
-            $query->limit($limit);
+        if ($includeId) {
+            $query->orderByRaw('FIELD(customer_groups.id, '.$includeId.') desc');
+        }
+        $query->orderBy('customer_groups.name', 'asc');
+
+        if ($execute) {
+            $timer_start = microtime(true);
+            $recordsCount = 0;
+
+            try {
+                $cacheParams = [
+                    $withTrashed ? 'true' : 'false',
+                    empty($search) ? '[empty]' : $search,
+                    $companyId,
+                    $includeId ?? '[null]',
+                    $execute->pagination ? 'true' : 'false',
+                    $execute->pagination?->page ?? '[null]',
+                    $execute->pagination?->perPage ?? '[null]',
+                    $execute->get?->limit ?? '[null]',
+                ];
+
+                $cacheKey = 'readAny_'.implode('-', $cacheParams);
+
+                if ($execute->useCache) {
+                    $cacheData = $this->readFromCache($cacheKey);
+                    if ($cacheData !== Config::get('dcslab.ERROR_RETURN_VALUE')) {
+                        return $cacheData;
+                    }
+                }
+
+                if ($execute->pagination) {
+                    $result = $query->paginate(
+                        perPage: $execute->pagination->perPage,
+                        columns: ['*'],
+                        pageName: 'page',
+                        page: $execute->pagination->page
+                    );
+                } else {
+                    if ($execute->get?->limit) {
+                        $query->limit($execute->get->limit);
+                    }
+                    $result = $query->get();
+                }
+
+                $recordsCount = $result->count();
+
+                if ($execute->useCache) {
+                    $this->saveToCache($cacheKey, $result);
+                }
+
+                return $result;
+            } catch (Exception $e) {
+                $this->loggerDebug(__METHOD__, $e);
+                throw $e;
+            } finally {
+                $execution_time = microtime(true) - $timer_start;
+                $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
+            }
         }
 
         return $query;
-    }
-
-    public function readAny(
-        ?bool $useCache,
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-
-        bool $paginate,
-        ?int $page,
-        ?int $perPage,
-        ?int $limit
-    ): Paginator|Collection {
-        $timer_start = microtime(true);
-        $recordsCount = 0;
-
-        try {
-            $cacheSearch = empty($search) ? '[empty]' : $search;
-            $cacheKey = 'readAny_'.$companyId.'-'.$cacheSearch.'-'.$paginate.'-'.$page.'-'.$perPage;
-            if ($useCache === true) {
-                $cacheResult = $this->readFromCache($cacheKey);
-
-                if (! is_null($cacheResult)) {
-                    return $cacheResult;
-                }
-            }
-
-            $result = null;
-
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-                search: $search,
-                companyId: $companyId,
-                limit: $paginate ? null : $limit
-            );
-
-            if ($paginate) {
-                $result = $query->paginate(perPage: $perPage, page: $page);
-            } else {
-                $result = $query->get();
-            }
-
-            $recordsCount = $result->count();
-
-            if ($useCache === true) {
-                $this->saveToCache($cacheKey, $result);
-            }
-
-            return $result;
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time, $recordsCount);
-        }
     }
 
     public function read(CustomerGroup $customerGroup): CustomerGroup
@@ -159,54 +162,8 @@ class CustomerGroupActions
         return $customerGroup->load('company');
     }
 
-    public function getAllActiveCustomerGroup(
-        ?array $with,
-        ?bool $withTrashed,
-
-        ?string $search,
-        int $companyId,
-        ?array $includeIds,
-
-        ?int $limit
-    ) {
-        $timer_start = microtime(true);
-
-        try {
-            $query = $this->readAnyQuery(
-                withTrashed: $withTrashed,
-
-                search: $search,
-                companyId: $companyId,
-
-                limit: $limit
-            );
-
-            if ($includeIds) {
-                $query = $query->orWhereIn('id', $includeIds);
-
-                $orders = $query->getQuery()->orders;
-                $query->reorder();
-                $query->orderByRaw('FIELD(id, '.implode(',', $includeIds).') desc');
-                if (! empty($orders)) {
-                    foreach ($orders as $order) {
-                        $query->orderBy($order['column'], $order['direction']);
-                    }
-                }
-            }
-
-            return $query->get();
-        } catch (Exception $e) {
-            $this->loggerDebug(__METHOD__, $e);
-            throw $e;
-        } finally {
-            $execution_time = microtime(true) - $timer_start;
-            $this->loggerPerformance(__METHOD__, $execution_time);
-        }
-    }
-
     public function update(CustomerGroup $customerGroup, array $data): CustomerGroup
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
@@ -229,13 +186,10 @@ class CustomerGroupActions
             $customerGroup->remarks = $data['remarks'];
             $customerGroup->save();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $customerGroup->refresh();
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -246,7 +200,6 @@ class CustomerGroupActions
 
     public function delete(CustomerGroup $customerGroup): bool
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         $retval = false;
@@ -254,13 +207,10 @@ class CustomerGroupActions
         try {
             $retval = $customerGroup->delete();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $retval;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {

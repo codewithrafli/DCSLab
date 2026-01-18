@@ -31,7 +31,7 @@ class CustomerGroupAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.customer.customer_group.edit', $customerGroup->ulid), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.customer_group.edit', $customerGroup->ulid), $customerGroupArr);
 
         $api->assertStatus(401);
     }
@@ -51,7 +51,7 @@ class CustomerGroupAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.customer.customer_group.edit', $customerGroup->ulid), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.customer_group.edit', $customerGroup->ulid), $customerGroupArr);
 
         $api->assertStatus(403);
     }
@@ -82,7 +82,7 @@ class CustomerGroupAPIEditTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.customer.customer_group.edit', $customerGroup->ulid), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.customer_group.edit', $customerGroup->ulid), $customerGroupArr);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('customer_groups', [
@@ -119,7 +119,7 @@ class CustomerGroupAPIEditTest extends APITestCase
             'code' => $customerGroup_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.customer.customer_group.edit', $customerGroup_2->ulid), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.customer_group.edit', $customerGroup_2->ulid), $customerGroupArr);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -154,7 +154,7 @@ class CustomerGroupAPIEditTest extends APITestCase
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.customer.customer_group.edit', $customerGroup_2->ulid), $customerGroupArr);
+        $api = $this->json('POST', route('api.post.customer_group.edit', $customerGroup_2->ulid), $customerGroupArr);
 
         $api->assertSuccessful();
     }

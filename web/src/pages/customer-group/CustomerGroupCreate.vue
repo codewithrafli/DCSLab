@@ -77,7 +77,7 @@ const statusDDL = ref<Array<DropDownOption> | null>(null);
 const paymentTermTypeDDL = ref<Array<DropDownOption> | null>(null);
 const roundOnDDL = ref<Array<DropDownOption> | null>(null);
 
-const customerGroupForm = customerGroupService.useCosutomerGroupCreateForm();
+const customerGroupForm = customerGroupService.useCustomerGroupCreateForm();
 // #endregion
 
 // #region Computed

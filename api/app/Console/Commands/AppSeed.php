@@ -61,7 +61,7 @@ class AppSeed extends Command
 
     private function runDefault()
     {
-        $total = 10;
+        $total = 9;
         $this->info('Starting data seeding...');
         $this->info('');
         $progressBar = $this->output->createProgressBar($total);
@@ -100,8 +100,8 @@ class AppSeed extends Command
         // (new ProductSeeder())->run(companyId: null, qtyPerCompany: 5);
         // $progressBar->advance();
 
-        // (new CustomerGroupSeeder())->run(companyId: null, qtyPerCompany: 5);
-        // $progressBar->advance();
+        (new CustomerGroupSeeder())->run(customerGroupsPerCompany: 5, companyId: null);
+        $progressBar->advance();
 
         $progressBar->finish();
         $this->info('');

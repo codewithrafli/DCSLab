@@ -59,31 +59,22 @@ class DashboardActions
     private function createMenu_Dashboard(array $menu, bool $showDemo): array
     {
         $maindashboard = [
-            'icon' => 'ChevronRight',
-            'pageName' => 'side-menu-dashboard-maindashboard',
-            'title' => 'components.menu.main-dashboard',
-        ];
-
-        $demo = [
-            'icon' => 'ChevronRight',
-            'pageName' => 'side-menu-dashboard-demo',
-            'title' => 'components.menu.main-demo',
-        ];
-
-        $root_array = [
             'icon' => 'Home',
-            'pageName' => 'side-menu-dashboard',
+            'pageName' => 'side-menu-dashboard-maindashboard',
             'title' => 'components.menu.dashboard',
-            'subMenu' => [],
         ];
+
+        array_push($menu, $maindashboard);
 
         if ($showDemo) {
-            array_push($root_array['subMenu'], $maindashboard, $demo);
-        } else {
-            array_push($root_array['subMenu'], $maindashboard);
-        }
+            $demo = [
+                'icon' => 'ChevronRight',
+                'pageName' => 'side-menu-dashboard-demo',
+                'title' => 'components.menu.main-demo',
+            ];
 
-        array_push($menu, $root_array);
+            array_push($menu, $demo);
+        }
 
         return $menu;
     }
