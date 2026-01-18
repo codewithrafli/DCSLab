@@ -100,6 +100,19 @@ Route::prefix('warehouse')->middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::prefix('investor')->middleware('auth:sanctum')->group(function () {
+    Route::middleware('throttle:100,1')->name('api.get.investor.')->group(function () {
+        Route::get('read', [InvestorController::class, 'readAny'])->name('read_any');
+        Route::get('read/{investor:ulid}', [InvestorController::class, 'read'])->name('read');
+    });
+
+    Route::middleware(['throttle:50,1', 'precognitive'])->name('api.post.investor.')->group(function () {
+        Route::post('save', [InvestorController::class, 'store'])->name('save');
+        Route::post('edit/{investor:ulid}', [InvestorController::class, 'update'])->name('edit');
+        Route::post('delete/{investor:ulid}', [InvestorController::class, 'delete'])->name('delete');
+    });
+});
+
 Route::prefix('cash_account')->middleware('auth:sanctum')->group(function () {
     Route::middleware('throttle:100,1')->name('api.get.cash_account.')->group(function () {
         Route::get('read', [CashAccountController::class, 'readAny'])->name('read_any');
@@ -215,13 +228,6 @@ Route::group(['prefix' => 'get', 'middleware' => ['auth:sanctum', 'throttle:100,
             Route::group(['prefix' => 'employee', 'as' => '.employee'], function () {
                 Route::get('read', [EmployeeController::class, 'readAny'])->name('.read_any');
                 Route::get('read/{employee:ulid}', [EmployeeController::class, 'read'])->name('.read');
-            });
-        });
-
-        Route::group(['prefix' => 'investor', 'as' => '.investor'], function () {
-            Route::group(['prefix' => 'investor', 'as' => '.investor'], function () {
-                Route::get('read', [InvestorController::class, 'readAny'])->name('.read_any');
-                Route::get('read/{investor:ulid}', [InvestorController::class, 'read'])->name('.read');
             });
         });
 
@@ -455,14 +461,6 @@ Route::group(['prefix' => 'post', 'middleware' => ['auth:sanctum', 'throttle:50,
                 Route::post('save', [EmployeeController::class, 'store'])->name('.save');
                 Route::post('edit/{employee:ulid}', [EmployeeController::class, 'update'])->name('.edit');
                 Route::post('delete/{employee:ulid}', [EmployeeController::class, 'delete'])->name('.delete');
-            });
-        });
-
-        Route::group(['prefix' => 'investor', 'middleware' => ['precognitive'], 'as' => '.investor'], function () {
-            Route::group(['prefix' => 'investor', 'as' => '.investor'], function () {
-                Route::post('save', [InvestorController::class, 'store'])->name('.save');
-                Route::post('edit/{investor:ulid}', [InvestorController::class, 'update'])->name('.edit');
-                Route::post('delete/{investor:ulid}', [InvestorController::class, 'delete'])->name('.delete');
             });
         });
 

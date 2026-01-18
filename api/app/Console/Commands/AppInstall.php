@@ -9,9 +9,11 @@ use App\Enums\RecordStatusEnum;
 use App\Enums\UserRolesEnum;
 use Database\Seeders\BranchSeeder;
 use Database\Seeders\BrandSeeder;
+use Database\Seeders\CashAccountSeeder;
 use Database\Seeders\CompanySeeder;
 use Database\Seeders\CustomerGroupSeeder;
 use Database\Seeders\CustomerSeeder;
+use Database\Seeders\InvestorSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\StockAdjustmentCategorySeeder;
 use Database\Seeders\UnitSeeder;
@@ -59,6 +61,9 @@ class AppInstall extends Command
         (new CompanySeeder())->run();
         (new BranchSeeder())->run();
         (new WarehouseSeeder())->run();
+
+        (new CashAccountSeeder())->run();
+        (new InvestorSeeder())->run();
 
         (new ProductCategorySeeder())->run();
         (new BrandSeeder())->run();

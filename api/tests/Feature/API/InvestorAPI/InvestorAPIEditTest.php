@@ -27,11 +27,11 @@ class InvestorAPIEditTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $investor = Investor::factory()->for($company)->create();
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.edit', $investor->ulid), $payload);
 
         $api->assertStatus(401);
     }
@@ -47,11 +47,11 @@ class InvestorAPIEditTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $investor = Investor::factory()->for($company)->create();
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.edit', $investor->ulid), $payload);
 
         $api->assertStatus(403);
     }
@@ -78,18 +78,18 @@ class InvestorAPIEditTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
         $investor = Investor::factory()->for($company)->create();
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.edit', $investor->ulid), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('investors', [
             'id' => $investor->id,
             'company_id' => $company->id,
-            'code' => $investorArr['code'],
-            'name' => $investorArr['name'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
         ]);
     }
 
@@ -114,12 +114,12 @@ class InvestorAPIEditTest extends APITestCase
         $investor_1 = $investors[0];
         $investor_2 = $investors[1];
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'code' => $investor_1->code,
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor_2->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.edit', $investor_2->ulid), $payload);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -149,12 +149,12 @@ class InvestorAPIEditTest extends APITestCase
             'code' => 'test2',
         ]);
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.edit', $investor_2->ulid), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.edit', $investor_2->ulid), $payload);
 
         $api->assertSuccessful();
     }

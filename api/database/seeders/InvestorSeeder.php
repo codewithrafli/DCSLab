@@ -8,21 +8,17 @@ use Illuminate\Database\Seeder;
 
 class InvestorSeeder extends Seeder
 {
-    public function run(?int $companyId, ?int $qtyPerCompany)
+    public function run(?int $investorsPerCompany = null, ?int $companyId = null)
     {
-        $query = Company::query();
-        if ($companyId) {
-            $query->where('id', '=', $companyId);
-        }
-        $companies = $query->get();
+        $investorsPerCompany = $investorsPerCompany ?? 5;
 
-        if (! $qtyPerCompany) {
-            $qtyPerCompany = 5;
-        }
+        $companies = $companyId ? Company::where('id', $companyId)->get() : Company::all();
+
         foreach ($companies as $company) {
-            for ($i = 0; $i < $qtyPerCompany; $i++) {
-                $investorFactory = Investor::factory()->for($company);
-                $investorFactory->create();
+            for ($i = 0; $i < $investorsPerCompany; $i++) {
+                Investor::factory()
+                    ->for($company)
+                    ->create();
             }
         }
     }

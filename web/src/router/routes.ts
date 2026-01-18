@@ -59,6 +59,10 @@ import CustomerIndex from "@/pages/customer/CustomerIndex.vue";
 import CustomerList from "@/pages/customer/CustomerList.vue";
 import CustomerCreate from "@/pages/customer/CustomerCreate.vue";
 import CustomerEdit from "@/pages/customer/CustomerEdit.vue";
+import InvestorIndex from "@/pages/investor/InvestorIndex.vue";
+import InvestorList from "@/pages/investor/InvestorList.vue";
+import InvestorCreate from "@/pages/investor/InvestorCreate.vue";
+import InvestorEdit from "@/pages/investor/InvestorEdit.vue";
 import CashAccountIndex from "@/pages/cash-account/CashAccountIndex.vue";
 import CashAccountList from "@/pages/cash-account/CashAccountList.vue";
 import CashAccountCreate from "@/pages/cash-account/CashAccountCreate.vue";
@@ -388,6 +392,38 @@ export default [
             {
                 path: "/dashboard/finance",
                 children: [
+                    {
+                        path: "/dashboard/finance/investor",
+                        name: "side-menu-company-investor",
+                        redirect: "/dashboard/finance/investor/list",
+                        component: InvestorIndex,
+                        children: [
+                            {
+                                path: "/dashboard/finance/investor/list",
+                                name: "side-menu-company-investor-list",
+                                component: InvestorList,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/finance/investor/create",
+                                name: "side-menu-company-investor-create",
+                                component: InvestorCreate,
+                                meta: {
+                                    remember: true,
+                                },
+                            },
+                            {
+                                path: "/dashboard/finance/investor/edit/:ulid",
+                                name: "side-menu-company-investor-edit",
+                                component: InvestorEdit,
+                                meta: {
+                                    remember: true,
+                                },
+                            }
+                        ]
+                    },
                     {
                         path: "/dashboard/finance/cash-account",
                         name: "side-menu-finance-cash-account",

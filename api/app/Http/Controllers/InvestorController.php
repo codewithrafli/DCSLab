@@ -3,10 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Investor\InvestorActions;
-use App\Http\Requests\InvestorRequest;
+use App\DTOs\ExecuteDTO;
+use App\DTOs\ExecuteGetDTO;
+use App\DTOs\ExecutePaginationDTO;
+use App\Helpers\HashidsHelper;
+use App\Http\Requests\Investor\InvestorStoreRequest;
+use App\Http\Requests\Investor\InvestorUpdateRequest;
 use App\Http\Resources\InvestorResource;
 use App\Models\Investor;
+use App\Rules\IsValidCompany;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InvestorController extends BaseController
 {
@@ -19,15 +27,28 @@ class InvestorController extends BaseController
         $this->investorActions = $investorActions;
     }
 
-    public function store(InvestorRequest $investorRequest)
+    public function store(InvestorStoreRequest $investorStoreRequest)
     {
-        $request = $investorRequest->validated();
+        $validatedRequest = $investorStoreRequest->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
-            $result = $this->investorActions->create($request);
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->investorActions->isUniqueCode(
+                    $validatedRequest['company_id'],
+                    $validatedRequest['code'],
+                    null
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $validatedRequest['remarks'] = $validatedRequest['remarks'] ?? null;
+
+            $result = $this->investorActions->create($validatedRequest);
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
@@ -35,25 +56,69 @@ class InvestorController extends BaseController
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function readAny(InvestorRequest $investorRequest)
+    public function readAny(Request $request)
     {
-        $request = $investorRequest->validated();
+        if (! Auth::check()) return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('viewAny', Investor::class);
+
+        if ($request->filled('company_id')) {
+            $request->merge(['company_id' => HashidsHelper::decodeId($request->company_id)]);
+        }
+        if ($request->filled('include_id')) {
+            $request->merge(['include_id' => HashidsHelper::decodeId($request->include_id)]);
+        }
+
+        $validatedRequest = $request->validate([
+            'with_trashed' => ['required', 'boolean'],
+            'company_id' => ['required', 'integer', 'bail', new IsValidCompany()],
+
+            'search' => ['nullable', 'string'],
+            'include_id' => ['nullable', 'integer', 'exists:investors,id'],
+
+            'refresh' => ['required', 'boolean'],
+            'paginate' => ['nullable', 'array', 'required_without:get', 'prohibits:get'],
+            'paginate.page' => ['required_with:paginate', 'integer', 'min:1'],
+            'paginate.per_page' => ['required_with:paginate', 'integer', 'min:10'],
+            'get' => ['nullable', 'array', 'required_without:paginate', 'prohibits:paginate'],
+            'get.limit' => ['required_with:get', 'integer', 'min:10'],
+        ]);
+
+        $validatedRequest['search'] = $validatedRequest['search'] ?? null;
+        $validatedRequest['include_id'] = $validatedRequest['include_id'] ?? null;
 
         $result = null;
         $errorMsg = '';
 
         try {
             $result = $this->investorActions->readAny(
-                useCache: $request['refresh'],
-                withTrashed: $request['with_trashed'],
+                withTrashed: $validatedRequest['with_trashed'],
+                search: $validatedRequest['search'] ?? null,
+                companyId: $validatedRequest['company_id'],
+                includeId: $validatedRequest['include_id'] ?? null,
+                execute: new ExecuteDTO(
+                    useCache: $validatedRequest['refresh'],
+                    pagination: (function () use ($validatedRequest) {
+                        $pagination = null;
+                        if (isset($validatedRequest['paginate'])) {
+                            $pagination = new ExecutePaginationDTO(
+                                page: $validatedRequest['paginate']['page'],
+                                perPage: $validatedRequest['paginate']['per_page'],
+                            );
+                        }
 
-                search: $request['search'],
-                companyId: $request['company_id'],
+                        return $pagination;
+                    })(),
+                    get: (function () use ($validatedRequest) {
+                        $get = null;
+                        if (isset($validatedRequest['get'])) {
+                            $get = new ExecuteGetDTO(
+                                limit: $validatedRequest['get']['limit'],
+                            );
+                        }
 
-                paginate: $request['paginate'],
-                page: $request['page'],
-                perPage: $request['per_page'],
-                limit: $request['limit'],
+                        return $get;
+                    })()
+                )
             );
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
@@ -62,15 +127,14 @@ class InvestorController extends BaseController
         if (is_null($result)) {
             return response()->error($errorMsg);
         } else {
-            $response = InvestorResource::collection($result);
-
-            return $response;
+            return InvestorResource::collection($result);
         }
     }
 
-    public function read(Investor $investor, InvestorRequest $investorRequest)
+    public function read(Investor $investor)
     {
-        $request = $investorRequest->validated();
+        if (! Auth::check()) return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('view', $investor);
 
         $result = null;
         $errorMsg = '';
@@ -84,23 +148,34 @@ class InvestorController extends BaseController
         if (is_null($result)) {
             return response()->error($errorMsg);
         } else {
-            $response = new InvestorResource($result);
-
-            return $response;
+            return new InvestorResource($result);
         }
     }
 
-    public function update(Investor $investor, InvestorRequest $investorRequest)
+    public function update(Investor $investor, InvestorUpdateRequest $investorUpdateRequest)
     {
-        $request = $investorRequest->validated();
+        $validatedRequest = $investorUpdateRequest->validated();
 
         $result = null;
         $errorMsg = '';
 
         try {
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->investorActions->isUniqueCode(
+                    $validatedRequest['company_id'],
+                    $validatedRequest['code'],
+                    $investor->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $validatedRequest['remarks'] = $validatedRequest['remarks'] ?? null;
+
             $result = $this->investorActions->update(
                 investor: $investor,
-                data: $request
+                data: $validatedRequest
             );
         } catch (Exception $e) {
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
@@ -109,8 +184,11 @@ class InvestorController extends BaseController
         return is_null($result) ? response()->error($errorMsg) : response()->success();
     }
 
-    public function delete(Investor $investor, InvestorRequest $investorRequest)
+    public function delete(Investor $investor)
     {
+        if (! Auth::check()) return response()->error(trans('rules.auth.unauthorized'), 401);
+        $this->authorize('delete', $investor);
+
         $result = false;
         $errorMsg = '';
 

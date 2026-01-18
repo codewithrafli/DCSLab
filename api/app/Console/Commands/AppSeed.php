@@ -8,6 +8,7 @@ use Database\Seeders\CashAccountSeeder;
 use Database\Seeders\CompanySeeder;
 use Database\Seeders\CustomerGroupSeeder;
 use Database\Seeders\CustomerSeeder;
+use Database\Seeders\InvestorSeeder;
 use Database\Seeders\ProductCategorySeeder;
 use Database\Seeders\ProductSeeder;
 use Database\Seeders\RoleSeeder;
@@ -62,7 +63,7 @@ class AppSeed extends Command
 
     private function runDefault()
     {
-        $total = 10;
+        $total = 11;
         $this->info('Starting data seeding...');
         $this->info('');
         $progressBar = $this->output->createProgressBar($total);
@@ -105,6 +106,9 @@ class AppSeed extends Command
         $progressBar->advance();
 
         (new CustomerSeeder())->run(customersPerCompany: 5, companyId: null);
+        $progressBar->advance();
+
+        (new InvestorSeeder())->run(investorsPerCompany: 5, companyId: null);
         $progressBar->advance();
 
         $progressBar->finish();

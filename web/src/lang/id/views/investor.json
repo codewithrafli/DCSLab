@@ -26,7 +26,7 @@
         "remarks": "Keterangan"
     },
     "alert": {
-        "delete_Investor": {
+        "delete_investor": {
             "title": "Hapus Investor",
             "content": "Investor berhasil dihapus"
         }

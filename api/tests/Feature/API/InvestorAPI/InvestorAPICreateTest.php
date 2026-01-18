@@ -26,11 +26,11 @@ class InvestorAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.save'), $payload);
 
         $api->assertUnauthorized();
     }
@@ -45,11 +45,11 @@ class InvestorAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.save'), $payload);
 
         $api->assertForbidden();
     }
@@ -75,17 +75,17 @@ class InvestorAPICreateTest extends APITestCase
 
         $company = $user->companies()->inRandomOrder()->first();
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company->id),
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('investors', [
             'company_id' => $company->id,
-            'code' => $investorArr['code'],
-            'name' => $investorArr['name'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
         ]);
     }
 
@@ -110,12 +110,12 @@ class InvestorAPICreateTest extends APITestCase
             'code' => 'test1',
         ]);
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.save'), $payload);
 
         $api->assertStatus(422);
         $api->assertJsonStructure([
@@ -143,18 +143,18 @@ class InvestorAPICreateTest extends APITestCase
             'code' => 'test1',
         ]);
 
-        $investorArr = Investor::factory()->make([
+        $payload = Investor::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
             'code' => 'test1',
         ])->toArray();
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.save'), $payload);
 
         $api->assertSuccessful();
         $this->assertDatabaseHas('investors', [
             'company_id' => $company_2->id,
-            'code' => $investorArr['code'],
-            'name' => $investorArr['name'],
+            'code' => $payload['code'],
+            'name' => $payload['name'],
         ]);
     }
 
@@ -167,9 +167,9 @@ class InvestorAPICreateTest extends APITestCase
 
         $this->actingAs($user);
 
-        $investorArr = [];
+        $payload = [];
 
-        $api = $this->json('POST', route('api.post.db.investor.investor.save'), $investorArr);
+        $api = $this->json('POST', route('api.post.investor.save'), $payload);
 
         $api->assertJsonValidationErrors(['company_id', 'code', 'name']);
     }

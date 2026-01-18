@@ -12,7 +12,7 @@ import { Collection } from "@/types/resources/Collection";
 import { DataListEmittedData } from "@/components/DataList/DataList.vue";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
 import { Resource } from "@/types/resources/Resource";
-import { ReadAnyRequest } from "@/types/services/ServiceRequest";
+import { InvestorReadAnyPaginateRequest } from "@/types/services/investor/InvestorRequest";
 import { useRouter } from "vue-router";
 import { Dialog } from "@/components/Base/Headless";
 import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
@@ -43,7 +43,6 @@ const emits = defineEmits([
 // #endregion
 
 // #region Refs
-const datalistErrors = ref<Record<string, Array<string>> | null>(null);
 const deleteUlid = ref<string>("");
 const deleteModalShow = ref<boolean>(false);
 const expandDetail = ref<number | null>(null);
@@ -87,7 +86,7 @@ onMounted(async () => {
     });
   }
 
-  await getInvestors("", true, true, 1, 10);
+  await getInvestors("", true, 1, 10);
 });
 // #endregion
 
@@ -95,27 +94,26 @@ onMounted(async () => {
 const getInvestors = async (
   search: string,
   refresh: boolean,
-  paginate: boolean,
   page: number,
   per_page: number
 ) => {
   emits("loading-state", true);
 
-  let company_id = selectedUserLocation.value.company.id;
+  const company_id = selectedUserLocation.value.company.id;
 
-  const searchReq: ReadAnyRequest = {
+  const searchReq: InvestorReadAnyPaginateRequest = {
     with_trashed: false,
     company_id: company_id,
     search: search,
+    include_id: undefined,
     refresh: refresh,
-    paginate: paginate,
     page: page,
     per_page: per_page,
   };
 
-  let result: ServiceResponse<
+  const result: ServiceResponse<
     Collection<Array<Investor>> | Resource<Array<Investor>> | null
-  > = await investorServices.readAny(searchReq);
+  > = await investorServices.readAnyPaginate(searchReq);
 
   if (result.success && result.data) {
     investorLists.value = result.data as Collection<Array<Investor>>;
@@ -134,7 +132,6 @@ const onDataListChanged = async (data: DataListEmittedData) => {
   await getInvestors(
     data.search.text,
     false,
-    true,
     data.pagination.page,
     data.pagination.per_page
   );
@@ -177,7 +174,7 @@ const confirmDelete = async () => {
 
   if (result.success) {
     emits("update-profile");
-    await getInvestors("", true, true, 1, 10);
+    await getInvestors("", true, 1, 10);
     showNotification(
       t("views.investor.alert.delete_investor.title"),
       t("views.investor.alert.delete_investor.content")

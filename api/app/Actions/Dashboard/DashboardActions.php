@@ -123,11 +123,26 @@ class DashboardActions
             array_push($companyManagement['subMenu'], $company);
         }
 
+        $financeManagement = [
+            'icon' => 'Wallet',
+            'pageName' => 'side-menu-finance',
+            'title' => 'components.menu.finance',
+            'subMenu' => [],
+        ];
+
+        $investor = [
+            'icon' => 'ChevronRight',
+            'pageName' => 'side-menu-company-investor',
+            'title' => 'components.menu.investor',
+        ];
+
         $cashAccount = [
             'icon' => 'ChevronRight',
             'pageName' => 'side-menu-finance-cash-account',
             'title' => 'components.menu.cash-account',
         ];
+
+        array_push($financeManagement['subMenu'], $investor, $cashAccount);
 
         $productManagement = [
             'icon' => 'Package',
@@ -189,7 +204,7 @@ class DashboardActions
 
         array_push($customerManagement['subMenu'], $customerGroup, $customer);
 
-        array_push($root_array['subMenu'], $companyManagement, $cashAccount, $productManagement, $customerManagement);
+        array_push($root_array['subMenu'], $companyManagement, $financeManagement, $productManagement, $customerManagement);
         array_push($menu, $root_array);
 
         return $menu;

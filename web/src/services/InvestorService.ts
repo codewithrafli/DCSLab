@@ -7,9 +7,9 @@ import { Collection } from "../types/resources/Collection";
 import { ServiceResponse } from "../types/services/ServiceResponse";
 import { AxiosError, AxiosResponse, isAxiosError } from "axios";
 import ErrorHandlerService from "./ErrorHandlerService";
-import { ReadAnyRequest } from "../types/services/ServiceRequest";
 import { StatusCode } from "../types/enums/StatusCode";
 import { client, useForm } from "laravel-precognition-vue";
+import { InvestorReadAnyGetRequest, InvestorReadAnyPaginateRequest } from "../types/services/investor/InvestorRequest";
 
 export default class InvestorService {
     private ziggyRoute: Config;
@@ -24,7 +24,7 @@ export default class InvestorService {
     }
 
     public useInvestorCreateForm() {
-        const url = route('api.post.db.investor.investor.save', undefined, true, this.ziggyRoute);
+        const url = route('api.post.investor.save', undefined, true, this.ziggyRoute);
 
         client.axios().defaults.withCredentials = true;
         client.axios().defaults.withXSRFToken = true;
@@ -38,29 +38,69 @@ export default class InvestorService {
         return form;
     }
 
-    public async readAny(args: ReadAnyRequest): Promise<ServiceResponse<Collection<Array<Investor>> | Resource<Array<Investor>> | null>> {
-        const result: ServiceResponse<Collection<Array<Investor>> | Resource<Array<Investor>> | null> = {
+    public async readAnyPaginate(args: InvestorReadAnyPaginateRequest): Promise<ServiceResponse<Collection<Array<Investor>> | null>> {
+        const result: ServiceResponse<Collection<Array<Investor>> | null> = {
             success: false
         }
 
         try {
-            const queryParams: Record<string, string | number | boolean> = {};
-            if (args.company_id) {
-                queryParams['company_id'] = args.company_id;
-            }
-
-            queryParams['with_trashed'] = args.with_trashed ? args.with_trashed : false;
+            const queryParams: Record<string, any> = {};
+            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            queryParams['company_id'] = args.company_id;
             queryParams['search'] = args.search ? args.search : '';
-            queryParams['refresh'] = args.refresh;
-            queryParams['paginate'] = args.paginate;
-            if (args.page) queryParams['page'] = args.page;
-            if (args.per_page) queryParams['per_page'] = args.per_page;
+            if (args.include_id) queryParams['include_id'] = args.include_id;
 
-            const url = route('api.get.db.investor.investor.read_any', {
+            queryParams['refresh'] = args.refresh;
+            queryParams['paginate'] = {
+                page: args.page,
+                per_page: args.per_page
+            };
+
+            const url = route('api.get.investor.read_any', {
                 _query: queryParams
             }, false, this.ziggyRoute);
 
             const response: AxiosResponse<Collection<Array<Investor>>> = await axios.get(url);
+
+            if (response.status == StatusCode.OK) {
+                result.success = true;
+                result.data = response.data;
+            }
+
+            return result;
+        } catch (e: unknown) {
+            if (e instanceof Error && e.message.includes('Ziggy error')) {
+                return this.errorHandlerService.generateZiggyUrlErrorServiceResponse(e.message);
+            } else if (isAxiosError(e)) {
+                return this.errorHandlerService.generateAxiosErrorServiceResponse(e as AxiosError);
+            } else {
+                return result;
+            }
+        }
+    }
+
+    public async readAnyGet(args: InvestorReadAnyGetRequest): Promise<ServiceResponse<Resource<Array<Investor>> | null>> {
+        const result: ServiceResponse<Resource<Array<Investor>> | null> = {
+            success: false
+        }
+
+        try {
+            const queryParams: Record<string, any> = {};
+            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            queryParams['company_id'] = args.company_id;
+            queryParams['search'] = args.search ? args.search : '';
+            if (args.include_id) queryParams['include_id'] = args.include_id;
+
+            queryParams['refresh'] = args.refresh;
+            queryParams['get'] = {
+                limit: args.limit
+            };
+
+            const url = route('api.get.investor.read_any', {
+                _query: queryParams
+            }, false, this.ziggyRoute);
+
+            const response: AxiosResponse<Resource<Array<Investor>>> = await axios.get(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
@@ -85,7 +125,7 @@ export default class InvestorService {
         }
 
         try {
-            const url = route('api.get.db.investor.investor.read', {
+            const url = route('api.get.investor.read', {
                 investor: ulid
             }, false, this.ziggyRoute);
 
@@ -109,7 +149,9 @@ export default class InvestorService {
     }
 
     public useInvestorEditForm(ulid: string) {
-        const url = route('api.post.db.investor.investor.edit', ulid, true, this.ziggyRoute);
+        const url = route('api.post.investor.edit', {
+            investor: ulid
+        }, true, this.ziggyRoute);
 
         client.axios().defaults.withCredentials = true;
         client.axios().defaults.withXSRFToken = true;
@@ -129,7 +171,9 @@ export default class InvestorService {
         }
 
         try {
-            const url = route('api.post.db.investor.investor.delete', ulid, false, this.ziggyRoute);
+            const url = route('api.post.investor.delete', {
+                investor: ulid
+            }, false, this.ziggyRoute);
 
             const response: AxiosResponse<boolean | null> = await axios.post(url);
 
