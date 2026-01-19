@@ -96,7 +96,7 @@ class BrandController extends BaseController
                 includeId: $validatedRequest['include_id'] ?? null,
 
                 execute: new ExecuteDTO(
-                    useCache: $validatedRequest['refresh'],
+                    useCache: ! $validatedRequest['refresh'],
                     pagination: (function () use ($validatedRequest) {
                         $pagination = null;
                         if (isset($validatedRequest['paginate'])) {
