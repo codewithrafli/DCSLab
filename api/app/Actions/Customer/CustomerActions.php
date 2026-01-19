@@ -9,9 +9,9 @@ use App\Traits\CacheHelper;
 use App\Traits\LoggerHelper;
 use Exception;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 
 class CustomerActions
 {
@@ -24,7 +24,6 @@ class CustomerActions
 
     public function create(array $data): Customer
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
@@ -48,13 +47,10 @@ class CustomerActions
 
             // save user (not yet implemented)
 
-            DB::commit();
-
             $this->flushCache();
 
             return $customer;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -82,7 +78,7 @@ class CustomerActions
         ?int $includeId,
 
         ?ExecuteDTO $execute
-    ): Paginator|Collection {
+    ): Paginator|Collection|Builder {
         $query = Customer::with(['company', 'user', 'group'])
             ->select('customers.*')
             ->where('customers.company_id', $companyId)
@@ -250,7 +246,7 @@ class CustomerActions
             }
         }
 
-        return $query->get();
+        return $query;
     }
 
     public function read(Customer $customer): Customer
@@ -260,7 +256,6 @@ class CustomerActions
 
     public function update(Customer $customer, array $data): Customer
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         try {
@@ -280,13 +275,10 @@ class CustomerActions
             $customer->remarks = $data['remarks'];
             $customer->save();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $customer->refresh();
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -297,7 +289,6 @@ class CustomerActions
 
     public function delete(Customer $customer): bool
     {
-        DB::beginTransaction();
         $timer_start = microtime(true);
 
         $retval = false;
@@ -305,13 +296,10 @@ class CustomerActions
         try {
             $retval = $customer->delete();
 
-            DB::commit();
-
             $this->flushCache();
 
             return $retval;
         } catch (Exception $e) {
-            DB::rollBack();
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
         } finally {
@@ -322,30 +310,51 @@ class CustomerActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
-        if ($code == config('dcslab.KEYWORDS.AUTO')) {
-            $company = Company::find($companyId);
-
-            $tryCount = 0;
-            do {
-                $count = $company->customers()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'C'.str_pad($count, 3, '0', STR_PAD_LEFT);
-                $tryCount++;
-            } while (! $this->isUniqueCode($companyId, $code, $exceptId));
-
-            return $code;
-        } else {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) {
             return $code;
         }
+
+        $company = Company::find($companyId);
+
+        $tryCount = 0;
+        do {
+            $count = $company->customers()->withTrashed()->count() + 1 + $tryCount;
+            $code = 'C'.str_pad($count, 3, '0', STR_PAD_LEFT);
+            $tryCount++;
+        } while (! $this->isUniqueCode($companyId, $code, $exceptId));
+
+        return $code;
     }
 
     public function isUniqueCode(int $companyId, string $code, ?int $exceptId): bool
     {
-        $result = Customer::whereCompanyId($companyId)->where('code', '=', $code);
+        $company = Company::find($companyId);
 
-        if ($exceptId) {
-            $result = $result->where('id', '<>', $exceptId);
+        if ($company->customers()->count() == 0) {
+            return true;
         }
 
-        return $result->count() == 0 ? true : false;
+        $query = $company->customers()->where('code', '=', $code);
+        if ($exceptId) {
+            $query->where('customers.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId): bool
+    {
+        $company = Company::find($companyId);
+
+        if ($company->customers()->count() == 0) {
+            return true;
+        }
+
+        $query = $company->customers()->where('name', '=', $name);
+        if ($exceptId) {
+            $query->where('customers.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
     }
 }

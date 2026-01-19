@@ -221,30 +221,51 @@ class CustomerGroupActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
-        if ($code == config('dcslab.KEYWORDS.AUTO')) {
-            $company = Company::find($companyId);
-
-            $tryCount = 0;
-            do {
-                $count = $company->customerGroups()->withTrashed()->count() + 1 + $tryCount;
-                $code = 'CG'.str_pad($count, 3, '0', STR_PAD_LEFT);
-                $tryCount++;
-            } while (! $this->isUniqueCode($companyId, $code, $exceptId));
-
-            return $code;
-        } else {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) {
             return $code;
         }
+
+        $company = Company::find($companyId);
+
+        $tryCount = 0;
+        do {
+            $count = $company->customerGroups()->withTrashed()->count() + 1 + $tryCount;
+            $code = 'CG'.str_pad($count, 3, '0', STR_PAD_LEFT);
+            $tryCount++;
+        } while (! $this->isUniqueCode($companyId, $code, $exceptId));
+
+        return $code;
     }
 
     public function isUniqueCode(int $companyId, string $code, ?int $exceptId): bool
     {
-        $result = CustomerGroup::whereCompanyId($companyId)->where('code', '=', $code);
+        $company = Company::find($companyId);
 
-        if ($exceptId) {
-            $result = $result->where('id', '<>', $exceptId);
+        if ($company->customerGroups()->count() == 0) {
+            return true;
         }
 
-        return $result->count() == 0 ? true : false;
+        $query = $company->customerGroups()->where('code', '=', $code);
+        if ($exceptId) {
+            $query->where('customer_groups.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId): bool
+    {
+        $company = Company::find($companyId);
+
+        if ($company->customerGroups()->count() == 0) {
+            return true;
+        }
+
+        $query = $company->customerGroups()->where('name', '=', $name);
+        if ($exceptId) {
+            $query->where('customer_groups.id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
     }
 }

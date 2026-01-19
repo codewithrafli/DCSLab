@@ -7,6 +7,7 @@ use App\Http\Requests\PurchasePaymentRequest;
 use App\Http\Resources\PurchasePaymentResource;
 use App\Models\PurchasePayment;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class PurchasePaymentController extends BaseController
 {
@@ -115,8 +116,13 @@ class PurchasePaymentController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->purchasePaymentActions->delete($purchasePayment);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

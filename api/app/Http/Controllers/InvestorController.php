@@ -15,6 +15,7 @@ use App\Rules\IsValidCompany;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InvestorController extends BaseController
 {
@@ -35,6 +36,8 @@ class InvestorController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->investorActions->isUniqueCode(
                     $validatedRequest['company_id'],
@@ -46,10 +49,22 @@ class InvestorController extends BaseController
                 }
             }
 
+            $isUnique = $this->investorActions->isUniqueName(
+                $validatedRequest['company_id'],
+                $validatedRequest['name'],
+                null
+            );
+            if (! $isUnique) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $validatedRequest['remarks'] = $validatedRequest['remarks'] ?? null;
 
             $result = $this->investorActions->create($validatedRequest);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -160,6 +175,8 @@ class InvestorController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->investorActions->isUniqueCode(
                     $validatedRequest['company_id'],
@@ -171,13 +188,25 @@ class InvestorController extends BaseController
                 }
             }
 
+            $isUnique = $this->investorActions->isUniqueName(
+                $validatedRequest['company_id'],
+                $validatedRequest['name'],
+                $investor->id
+            );
+            if (! $isUnique) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $validatedRequest['remarks'] = $validatedRequest['remarks'] ?? null;
 
             $result = $this->investorActions->update(
                 investor: $investor,
                 data: $validatedRequest
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -193,8 +222,13 @@ class InvestorController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->investorActions->delete($investor);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

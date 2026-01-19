@@ -7,6 +7,7 @@ use App\Http\Requests\PurchaseAdditionalCostCategoryRequest;
 use App\Http\Resources\PurchaseAdditionalCostCategoryResource;
 use App\Models\PurchaseAdditionalCostCategory;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseAdditionalCostCategoryController extends BaseController
 {
@@ -27,8 +28,24 @@ class PurchaseAdditionalCostCategoryController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->purchaseAdditionalCostCategoryActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    null
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->purchaseAdditionalCostCategoryActions->create($request);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -98,11 +115,36 @@ class PurchaseAdditionalCostCategoryController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->purchaseAdditionalCostCategoryActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $purchaseAdditionalCostCategory->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $isUniqueName = $this->purchaseAdditionalCostCategoryActions->isUniqueName(
+                $request['company_id'],
+                $request['name'],
+                $purchaseAdditionalCostCategory->id
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $result = $this->purchaseAdditionalCostCategoryActions->update(
                 purchaseAdditionalCostCategory: $purchaseAdditionalCostCategory,
                 data: $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -115,8 +157,13 @@ class PurchaseAdditionalCostCategoryController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->purchaseAdditionalCostCategoryActions->delete($purchaseAdditionalCostCategory);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

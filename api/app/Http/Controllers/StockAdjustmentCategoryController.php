@@ -170,6 +170,13 @@ class StockAdjustmentCategoryController extends BaseController
                 if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
+            $isUniqueName = $this->stockAdjustmentCategoryActions->isUniqueName(
+                $validatedRequest['company_id'],
+                $validatedRequest['name'],
+                $stockAdjustmentCategory->id,
+            );
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
+
             $result = $this->stockAdjustmentCategoryActions->update(
                 stockAdjustmentCategory: $stockAdjustmentCategory,
                 data: [

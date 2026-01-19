@@ -27,7 +27,7 @@ class CashAccountActions
             $cashAccount = new CashAccount();
             $cashAccount->company_id = $data['company_id'];
             $cashAccount->branch_id = $data['branch_id'];
-            $cashAccount->code = $data['code'];
+            $cashAccount->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $cashAccount->name = $data['name'];
             $cashAccount->is_bank = $data['is_bank'];
             $cashAccount->is_active = $data['is_active'];
@@ -57,7 +57,7 @@ class CashAccountActions
         ?ExecuteDTO $execute
     ) {
         $query = CashAccount::with('company', 'branch')->select('cash_accounts.*')
-            ->where('cash_accounts.company_id', $companyId)
+            ->whereCompanyId($companyId)
             ->withTrashed();
 
         if ($branchId) {
@@ -155,7 +155,7 @@ class CashAccountActions
         $timer_start = microtime(true);
 
         try {
-            $cashAccount->code = $data['code'];
+            $cashAccount->code = $this->generateUniqueCode($cashAccount->company_id, $data['code'], $cashAccount->id);
             $cashAccount->name = $data['name'];
             $cashAccount->is_bank = $data['is_bank'];
             $cashAccount->is_active = $data['is_active'];
@@ -197,6 +197,8 @@ class CashAccountActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) return $code;
+
         $company = Company::find($companyId);
 
         $tryCount = 0;

@@ -7,6 +7,7 @@ use App\Http\Requests\PurchaseRequest;
 use App\Http\Resources\PurchaseResource;
 use App\Models\Purchase;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseController extends BaseController
 {
@@ -27,8 +28,24 @@ class PurchaseController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->purchaseActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    null
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->purchaseActions->create($request);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -98,11 +115,27 @@ class PurchaseController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->purchaseActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $purchase->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->purchaseActions->update(
                 purchase: $purchase,
                 data: $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -115,8 +148,13 @@ class PurchaseController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->purchaseActions->delete($purchase);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

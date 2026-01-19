@@ -20,6 +20,17 @@ class NonCapitalWithdrawalCategoryActions
     {
     }
 
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId = null): bool
+    {
+        $query = NonCapitalWithdrawalCategory::whereCompanyId($companyId)->whereName($name);
+
+        if ($exceptId) {
+            $query->where('id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
     public function create(array $data): NonCapitalWithdrawalCategory
     {
         DB::beginTransaction();

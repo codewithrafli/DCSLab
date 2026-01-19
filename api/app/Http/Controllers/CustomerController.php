@@ -16,6 +16,7 @@ use App\Rules\IsValidCompany;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends BaseController
 {
@@ -36,6 +37,8 @@ class CustomerController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $validatedRequest['group_id'] = $validatedRequest['group_id'] ?? null;
             $validatedRequest['zone'] = $validatedRequest['zone'] ?? null;
             $validatedRequest['payment_term_type'] = $validatedRequest['payment_term_type'] ?? null;
@@ -53,8 +56,20 @@ class CustomerController extends BaseController
                 }
             }
 
+            $isUniqueName = $this->customerActions->isUniqueName(
+                $validatedRequest['company_id'],
+                $validatedRequest['name'],
+                null
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $result = $this->customerActions->create($validatedRequest);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -189,6 +204,8 @@ class CustomerController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUniqueCode = $this->customerActions->isUniqueCode(
                     $validatedRequest['company_id'],
@@ -200,6 +217,15 @@ class CustomerController extends BaseController
                 }
             }
 
+            $isUniqueName = $this->customerActions->isUniqueName(
+                $validatedRequest['company_id'],
+                $validatedRequest['name'],
+                $customer->id
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $validatedRequest['group_id'] = $validatedRequest['group_id'] ?? null;
             $validatedRequest['zone'] = $validatedRequest['zone'] ?? null;
             $validatedRequest['payment_term_type'] = $validatedRequest['payment_term_type'] ?? null;
@@ -209,7 +235,10 @@ class CustomerController extends BaseController
                 customer: $customer,
                 data: $validatedRequest
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -225,8 +254,13 @@ class CustomerController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->customerActions->delete($customer);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

@@ -38,12 +38,7 @@ class BrandController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->brandActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], null,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->brandActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
@@ -169,12 +164,7 @@ class BrandController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->brandActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], $brand->id,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->brandActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $brand->id,
                 );

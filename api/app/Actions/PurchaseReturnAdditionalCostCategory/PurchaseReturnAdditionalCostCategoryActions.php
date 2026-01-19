@@ -20,6 +20,17 @@ class PurchaseReturnAdditionalCostCategoryActions
     {
     }
 
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId = null): bool
+    {
+        $query = PurchaseReturnAdditionalCostCategory::whereCompanyId($companyId)->whereName($name);
+
+        if ($exceptId) {
+            $query->where('id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
     public function create(array $data): PurchaseReturnAdditionalCostCategory
     {
         DB::beginTransaction();

@@ -7,6 +7,7 @@ use App\Http\Requests\SalePaymentRequest;
 use App\Http\Resources\SalePaymentResource;
 use App\Models\SalePayment;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class SalePaymentController extends BaseController
 {
@@ -115,8 +116,13 @@ class SalePaymentController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->salePaymentActions->delete($salePayment);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

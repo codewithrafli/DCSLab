@@ -19,6 +19,17 @@ class StockAdjustmentCategoryActions
     {
     }
 
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId = null): bool
+    {
+        $query = StockAdjustmentCategory::whereCompanyId($companyId)->whereName($name);
+
+        if ($exceptId) {
+            $query->where('id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
     public function create(array $data): StockAdjustmentCategory
     {
         $timer_start = microtime(true);

@@ -19,6 +19,19 @@ class CustomerAddressActions
     {
     }
 
+    public function isUniqueAddress(int $companyId, int $customerId, string $address, ?int $exceptId = null): bool
+    {
+        $query = CustomerAddress::whereCompanyId($companyId)
+            ->whereCustomerId($customerId)
+            ->whereAddress($address);
+
+        if ($exceptId) {
+            $query->where('id', '<>', $exceptId);
+        }
+
+        return $query->doesntExist();
+    }
+
     public function create(array $data): CustomerAddress
     {
         DB::beginTransaction();

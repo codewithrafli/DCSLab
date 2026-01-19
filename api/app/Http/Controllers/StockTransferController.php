@@ -7,6 +7,7 @@ use App\Http\Requests\StockTransferRequest;
 use App\Http\Resources\StockTransferResource;
 use App\Models\StockTransfer;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class StockTransferController extends BaseController
 {
@@ -115,8 +116,13 @@ class StockTransferController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->stockTransferActions->delete($stockTransfer);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

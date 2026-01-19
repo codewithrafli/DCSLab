@@ -7,6 +7,7 @@ use App\Http\Requests\PurchaseReceiptRequest;
 use App\Http\Resources\PurchaseReceiptResource;
 use App\Models\PurchaseReceipt;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseReceiptController extends BaseController
 {
@@ -115,8 +116,13 @@ class PurchaseReceiptController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->purchaseReceiptActions->delete($purchaseReceipt);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

@@ -7,6 +7,7 @@ use App\Http\Requests\CapitalWithdrawalRequest;
 use App\Http\Resources\CapitalWithdrawalResource;
 use App\Models\CapitalWithdrawal;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class CapitalWithdrawalController extends BaseController
 {
@@ -98,11 +99,27 @@ class CapitalWithdrawalController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->capitalWithdrawalActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $capitalWithdrawal->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->capitalWithdrawalActions->update(
                 capitalWithdrawal: $capitalWithdrawal,
                 data: $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -115,8 +132,13 @@ class CapitalWithdrawalController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->capitalWithdrawalActions->delete($capitalWithdrawal);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

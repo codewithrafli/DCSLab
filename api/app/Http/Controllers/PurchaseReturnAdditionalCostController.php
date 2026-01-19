@@ -7,6 +7,7 @@ use App\Http\Requests\PurchaseReturnAdditionalCostRequest;
 use App\Http\Resources\PurchaseReturnAdditionalCostResource;
 use App\Models\PurchaseReturnAdditionalCost;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseReturnAdditionalCostController extends BaseController
 {
@@ -27,8 +28,24 @@ class PurchaseReturnAdditionalCostController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->purchaseReturnAdditionalCostActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    null
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->purchaseReturnAdditionalCostActions->create($request);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -98,11 +115,27 @@ class PurchaseReturnAdditionalCostController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->purchaseReturnAdditionalCostActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $purchaseReturnAdditionalCost->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->purchaseReturnAdditionalCostActions->update(
                 purchaseReturnAdditionalCost: $purchaseReturnAdditionalCost,
                 data: $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -115,8 +148,13 @@ class PurchaseReturnAdditionalCostController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->purchaseReturnAdditionalCostActions->delete($purchaseReturnAdditionalCost);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

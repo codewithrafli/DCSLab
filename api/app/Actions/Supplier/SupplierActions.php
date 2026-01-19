@@ -291,4 +291,15 @@ class SupplierActions
 
         return $result->count() == 0 ? true : false;
     }
+
+    public function isUniqueName(int $companyId, string $name, ?int $exceptId): bool
+    {
+        $result = Supplier::whereCompanyId($companyId)->where('name', '=', $name);
+
+        if ($exceptId) {
+            $result = $result->where('id', '<>', $exceptId);
+        }
+
+        return $result->count() == 0 ? true : false;
+    }
 }

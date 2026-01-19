@@ -39,12 +39,7 @@ class CashAccountController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->cashAccountActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], null,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] != config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->cashAccountActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
@@ -137,7 +132,20 @@ class CashAccountController extends BaseController
         if (! Auth::check()) return response()->error(trans('rules.auth.unauthorized'), 401);
         $this->authorize('view', $cashAccount);
 
-        return response()->success(new CashAccountResource($this->cashAccountActions->read($cashAccount)));
+        $result = null;
+        $errorMsg = '';
+
+        try {
+            $result = $this->cashAccountActions->read($cashAccount);
+        } catch (Exception $e) {
+            $errorMsg = app()->environment('production') ? '' : $e->getMessage();
+        }
+
+        if (is_null($result)) {
+            return response()->error($errorMsg);
+        } else {
+            return new CashAccountResource($result);
+        }
     }
 
     public function update(CashAccountUpdateRequest $request, CashAccount $cashAccount)
@@ -150,12 +158,7 @@ class CashAccountController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->cashAccountActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], $cashAccount->id,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] != config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->cashAccountActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $cashAccount->id,
                 );

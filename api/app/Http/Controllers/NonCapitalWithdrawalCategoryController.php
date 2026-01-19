@@ -98,11 +98,36 @@ class NonCapitalWithdrawalCategoryController extends BaseController
         $errorMsg = '';
 
         try {
-            $result = $this->nonCapitalWithdrawalCategoryActions->update(
-                nonCapitalWithdrawalCategory: $nonCapitalWithdrawalCategory,
-                data: $request
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->nonCapitalWithdrawalCategoryActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $nonCapitalWithdrawalCategory->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $isUniqueName = $this->nonCapitalWithdrawalCategoryActions->isUniqueName(
+                $request['company_id'],
+                $request['name'],
+                $nonCapitalWithdrawalCategory->id
             );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
+            $result = $this->nonCapitalWithdrawalCategoryActions->update(
+                $nonCapitalWithdrawalCategory,
+                $request
+            );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

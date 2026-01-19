@@ -39,12 +39,7 @@ class UnitController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->unitActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], null,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->unitActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
@@ -141,7 +136,20 @@ class UnitController extends BaseController
     {
         $this->authorize('view', $unit);
 
-        return response()->success(new UnitResource($this->unitActions->read($unit)));
+        $result = null;
+        $errorMsg = '';
+
+        try {
+            $result = $this->unitActions->read($unit);
+        } catch (Exception $e) {
+            $errorMsg = app()->environment('production') ? '' : $e->getMessage();
+        }
+
+        if (is_null($result)) {
+            return response()->error($errorMsg);
+        } else {
+            return new UnitResource($result);
+        }
     }
 
     public function update(UnitUpdateRequest $request, Unit $unit)
@@ -154,12 +162,7 @@ class UnitController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->unitActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], $unit->id,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->unitActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $unit->id,
                 );

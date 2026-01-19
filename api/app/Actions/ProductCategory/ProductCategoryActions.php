@@ -26,7 +26,7 @@ class ProductCategoryActions
         try {
             $productCategory = new ProductCategory();
             $productCategory->company_id = $data['company_id'];
-            $productCategory->code = $data['code'];
+            $productCategory->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $productCategory->name = $data['name'];
             $productCategory->type = $data['type'];
             $productCategory->save();
@@ -45,16 +45,16 @@ class ProductCategoryActions
 
     public function readAny(
         bool $withTrashed,
+        int $companyId,
 
         ?string $search,
-        int $companyId,
         ?int $type,
         ?int $includeId,
 
         ?ExecuteDTO $execute
     ) {
         $query = ProductCategory::with('company')->select('product_categories.*')
-            ->where('product_categories.company_id', $companyId)
+            ->whereCompanyId($companyId)
             ->withTrashed();
 
         $query->where(function ($query) use ($withTrashed, $search, $type, $includeId) {
@@ -68,7 +68,7 @@ class ProductCategoryActions
                     $query->search($search);
                 }
 
-                if ($type) {
+                if ($type !== null) {
                     $query->where('product_categories.type', $type);
                 }
             });
@@ -90,8 +90,8 @@ class ProductCategoryActions
             try {
                 $cacheParams = [
                     $withTrashed ? 'true' : 'false',
-                    empty($search) ? '[empty]' : $search,
                     $companyId,
+                    empty($search) ? '[empty]' : $search,
                     $type ?? '[null]',
                     $includeId ?? '[null]',
                     $execute->pagination ? 'true' : 'false',
@@ -152,7 +152,7 @@ class ProductCategoryActions
         $timer_start = microtime(true);
 
         try {
-            $productCategory->code = $data['code'];
+            $productCategory->code = $this->generateUniqueCode($productCategory->company_id, $data['code'], $productCategory->id);
             $productCategory->name = $data['name'];
             $productCategory->type = $data['type'];
             $productCategory->save();
@@ -192,6 +192,8 @@ class ProductCategoryActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) return $code;
+
         $company = Company::find($companyId);
 
         $tryCount = 0;

@@ -27,7 +27,7 @@ class BranchActions
         try {
             $branch = new Branch();
             $branch->company_id = $data['company_id'];
-            $branch->code = $data['code'];
+            $branch->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $branch->name = $data['name'];
             $branch->address = $data['address'];
             $branch->city = $data['city'];
@@ -52,9 +52,9 @@ class BranchActions
 
     public function readAny(
         bool $withTrashed,
+        int $companyId,
 
         ?string $search,
-        int $companyId,
         ?bool $isMain,
         ?int $status,
         ?int $includeId,
@@ -62,13 +62,15 @@ class BranchActions
         ?ExecuteDTO $execute
     ) {
         $query = Branch::with('company')->select('branches.*')
-            ->where('branches.company_id', $companyId)
+            ->whereCompanyId($companyId)
             ->withTrashed();
 
         $query->where(function ($query) use ($withTrashed, $search, $isMain, $status, $includeId) {
             $query->where(function ($query) use ($withTrashed, $search, $isMain, $status) {
                 $query->withoutTrashed();
-                if ($withTrashed) $query->withTrashed();
+                if ($withTrashed) {
+                    $query->withTrashed();
+                }
 
                 if ($search) {
                     $query->search($search);
@@ -88,7 +90,9 @@ class BranchActions
             }
         });
 
-        if ($includeId) $query->orderByRaw('FIELD(branches.id, '.$includeId.') desc');
+        if ($includeId) {
+            $query->orderByRaw('FIELD(branches.id, '.$includeId.') desc');
+        }
         $query->orderBy('branches.name', 'asc');
 
         if ($execute) {
@@ -98,8 +102,8 @@ class BranchActions
             try {
                 $cacheParams = [
                     $withTrashed ? 'true' : 'false',
-                    empty($search) ? '[empty]' : $search,
                     $companyId,
+                    empty($search) ? '[empty]' : $search,
                     is_null($isMain) ? '[null]' : ($isMain ? 'true' : 'false'),
                     $status ?? '[null]',
                     $includeId ?? '[null]',
@@ -173,7 +177,7 @@ class BranchActions
         $timer_start = microtime(true);
 
         try {
-            $branch->code = $data['code'];
+            $branch->code = $this->generateUniqueCode($branch->company_id, $data['code'], $branch->id);
             $branch->name = $data['name'];
             $branch->address = $data['address'];
             $branch->city = $data['city'];
@@ -186,7 +190,7 @@ class BranchActions
 
             $this->flushCache();
 
-            return $branch;
+            return $branch->refresh();
         } catch (Exception $e) {
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
@@ -235,6 +239,8 @@ class BranchActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) return $code;
+
         $company = Company::find($companyId);
 
         $tryCount = 0;

@@ -7,6 +7,7 @@ use App\Http\Requests\CapitalAdditionRequest;
 use App\Http\Resources\CapitalAdditionResource;
 use App\Models\CapitalAddition;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class CapitalAdditionController extends BaseController
 {
@@ -98,11 +99,27 @@ class CapitalAdditionController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->capitalAdditionActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $capitalAddition->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->capitalAdditionActions->update(
-                capitalAddition: $capitalAddition,
-                data: $request
+                $capitalAddition,
+                $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

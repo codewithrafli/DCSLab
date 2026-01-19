@@ -7,6 +7,7 @@ use App\Http\Requests\SaleRequest;
 use App\Http\Resources\SaleResource;
 use App\Models\Sale;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class SaleController extends BaseController
 {
@@ -27,8 +28,24 @@ class SaleController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->saleActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    null
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->saleActions->create($request);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -98,11 +115,27 @@ class SaleController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->saleActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $sale->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->saleActions->update(
                 sale: $sale,
                 data: $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -115,8 +148,13 @@ class SaleController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->saleActions->delete($sale);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

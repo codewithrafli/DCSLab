@@ -45,6 +45,11 @@ class CustomerGroupController extends BaseController
                 if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
 
+            $isUnique = $this->customerGroupActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], null,
+            );
+            if (! $isUnique) return response()->error(['name' => [trans('rules.unique_name')]], 422);
+
             $result = $this->customerGroupActions->create($validatedRequest);
 
             DB::commit();
@@ -151,6 +156,11 @@ class CustomerGroupController extends BaseController
                 );
                 if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
+
+            $isUnique = $this->customerGroupActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], $customerGroup->id,
+            );
+            if (! $isUnique) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $result = $this->customerGroupActions->update(
                 customerGroup: $customerGroup,

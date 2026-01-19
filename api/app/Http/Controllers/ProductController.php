@@ -161,20 +161,24 @@ class ProductController extends BaseController
         try {
             DB::beginTransaction();
 
-            $isUniqueCode = $this->productServiceActions->isUniqueCode(
-                $validatedRequest['company_id'], $validatedRequest['code'], null
-            );
-            if (! $isUniqueCode) return response()->error(['code' => [trans('rules.unique_code')]], 422);
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUniqueCode = $this->productServiceActions->isUniqueCode(
+                    $validatedRequest['company_id'], $validatedRequest['code'], null
+                );
+                if (! $isUniqueCode) return response()->error(['code' => [trans('rules.unique_code')]], 422);
+            }
 
             $isUniqueName = $this->productServiceActions->isUniqueName(
                 $validatedRequest['company_id'], $validatedRequest['name'], null
             );
             if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
-            $isUniqueSlug = $this->productServiceActions->isUniqueSlug(
-                $validatedRequest['company_id'], $validatedRequest['slug'], null
-            );
-            if (! $isUniqueSlug) return response()->error(['slug' => [trans('rules.unique_slug')]], 422);
+            if ($validatedRequest['slug'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUniqueSlug = $this->productServiceActions->isUniqueSlug(
+                    $validatedRequest['company_id'], $validatedRequest['slug'], null
+                );
+                if (! $isUniqueSlug) return response()->error(['slug' => [trans('rules.unique_slug')]], 422);
+            }
 
             if (! array_key_exists('remarks', $validatedRequest)) $validatedRequest['remarks'] = null;
 

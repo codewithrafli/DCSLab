@@ -41,12 +41,7 @@ class WarehouseController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->warehouseActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], null,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->warehouseActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
@@ -188,17 +183,17 @@ class WarehouseController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->warehouseActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], $warehouse->id,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->warehouseActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $warehouse->id,
                 );
                 if (! $isUnique) return response()->error(['code' => [trans('rules.unique_code')]], 422);
             }
+
+            $isUniqueName = $this->warehouseActions->isUniqueName(
+                $validatedRequest['company_id'], $validatedRequest['name'], $warehouse->id,
+            );
+            if (! $isUniqueName) return response()->error(['name' => [trans('rules.unique_name')]], 422);
 
             $validatedRequest['address'] = $validatedRequest['address'] ?? null;
             $validatedRequest['city'] = $validatedRequest['city'] ?? null;

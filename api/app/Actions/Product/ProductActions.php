@@ -20,8 +20,8 @@ class ProductActions
 
     public function readAny(
         bool $withTrashed,
-        ?string $search,
         int $companyId,
+        ?string $search,
         ?int $categoryId,
         ?int $brandId,
         ?bool $isTaxable,
@@ -35,7 +35,7 @@ class ProductActions
         ?ExecuteDTO $execute
     ) {
         $query = Product::with(['company', 'category', 'brand', 'productUnits.unit'])->select('products.*')
-            ->where('products.company_id', $companyId)
+            ->whereCompanyId($companyId)
             ->withTrashed();
 
         $query->where(function ($query) use (
@@ -128,8 +128,8 @@ class ProductActions
             try {
                 $cacheParams = [
                     $withTrashed ? 'true' : 'false',
-                    empty($search) ? '[empty]' : $search,
                     $companyId,
+                    empty($search) ? '[empty]' : $search,
                     $categoryId ?? '[null]',
                     $brandId ?? '[null]',
                     is_null($isTaxable) ? '[null]' : ($isTaxable ? 'true' : 'false'),

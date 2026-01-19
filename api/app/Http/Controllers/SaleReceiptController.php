@@ -7,6 +7,7 @@ use App\Http\Requests\SaleReceiptRequest;
 use App\Http\Resources\SaleReceiptResource;
 use App\Models\SaleReceipt;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class SaleReceiptController extends BaseController
 {
@@ -115,8 +116,13 @@ class SaleReceiptController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->saleReceiptActions->delete($saleReceipt);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

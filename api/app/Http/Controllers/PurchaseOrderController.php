@@ -7,6 +7,7 @@ use App\Http\Requests\PurchaseOrderRequest;
 use App\Http\Resources\PurchaseOrderResource;
 use App\Models\PurchaseOrder;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseOrderController extends BaseController
 {
@@ -98,11 +99,27 @@ class PurchaseOrderController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->purchaseOrderActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $purchaseOrder->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->purchaseOrderActions->update(
                 purchaseOrder: $purchaseOrder,
                 data: $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -115,8 +132,13 @@ class PurchaseOrderController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->purchaseOrderActions->delete($purchaseOrder);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

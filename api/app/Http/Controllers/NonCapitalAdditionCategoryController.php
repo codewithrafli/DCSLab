@@ -98,11 +98,36 @@ class NonCapitalAdditionCategoryController extends BaseController
         $errorMsg = '';
 
         try {
-            $result = $this->nonCapitalAdditionCategoryActions->update(
-                nonCapitalAdditionCategory: $nonCapitalAdditionCategory,
-                data: $request
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->nonCapitalAdditionCategoryActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $nonCapitalAdditionCategory->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $isUniqueName = $this->nonCapitalAdditionCategoryActions->isUniqueName(
+                $request['company_id'],
+                $request['name'],
+                $nonCapitalAdditionCategory->id
             );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
+            $result = $this->nonCapitalAdditionCategoryActions->update(
+                $nonCapitalAdditionCategory,
+                $request
+            );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

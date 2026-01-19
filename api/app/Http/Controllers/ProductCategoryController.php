@@ -40,12 +40,7 @@ class ProductCategoryController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->productCategoryActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], null,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] != config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->productCategoryActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], null,
                 );
@@ -183,12 +178,7 @@ class ProductCategoryController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->productCategoryActions->generateUniqueCode(
-                    $validatedRequest['company_id'], $validatedRequest['code'], $productCategory->id,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] !== config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->productCategoryActions->isUniqueCode(
                     $validatedRequest['company_id'], $validatedRequest['code'], $productCategory->id,
                 );

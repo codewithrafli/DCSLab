@@ -39,12 +39,7 @@ class CompanyController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->companyActions->generateUniqueCode(
-                    Auth::user(), $validatedRequest['code'], null,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] != config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->companyActions->isUniqueCode(
                     Auth::user(), $validatedRequest['code'], null,
                 );
@@ -185,12 +180,7 @@ class CompanyController extends BaseController
         try {
             DB::beginTransaction();
 
-            if ($validatedRequest['code'] == config('dcslab.KEYWORDS.AUTO')) {
-                $code = $this->companyActions->generateUniqueCode(
-                    Auth::user(), $validatedRequest['code'], $company->id,
-                );
-                $validatedRequest['code'] = $code;
-            } else {
+            if ($validatedRequest['code'] != config('dcslab.KEYWORDS.AUTO')) {
                 $isUnique = $this->companyActions->isUniqueCode(
                     Auth::user(), $validatedRequest['code'], $company->id,
                 );
@@ -210,6 +200,7 @@ class CompanyController extends BaseController
             }
 
             $result = $this->companyActions->update(
+                user: Auth::user(),
                 company: $company,
                 data: $validatedRequest
             );

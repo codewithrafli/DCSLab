@@ -8,6 +8,7 @@ use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SupplierController extends BaseController
 {
@@ -28,8 +29,33 @@ class SupplierController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUniqueCode = $this->supplierActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    null
+                );
+                if (! $isUniqueCode) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $isUniqueName = $this->supplierActions->isUniqueName(
+                $request['company_id'],
+                $request['name'],
+                null
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $result = $this->supplierActions->create($request);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -100,11 +126,36 @@ class SupplierController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUniqueCode = $this->supplierActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $supplier->id
+                );
+                if (! $isUniqueCode) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
+            $isUniqueName = $this->supplierActions->isUniqueName(
+                $request['company_id'],
+                $request['name'],
+                $supplier->id
+            );
+            if (! $isUniqueName) {
+                return response()->error(['name' => [trans('rules.unique_name')]], 422);
+            }
+
             $result = $this->supplierActions->update(
                 supplier: $supplier,
                 data: $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 
@@ -117,8 +168,13 @@ class SupplierController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->supplierActions->delete($supplier);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

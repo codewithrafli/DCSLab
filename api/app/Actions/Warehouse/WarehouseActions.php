@@ -27,7 +27,7 @@ class WarehouseActions
             $warehouse = new Warehouse();
             $warehouse->company_id = $data['company_id'];
             $warehouse->branch_id = $data['branch_id'];
-            $warehouse->code = $data['code'];
+            $warehouse->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $warehouse->name = $data['name'];
             $warehouse->address = $data['address'];
             $warehouse->city = $data['city'];
@@ -50,9 +50,9 @@ class WarehouseActions
 
     public function readAny(
         bool $withTrashed,
+        int $companyId,
 
         ?string $search,
-        int $companyId,
         ?int $branchId,
         ?int $status,
         ?int $includeId,
@@ -60,7 +60,7 @@ class WarehouseActions
         ?ExecuteDTO $execute
     ) {
         $query = Warehouse::with('company', 'branch')->select('warehouses.*')
-            ->where('warehouses.company_id', $companyId)
+            ->whereCompanyId($companyId)
             ->withTrashed();
 
         $query->where(function ($query) use ($withTrashed, $search, $branchId, $status, $includeId) {
@@ -96,8 +96,8 @@ class WarehouseActions
             try {
                 $cacheParams = [
                     $withTrashed ? 'true' : 'false',
-                    empty($search) ? '[empty]' : $search,
                     $companyId,
+                    empty($search) ? '[empty]' : $search,
                     $branchId ?? '[null]',
                     $status ?? '[null]',
                     $includeId ?? '[null]',
@@ -157,7 +157,7 @@ class WarehouseActions
         $timer_start = microtime(true);
 
         try {
-            $warehouse->code = $data['code'];
+            $warehouse->code = $this->generateUniqueCode($warehouse->company_id, $data['code'], $warehouse->id);
             $warehouse->name = $data['name'];
             $warehouse->address = $data['address'];
             $warehouse->city = $data['city'];
@@ -201,6 +201,8 @@ class WarehouseActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) return $code;
+
         $company = Company::find($companyId);
 
         $tryCount = 0;

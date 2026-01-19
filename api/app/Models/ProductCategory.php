@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ProductCategoryTypeEnum;
 use App\Traits\BootableModel;
+use App\Traits\ScopeableByCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,6 +13,7 @@ class ProductCategory extends Model
 {
     use BootableModel;
     use HasFactory;
+    use ScopeableByCompany;
     use SoftDeletes;
 
     protected $fillable = [

@@ -25,7 +25,7 @@ class CompanyActions
 
         try {
             $company = new Company();
-            $company->code = $data['code'];
+            $company->code = $this->generateUniqueCode($user, $data['code'], null);
             $company->name = $data['name'];
             $company->address = $data['address'];
             $company->default = $data['default'];
@@ -64,7 +64,9 @@ class CompanyActions
         $query->where(function ($query) use ($withTrashed, $search, $default, $status, $includeId) {
             $query->where(function ($query) use ($withTrashed, $search, $default, $status) {
                 $query->withoutTrashed();
-                if ($withTrashed == true) $query->withTrashed();
+                if ($withTrashed) {
+                    $query->withTrashed();
+                }
 
                 if ($search) {
                     $query->search($search);
@@ -84,7 +86,9 @@ class CompanyActions
             }
         });
 
-        if ($includeId) $query->orderByRaw('FIELD(companies.id, '.$includeId.') desc');
+        if ($includeId) {
+            $query->orderByRaw('FIELD(companies.id, '.$includeId.') desc');
+        }
         $query->orderBy('companies.name', 'asc');
 
         if ($execute) {
@@ -162,12 +166,12 @@ class CompanyActions
         return is_null($result) ? false : $result;
     }
 
-    public function update(Company $company, array $data): Company
+    public function update(User $user, Company $company, array $data): Company
     {
         $timer_start = microtime(true);
 
         try {
-            $company->code = $data['code'];
+            $company->code = $this->generateUniqueCode($user, $data['code'], $company->id);
             $company->name = $data['name'];
             $company->address = $data['address'];
             $company->default = $data['default'];
@@ -176,7 +180,7 @@ class CompanyActions
 
             $this->flushCache();
 
-            return $company;
+            return $company->refresh();
         } catch (Exception $e) {
             $this->loggerDebug(__METHOD__, $e);
             throw $e;
@@ -224,6 +228,8 @@ class CompanyActions
 
     public function generateUniqueCode(User $user, string $code, ?int $exceptId): string
     {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) return $code;
+
         $tryCount = 0;
         do {
             $count = $user->companies()->withTrashed()->count() + 1 + $tryCount;

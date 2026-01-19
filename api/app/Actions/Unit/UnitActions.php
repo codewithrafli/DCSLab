@@ -26,7 +26,7 @@ class UnitActions
         try {
             $unit = new Unit();
             $unit->company_id = $data['company_id'];
-            $unit->code = $data['code'];
+            $unit->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $unit->name = $data['name'];
             $unit->description = $data['description'];
             $unit->type = $data['type'];
@@ -46,9 +46,9 @@ class UnitActions
 
     public function readAny(
         bool $withTrashed,
+        int $companyId,
 
         ?string $search,
-        int $companyId,
         ?int $includeId,
 
         ?ExecuteDTO $execute
@@ -86,8 +86,8 @@ class UnitActions
             try {
                 $cacheParams = [
                     $withTrashed ? 'true' : 'false',
-                    empty($search) ? '[empty]' : $search,
                     $companyId,
+                    empty($search) ? '[empty]' : $search,
                     $includeId ?? '[null]',
                     $execute->pagination ? 'true' : 'false',
                     $execute->pagination?->page ?? '[null]',
@@ -147,7 +147,7 @@ class UnitActions
         $timer_start = microtime(true);
 
         try {
-            $unit->code = $data['code'];
+            $unit->code = $this->generateUniqueCode($unit->company_id, $data['code'], $unit->id);
             $unit->name = $data['name'];
             $unit->description = $data['description'];
             $unit->type = $data['type'];
@@ -188,6 +188,8 @@ class UnitActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) return $code;
+
         $company = Company::find($companyId);
 
         $tryCount = 0;

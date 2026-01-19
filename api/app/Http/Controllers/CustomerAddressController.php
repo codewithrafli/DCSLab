@@ -98,6 +98,17 @@ class CustomerAddressController extends BaseController
         $errorMsg = '';
 
         try {
+            $isUniqueAddress = $this->customerAddressActions->isUniqueAddress(
+                companyId: $request['company_id'],
+                customerId: $request['customer_id'],
+                address: $request['address'],
+                exceptId: $customerAddress->id
+            );
+
+            if (! $isUniqueAddress) {
+                return response()->error(['address' => [trans('rules.unique_address')]], 422);
+            }
+
             $result = $this->customerAddressActions->update(
                 customerAddress: $customerAddress,
                 data: $request

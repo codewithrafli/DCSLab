@@ -7,6 +7,7 @@ use App\Http\Requests\SaleOrderDownPaymentRequest;
 use App\Http\Resources\SaleOrderDownPaymentResource;
 use App\Models\SaleOrderDownPayment;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class SaleOrderDownPaymentController extends BaseController
 {
@@ -115,8 +116,13 @@ class SaleOrderDownPaymentController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
             $result = $this->saleOrderDownPaymentActions->delete($saleOrderDownPayment);
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

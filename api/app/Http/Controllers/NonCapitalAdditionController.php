@@ -98,11 +98,27 @@ class NonCapitalAdditionController extends BaseController
         $errorMsg = '';
 
         try {
+            DB::beginTransaction();
+
+            if ($request['code'] !== config('dcslab.KEYWORDS.AUTO')) {
+                $isUnique = $this->nonCapitalAdditionActions->isUniqueCode(
+                    $request['company_id'],
+                    $request['code'],
+                    $nonCapitalAddition->id
+                );
+                if (! $isUnique) {
+                    return response()->error(['code' => [trans('rules.unique_code')]], 422);
+                }
+            }
+
             $result = $this->nonCapitalAdditionActions->update(
-                nonCapitalAddition: $nonCapitalAddition,
-                data: $request
+                $nonCapitalAddition,
+                $request
             );
+
+            DB::commit();
         } catch (Exception $e) {
+            DB::rollBack();
             $errorMsg = app()->environment('production') ? '' : $e->getMessage();
         }
 

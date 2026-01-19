@@ -26,7 +26,7 @@ class BrandActions
         try {
             $brand = new Brand();
             $brand->company_id = $data['company_id'];
-            $brand->code = $data['code'];
+            $brand->code = $this->generateUniqueCode($data['company_id'], $data['code'], null);
             $brand->name = $data['name'];
             $brand->save();
 
@@ -44,15 +44,15 @@ class BrandActions
 
     public function readAny(
         bool $withTrashed,
+        int $companyId,
 
         ?string $search,
-        int $companyId,
         ?int $includeId,
 
         ?ExecuteDTO $execute
     ) {
         $query = Brand::with('company')->select('brands.*')
-            ->where('brands.company_id', $companyId)
+            ->whereCompanyId($companyId)
             ->withTrashed();
 
         $query->where(function ($query) use ($withTrashed, $search, $includeId) {
@@ -84,8 +84,8 @@ class BrandActions
             try {
                 $cacheParams = [
                     $withTrashed ? 'true' : 'false',
-                    empty($search) ? '[empty]' : $search,
                     $companyId,
+                    empty($search) ? '[empty]' : $search,
                     $includeId ?? '[null]',
                     $execute->pagination ? 'true' : 'false',
                     $execute->pagination?->page ?? '[null]',
@@ -145,7 +145,7 @@ class BrandActions
         $timer_start = microtime(true);
 
         try {
-            $brand->code = $data['code'];
+            $brand->code = $this->generateUniqueCode($brand->company_id, $data['code'], $brand->id);
             $brand->name = $data['name'];
             $brand->save();
 
@@ -184,6 +184,8 @@ class BrandActions
 
     public function generateUniqueCode(int $companyId, string $code, ?int $exceptId): string
     {
+        if ($code != config('dcslab.KEYWORDS.AUTO')) return $code;
+
         $company = Company::find($companyId);
 
         $tryCount = 0;
