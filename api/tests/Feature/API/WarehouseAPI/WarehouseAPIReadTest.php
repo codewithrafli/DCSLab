@@ -35,6 +35,7 @@ class WarehouseAPIReadTest extends APITestCase
         Warehouse::factory()->for($company)->for($branch)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'refresh' => true,
@@ -62,6 +63,7 @@ class WarehouseAPIReadTest extends APITestCase
         Warehouse::factory()->for($company)->for($branch)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'refresh' => true,
@@ -358,6 +360,7 @@ class WarehouseAPIReadTest extends APITestCase
         Warehouse::factory()->for($company)->for($branch)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
         ]));
 

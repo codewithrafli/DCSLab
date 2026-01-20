@@ -20,7 +20,9 @@ class RoleAPIReadTest extends APITestCase
             ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
             ->create();
 
-        $api = $this->getJson(route('api.get.db.admin.role.read_any', []));
+        $api = $this->getJson(route('api.get.db.admin.role.read_any', [
+            'with_trashed' => false,
+        ]));
 
         $api->assertUnauthorized();
     }
@@ -34,7 +36,9 @@ class RoleAPIReadTest extends APITestCase
 
         $this->actingAs($user);
 
-        $api = $this->getJson(route('api.get.db.admin.role.read_any', []));
+        $api = $this->getJson(route('api.get.db.admin.role.read_any', [
+            'with_trashed' => false,
+        ]));
 
         $api->assertForbidden();
     }
@@ -47,7 +51,9 @@ class RoleAPIReadTest extends APITestCase
 
         $this->actingAs($user);
 
-        $api = $this->getJson(route('api.get.db.admin.role.read_any', []));
+        $api = $this->getJson(route('api.get.db.admin.role.read_any', [
+            'with_trashed' => false,
+        ]));
 
         $api->assertSuccessful();
     }

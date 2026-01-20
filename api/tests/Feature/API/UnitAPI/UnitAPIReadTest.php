@@ -26,6 +26,7 @@ class UnitAPIReadTest extends APITestCase
         Unit::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.unit.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'refresh' => true,
@@ -51,6 +52,7 @@ class UnitAPIReadTest extends APITestCase
         Unit::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.unit.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'refresh' => true,
@@ -325,6 +327,7 @@ class UnitAPIReadTest extends APITestCase
         Unit::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.unit.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
         ]));
 

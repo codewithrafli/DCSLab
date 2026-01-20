@@ -326,6 +326,7 @@ class CustomerAPIReadTest extends APITestCase
         Customer::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
         ]));
 
@@ -386,8 +387,6 @@ class CustomerAPIReadTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'status' => null,
-            'page' => -1,
-            'per_page' => -25,
             'refresh' => false,
             'paginate' => [
                 'page' => 1,

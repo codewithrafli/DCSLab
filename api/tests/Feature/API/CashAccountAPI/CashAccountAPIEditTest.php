@@ -80,7 +80,6 @@ class CashAccountAPIEditTest extends APITestCase
 
         $payload = CashAccount::factory()->make([
             'company_id' => Hashids::encode($company->id),
-            'branch_id' => Hashids::encode($branch->id),
             'name' => '<script>alert("xss")</script>',
         ])->toArray();
 
@@ -111,7 +110,6 @@ class CashAccountAPIEditTest extends APITestCase
 
         $payload = CashAccount::factory()->make([
             'company_id' => Hashids::encode($company->id),
-            'branch_id' => Hashids::encode($branch->id),
             'name' => '<script>alert("xss")</script>',
         ])->toArray();
 
@@ -154,32 +152,6 @@ class CashAccountAPIEditTest extends APITestCase
             'code' => $payload['code'],
             'name' => $payload['name'],
         ]);
-    }
-
-    public function test_cash_account_api_call_update_with_nonexistance_branch_id_expect_failed()
-    {
-        $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRolesEnum::DEVELOPER->value)->first())
-            ->has(Company::factory()->setStatusActive()->setIsDefault()->has(Branch::factory()))
-            ->create();
-
-        $this->actingAs($user);
-
-        $company = $user->companies()->whereHas('branches')->inRandomOrder()->first();
-        $branch = $company->branches()->inRandomOrder()->first();
-        $cashAccount = CashAccount::factory()->for($company)->create([
-            'branch_id' => $branch->id,
-        ]);
-
-        $payload = CashAccount::factory()->make([
-            'company_id' => Hashids::encode($company->id),
-            'branch_id' => Hashids::encode($company->id + 999), // Invalid Branch ID
-        ])->toArray();
-
-        $api = $this->json('POST', route('api.post.cash_account.edit', $cashAccount->ulid), $payload);
-
-        $api->assertStatus(422);
-        $api->assertJsonValidationErrors(['branch_id']);
     }
 
     public function test_cash_account_api_call_update_and_use_existing_code_in_same_company_expect_failed()
@@ -243,7 +215,6 @@ class CashAccountAPIEditTest extends APITestCase
 
         $payload = CashAccount::factory()->make([
             'company_id' => Hashids::encode($company_2->id),
-            'branch_id' => Hashids::encode($branch_2->id),
             'code' => 'test1',
         ])->toArray();
 

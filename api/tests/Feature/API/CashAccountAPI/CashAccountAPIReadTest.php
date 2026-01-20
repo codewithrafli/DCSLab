@@ -34,6 +34,7 @@ class CashAccountAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.cash_account.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'refresh' => true,
@@ -62,6 +63,7 @@ class CashAccountAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.cash_account.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'refresh' => true,

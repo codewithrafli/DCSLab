@@ -293,6 +293,7 @@ class CompanyAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $api = $this->getJson(route('api.get.company.read_any', [
+            'with_trashed' => false,
         ]));
 
         $api->assertUnprocessable();

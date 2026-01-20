@@ -23,9 +23,8 @@ class UserAPIReadTest extends APITestCase
             ->create();
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
             'search' => '',
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -44,9 +43,8 @@ class UserAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
             'search' => '',
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -94,9 +92,8 @@ class UserAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
             'search' => '',
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -116,9 +113,8 @@ class UserAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
             'search' => '',
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -138,9 +134,8 @@ class UserAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
             'search' => '',
-            'page' => 1,
-            'per_page' => 25,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -177,9 +172,8 @@ class UserAPIReadTest extends APITestCase
         User::factory()->setName('testing2')->create();
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
             'search' => 'testing',
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -207,7 +201,9 @@ class UserAPIReadTest extends APITestCase
 
         $this->actingAs($user);
 
-        $api = $this->getJson(route('api.get.db.admin.user.read_any', []));
+        $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
+        ]));
 
         $api->assertUnprocessable();
     }
@@ -221,9 +217,8 @@ class UserAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
             'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => false,
             'paginate' => [
                 'page' => 1,
@@ -252,9 +247,8 @@ class UserAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
+            'with_trashed' => false,
             'search' => '',
-            'page' => -1,
-            'per_page' => -10,
             'refresh' => false,
             'paginate' => [
                 'page' => 1,

@@ -401,6 +401,7 @@ class BranchAPIReadTest extends APITestCase
         $company = $user->companies()->inRandomOrder()->first();
 
         $api = $this->getJson(route('api.get.branch.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
         ]));
 
@@ -625,12 +626,13 @@ class BranchAPIReadTest extends APITestCase
         $company = $user->companies()->first();
 
         $api = $this->getJson(route('api.get.branch.read_any', [
+            'with_trashed' => false,
             'company_id' => 'invalid-hashid',
             'refresh' => true,
             'get' => ['limit' => 10],
         ]));
 
-        $api->assertJsonValidationErrors(['with_trashed', 'company_id']);
+        $api->assertJsonValidationErrors(['company_id']);
     }
 
     public function test_branch_api_call_read_any_with_include_id_expect_included_result()

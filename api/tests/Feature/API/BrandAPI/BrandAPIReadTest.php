@@ -26,6 +26,7 @@ class BrandAPIReadTest extends APITestCase
         Brand::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.brand.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'refresh' => true,
@@ -51,6 +52,7 @@ class BrandAPIReadTest extends APITestCase
         Brand::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.brand.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'refresh' => true,
@@ -325,6 +327,7 @@ class BrandAPIReadTest extends APITestCase
         Brand::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.brand.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
         ]));
 

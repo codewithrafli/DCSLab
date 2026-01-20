@@ -248,6 +248,7 @@ class ProductCategoryAPIReadTest extends APITestCase
         ProductCategory::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
         ]));
 

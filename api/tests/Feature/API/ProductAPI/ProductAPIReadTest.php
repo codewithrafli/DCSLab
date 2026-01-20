@@ -34,10 +34,9 @@ class ProductAPIReadTest extends APITestCase
         Product::factory()->for($company)->where('product_category_id', '=', $productCategory->id)->where('brand_id', '=', $brand->id)->create();
 
         $api = $this->getJson(route('api.get.db.product.product.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -64,10 +63,9 @@ class ProductAPIReadTest extends APITestCase
         Product::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.product.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
             'search' => '',
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -234,8 +232,6 @@ class ProductAPIReadTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
             'search' => $injections[$testIdx],
             'status' => null,
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -266,7 +262,6 @@ class ProductAPIReadTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
             'search' => $injections[$testIdx],
             'status' => null,
-            'limit' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -301,8 +296,6 @@ class ProductAPIReadTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'status' => null,
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -356,8 +349,6 @@ class ProductAPIReadTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'status' => null,
-            'page' => 1,
-            'per_page' => 25,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -407,8 +398,6 @@ class ProductAPIReadTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
             'search' => 'testing',
             'status' => null,
-            'page' => 1,
-            'per_page' => 25,
             'refresh' => true,
             'paginate' => [
                 'page' => 1,
@@ -448,6 +437,7 @@ class ProductAPIReadTest extends APITestCase
         Product::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.product.product.read_any', [
+            'with_trashed' => false,
             'company_id' => Hashids::encode($company->id),
         ]));
 
@@ -474,8 +464,6 @@ class ProductAPIReadTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
             'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
             'status' => null,
-            'page' => 1,
-            'per_page' => 25,
             'refresh' => false,
             'paginate' => [
                 'page' => 1,
@@ -515,8 +503,6 @@ class ProductAPIReadTest extends APITestCase
             'company_id' => Hashids::encode($company->id),
             'search' => '',
             'status' => null,
-            'page' => -1,
-            'per_page' => -25,
             'refresh' => false,
             'paginate' => [
                 'page' => 1,
