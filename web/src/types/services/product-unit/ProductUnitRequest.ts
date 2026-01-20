@@ -1,7 +1,7 @@
 export interface ProductUnitReadAnyPaginateRequest {
     with_trashed: boolean;
-    search?: string | null;
     company_id: string;
+    search?: string | null;
     product_id?: string | null;
     unit_id?: string | null;
     is_base?: boolean | null;
@@ -13,8 +13,8 @@ export interface ProductUnitReadAnyPaginateRequest {
 
 export interface ProductUnitReadAnyGetRequest {
     with_trashed: boolean;
-    search?: string | null;
     company_id: string;
+    search?: string | null;
     product_id?: string | null;
     unit_id?: string | null;
     is_base?: boolean | null;

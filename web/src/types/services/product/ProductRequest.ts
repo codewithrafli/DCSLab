@@ -2,18 +2,17 @@ import { ProductUnitStoreRequest, ProductUnitUpdateRequest } from '../product-un
 
 export interface ProductReadAnyPaginateRequest {
     with_trashed: boolean;
-
-    search?: string | null;
     company_id: string;
-    category_id?: string | null;
+    search?: string | null;
     brand_id?: string | null;
-    is_taxable?: boolean | null;
-    vat_rate?: number | null;
-    is_price_include_vat?: boolean | null;
-    is_use_serial_number?: boolean | null;
+    category_id?: string | null;
     is_expirable?: boolean | null;
+    is_price_include_vat?: boolean | null;
+    is_taxable?: boolean | null;
+    is_use_serial_number?: boolean | null;
+    status?: string | number;
     type?: number | null;
-    status?: number | null;
+    vat_rate?: number | null;
     include_id?: string;
     refresh: boolean;
     page: number;
@@ -22,18 +21,17 @@ export interface ProductReadAnyPaginateRequest {
 
 export interface ProductReadAnyGetRequest {
     with_trashed: boolean;
-    
-    search?: string | null;
     company_id: string;
-    category_id?: string | null;
+    search?: string | null;
     brand_id?: string | null;
-    is_taxable?: boolean | null;
-    vat_rate?: number | null;
-    is_price_include_vat?: boolean | null;
-    is_use_serial_number?: boolean | null;
+    category_id?: string | null;
     is_expirable?: boolean | null;
+    is_price_include_vat?: boolean | null;
+    is_taxable?: boolean | null;
+    is_use_serial_number?: boolean | null;
+    status?: string | number;
     type?: number | null;
-    status?: number | null;
+    vat_rate?: number | null;
     include_id?: string;
     refresh: boolean;
     limit: number;
