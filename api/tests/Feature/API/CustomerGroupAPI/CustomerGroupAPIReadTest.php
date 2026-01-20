@@ -125,15 +125,15 @@ class CustomerGroupAPIReadTest extends APITestCase
 
         foreach ($injections as $injection) {
             $api = $this->getJson(route('api.get.customer_group.read_any', [
-            'with_trashed' => false,
-            'company_id' => Hashids::encode($company->id),
-            'search' => $injection,
-            'refresh' => true,
-            'paginate' => [
-                'page' => 1,
-                'per_page' => 10,
-            ],
-        ]));
+                'with_trashed' => false,
+                'company_id' => Hashids::encode($company->id),
+                'search' => $injection,
+                'refresh' => true,
+                'paginate' => [
+                    'page' => 1,
+                    'per_page' => 10,
+                ],
+            ]));
 
             $api->assertSuccessful();
 
@@ -152,14 +152,14 @@ class CustomerGroupAPIReadTest extends APITestCase
             ]);
 
             $api = $this->getJson(route('api.get.customer_group.read_any', [
-            'with_trashed' => false,
-            'company_id' => Hashids::encode($company->id),
-            'search' => $injection,
-            'refresh' => true,
-            'get' => [
-                'limit' => 10,
-            ],
-        ]));
+                'with_trashed' => false,
+                'company_id' => Hashids::encode($company->id),
+                'search' => $injection,
+                'refresh' => true,
+                'get' => [
+                    'limit' => 10,
+                ],
+            ]));
 
             $api->assertSuccessful();
 
