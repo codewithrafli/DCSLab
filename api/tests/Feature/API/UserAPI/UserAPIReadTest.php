@@ -24,10 +24,13 @@ class UserAPIReadTest extends APITestCase
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
             'search' => '',
-            'paginate' => true,
             'page' => 1,
             'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertUnauthorized();
@@ -42,10 +45,13 @@ class UserAPIReadTest extends APITestCase
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
             'search' => '',
-            'paginate' => true,
             'page' => 1,
             'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertForbidden();
@@ -89,10 +95,13 @@ class UserAPIReadTest extends APITestCase
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
             'search' => '',
-            'paginate' => true,
             'page' => 1,
             'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -108,10 +117,13 @@ class UserAPIReadTest extends APITestCase
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
             'search' => '',
-            'paginate' => false,
             'page' => 1,
             'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -127,10 +139,13 @@ class UserAPIReadTest extends APITestCase
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
             'search' => '',
-            'paginate' => true,
             'page' => 1,
             'per_page' => 25,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -163,10 +178,13 @@ class UserAPIReadTest extends APITestCase
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
             'search' => 'testing',
-            'paginate' => true,
             'page' => 1,
             'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -203,11 +221,14 @@ class UserAPIReadTest extends APITestCase
         $this->actingAs($user);
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
-            'search' => "!#$%&'()*+,-./:;<=>?@[\]^_`{|}~",
-            'paginate' => true,
+            'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
             'page' => 1,
             'per_page' => 10,
             'refresh' => false,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -232,10 +253,13 @@ class UserAPIReadTest extends APITestCase
 
         $api = $this->getJson(route('api.get.db.admin.user.read_any', [
             'search' => '',
-            'paginate' => true,
             'page' => -1,
             'per_page' => -10,
             'refresh' => false,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();

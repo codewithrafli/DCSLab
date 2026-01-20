@@ -41,13 +41,11 @@ class ProductCategoryAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
+            'search' => $injections[$testIdx],
             'type' => null,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -73,13 +71,11 @@ class ProductCategoryAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
+            'search' => $injections[$testIdx],
             'type' => null,
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -106,13 +102,11 @@ class ProductCategoryAPIReadTest extends APITestCase
         ProductCategory::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'type' => null,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -131,13 +125,11 @@ class ProductCategoryAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'type' => null,
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -163,13 +155,11 @@ class ProductCategoryAPIReadTest extends APITestCase
         ProductCategory::factory()->for($company)->count(30)->create();
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'type' => null,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -217,13 +207,11 @@ class ProductCategoryAPIReadTest extends APITestCase
             ]);
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => 'testing',
             'company_id' => Hashids::encode($company->id),
+            'search' => 'testing',
             'type' => null,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -280,13 +268,11 @@ class ProductCategoryAPIReadTest extends APITestCase
         ProductCategory::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
-            'refresh' => false,
             'with_trashed' => false,
-
-            'search' => " !#$%&'()*+,-./:;<=>?@[\]^_`{|}~",
             'company_id' => Hashids::encode($company->id),
+            'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
             'type' => null,
-
+            'refresh' => false,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -327,13 +313,11 @@ class ProductCategoryAPIReadTest extends APITestCase
             ]);
 
         $api = $this->getJson(route('api.get.product_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'type' => ProductCategoryTypeEnum::PRODUCT->value,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,

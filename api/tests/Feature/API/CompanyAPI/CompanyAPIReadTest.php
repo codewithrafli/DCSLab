@@ -117,7 +117,6 @@ class CompanyAPIReadTest extends APITestCase
             'default' => '',
             'status' => '',
             'refresh' => true,
-
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -293,7 +292,8 @@ class CompanyAPIReadTest extends APITestCase
 
         $this->actingAs($user);
 
-        $api = $this->getJson(route('api.get.company.read_any', []));
+        $api = $this->getJson(route('api.get.company.read_any', [
+        ]));
 
         $api->assertUnprocessable();
     }
@@ -309,7 +309,7 @@ class CompanyAPIReadTest extends APITestCase
 
         $api = $this->getJson(route('api.get.company.read_any', [
             'with_trashed' => false,
-            'search' => "!#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
+            'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
             'refresh' => false,
             'paginate' => [
                 'page' => 1,

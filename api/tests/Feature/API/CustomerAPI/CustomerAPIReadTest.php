@@ -31,14 +31,14 @@ class CustomerAPIReadTest extends APITestCase
         Customer::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'company_id' => Hashids::encode($company->id),
             'with_trashed' => false,
+            'company_id' => Hashids::encode($company->id),
             'search' => '',
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
             ],
-            'refresh' => true,
         ]));
 
         $api->assertStatus(401);
@@ -57,14 +57,14 @@ class CustomerAPIReadTest extends APITestCase
         Customer::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'company_id' => Hashids::encode($company->id),
             'with_trashed' => false,
+            'company_id' => Hashids::encode($company->id),
             'search' => '',
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
             ],
-            'refresh' => true,
         ]));
 
         $api->assertStatus(403);
@@ -136,12 +136,10 @@ class CustomerAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
-
+            'search' => $injections[$testIdx],
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -167,12 +165,10 @@ class CustomerAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
-
+            'search' => $injections[$testIdx],
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -199,11 +195,9 @@ class CustomerAPIReadTest extends APITestCase
         Customer::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -222,11 +216,9 @@ class CustomerAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -249,11 +241,9 @@ class CustomerAPIReadTest extends APITestCase
         Customer::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -296,12 +286,10 @@ class CustomerAPIReadTest extends APITestCase
             ->count(3)->create();
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => 'testing',
             'company_id' => Hashids::encode($company->id),
-
+            'search' => 'testing',
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -358,12 +346,10 @@ class CustomerAPIReadTest extends APITestCase
         Customer::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => " !#$%&'()*+,-./:;<=>?@[\]^_`{|}~",
             'company_id' => Hashids::encode($company->id),
-
+            'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -396,16 +382,17 @@ class CustomerAPIReadTest extends APITestCase
         Customer::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.customer.customer.read_any', [
-            'refresh' => false,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'status' => null,
-
-            'paginate' => true,
             'page' => -1,
             'per_page' => -25,
+            'refresh' => false,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertStatus(422);

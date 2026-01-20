@@ -30,14 +30,14 @@ class StockAdjustmentCategoryAPIReadTest extends APITestCase
         StockAdjustmentCategory::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.stock_adjustment_category.read_any', [
-            'company_id' => Hashids::encode($company->id),
             'with_trashed' => false,
+            'company_id' => Hashids::encode($company->id),
             'search' => '',
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
             ],
-            'refresh' => true,
         ]));
 
         $api->assertStatus(401);
@@ -56,14 +56,14 @@ class StockAdjustmentCategoryAPIReadTest extends APITestCase
         StockAdjustmentCategory::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.stock_adjustment_category.read_any', [
-            'company_id' => Hashids::encode($company->id),
             'with_trashed' => false,
+            'company_id' => Hashids::encode($company->id),
             'search' => '',
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
             ],
-            'refresh' => true,
         ]));
 
         $api->assertStatus(403);
@@ -134,12 +134,10 @@ class StockAdjustmentCategoryAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.stock_adjustment_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
-
+            'search' => $injections[$testIdx],
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -165,12 +163,10 @@ class StockAdjustmentCategoryAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.stock_adjustment_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
-
+            'search' => $injections[$testIdx],
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -197,11 +193,9 @@ class StockAdjustmentCategoryAPIReadTest extends APITestCase
         StockAdjustmentCategory::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.stock_adjustment_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -220,11 +214,9 @@ class StockAdjustmentCategoryAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.stock_adjustment_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -256,12 +248,10 @@ class StockAdjustmentCategoryAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.stock_adjustment_category.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => 'Adjustment Category 1',
             'company_id' => Hashids::encode($company->id),
-
+            'search' => 'Adjustment Category 1',
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],

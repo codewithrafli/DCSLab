@@ -28,10 +28,11 @@ class BrandAPIReadTest extends APITestCase
         $api = $this->getJson(route('api.get.brand.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
-            'paginate' => true,
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 10,
+            ],
         ]));
 
         $api->assertUnauthorized();
@@ -52,10 +53,11 @@ class BrandAPIReadTest extends APITestCase
         $api = $this->getJson(route('api.get.brand.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
-            'paginate' => true,
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 10,
+            ],
         ]));
 
         $api->assertForbidden();
@@ -122,12 +124,10 @@ class BrandAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.brand.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
-
+            'search' => $injections[$testIdx],
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -153,12 +153,10 @@ class BrandAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.brand.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
-
+            'search' => $injections[$testIdx],
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -185,12 +183,10 @@ class BrandAPIReadTest extends APITestCase
         Brand::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.brand.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
-
+            'search' => '',
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -209,12 +205,10 @@ class BrandAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.brand.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
-
+            'search' => '',
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -240,12 +234,10 @@ class BrandAPIReadTest extends APITestCase
         Brand::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.brand.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
-
+            'search' => '',
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -293,12 +285,10 @@ class BrandAPIReadTest extends APITestCase
             ]);
 
         $api = $this->getJson(route('api.get.brand.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => 'testing',
             'company_id' => Hashids::encode($company->id),
-
+            'search' => 'testing',
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -355,12 +345,10 @@ class BrandAPIReadTest extends APITestCase
         Brand::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.brand.read_any', [
-            'refresh' => false,
             'with_trashed' => false,
-
-            'search' => " !#$%&'()*+,-./:;<=>?@[\]^_`{|}~",
             'company_id' => Hashids::encode($company->id),
-
+            'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
+            'refresh' => false,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,

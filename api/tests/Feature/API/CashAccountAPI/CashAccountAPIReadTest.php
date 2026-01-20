@@ -36,10 +36,11 @@ class CashAccountAPIReadTest extends APITestCase
         $api = $this->getJson(route('api.get.cash_account.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
-            'paginate' => true,
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 10,
+            ],
         ]));
 
         $api->assertStatus(401);
@@ -63,10 +64,11 @@ class CashAccountAPIReadTest extends APITestCase
         $api = $this->getJson(route('api.get.cash_account.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
-            'paginate' => true,
-            'page' => 1,
-            'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 10,
+            ],
         ]));
 
         $api->assertStatus(403);
@@ -146,12 +148,10 @@ class CashAccountAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.cash_account.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
-
+            'search' => $injections[$testIdx],
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -177,12 +177,10 @@ class CashAccountAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.cash_account.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
-
+            'search' => $injections[$testIdx],
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -212,11 +210,9 @@ class CashAccountAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.cash_account.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -235,11 +231,9 @@ class CashAccountAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.cash_account.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -274,12 +268,10 @@ class CashAccountAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.cash_account.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
             'search' => 'Searchable',
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -325,12 +317,10 @@ class CashAccountAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.cash_account.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
             'company_id' => Hashids::encode($company->id),
             'branch_id' => Hashids::encode($branch_1->id),
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],

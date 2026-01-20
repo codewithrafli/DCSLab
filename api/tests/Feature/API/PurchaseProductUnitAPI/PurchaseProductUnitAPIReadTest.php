@@ -33,10 +33,13 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
-            'paginate' => true,
             'page' => 1,
             'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertStatus(401);
@@ -57,10 +60,13 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
             'company_id' => Hashids::encode($company->id),
             'search' => '',
-            'paginate' => true,
             'page' => 1,
             'per_page' => 10,
             'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertStatus(403);
@@ -211,16 +217,17 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections));
 
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
+            'search' => $injections[$testIdx],
             'status' => null,
-
-            'paginate' => true,
             'page' => 1,
             'per_page' => 10,
+            'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -242,15 +249,16 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections));
 
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
+            'search' => $injections[$testIdx],
             'status' => null,
-
-            'paginate' => false,
             'limit' => 10,
+            'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -274,16 +282,17 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         PurchaseProductUnit::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'status' => null,
-
-            'paginate' => true,
             'page' => 1,
             'per_page' => 10,
+            'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -298,14 +307,15 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'status' => null,
-
-            'paginate' => false,
+            'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -325,16 +335,17 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         PurchaseProductUnit::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'status' => null,
-
-            'paginate' => true,
             'page' => 1,
             'per_page' => 25,
+            'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -373,16 +384,17 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
             ->count(3)->create();
 
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => 'testing',
             'company_id' => Hashids::encode($company->id),
+            'search' => 'testing',
             'status' => null,
-
-            'paginate' => true,
             'page' => 1,
             'per_page' => 25,
+            'refresh' => true,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -435,16 +447,17 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         PurchaseProductUnit::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
-            'refresh' => false,
             'with_trashed' => false,
-
-            'search' => " !#$%&'()*+,-./:;<=>?@[\]^_`{|}~",
             'company_id' => Hashids::encode($company->id),
+            'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
             'status' => null,
-
-            'paginate' => true,
             'page' => 1,
             'per_page' => 25,
+            'refresh' => false,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertSuccessful();
@@ -473,16 +486,17 @@ class PurchaseProductUnitAPIReadTest extends APITestCase
         PurchaseProductUnit::factory()->for($company)->create();
 
         $api = $this->getJson(route('api.get.db.purchase.purchase_product_unit.read_any', [
-            'refresh' => false,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'status' => null,
-
-            'paginate' => true,
             'page' => -1,
             'per_page' => -25,
+            'refresh' => false,
+            'paginate' => [
+                'page' => 1,
+                'per_page' => 25,
+            ],
         ]));
 
         $api->assertStatus(422);

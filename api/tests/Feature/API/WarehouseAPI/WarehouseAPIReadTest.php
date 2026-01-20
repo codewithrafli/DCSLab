@@ -145,14 +145,12 @@ class WarehouseAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
+            'search' => $injections[$testIdx],
             'branch_id' => Hashids::encode($branch->id),
             'status' => null,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -178,14 +176,12 @@ class WarehouseAPIReadTest extends APITestCase
         $testIdx = random_int(0, count($injections) - 1);
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => $injections[$testIdx],
             'company_id' => Hashids::encode($company->id),
+            'search' => $injections[$testIdx],
             'branch_id' => Hashids::encode($branch->id),
             'status' => null,
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -214,14 +210,12 @@ class WarehouseAPIReadTest extends APITestCase
         Warehouse::factory()->for($company)->for($branch)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'branch_id' => null,
             'status' => null,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 10,
@@ -240,14 +234,12 @@ class WarehouseAPIReadTest extends APITestCase
         ]);
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'branch_id' => null,
             'status' => null,
-
+            'refresh' => true,
             'get' => [
                 'limit' => 10,
             ],
@@ -272,14 +264,12 @@ class WarehouseAPIReadTest extends APITestCase
         Warehouse::factory()->for($company)->for($branch)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'branch_id' => null,
             'status' => null,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -324,14 +314,12 @@ class WarehouseAPIReadTest extends APITestCase
             ->count(3)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => 'testing',
             'company_id' => Hashids::encode($company->id),
+            'search' => 'testing',
             'branch_id' => null,
             'status' => null,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -392,14 +380,12 @@ class WarehouseAPIReadTest extends APITestCase
         Warehouse::factory()->for($company)->for($branch)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => false,
             'with_trashed' => false,
-
-            'search' => " !#$%&'()*+,-./:;<=>?@[\]^_`{|}~",
             'company_id' => Hashids::encode($company->id),
+            'search' => " !#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
             'branch_id' => null,
             'status' => null,
-
+            'refresh' => false,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,
@@ -434,14 +420,12 @@ class WarehouseAPIReadTest extends APITestCase
         Warehouse::factory()->for($company)->for($branch)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => false,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'branch_id' => null,
             'status' => null,
-
+            'refresh' => false,
             'paginate' => [
                 'page' => -1,
                 'per_page' => -25,
@@ -525,14 +509,12 @@ class WarehouseAPIReadTest extends APITestCase
             ->count(3)->create();
 
         $api = $this->getJson(route('api.get.warehouse.read_any', [
-            'refresh' => true,
             'with_trashed' => false,
-
-            'search' => '',
             'company_id' => Hashids::encode($company->id),
+            'search' => '',
             'branch_id' => null,
             'status' => RecordStatusEnum::ACTIVE->value,
-
+            'refresh' => true,
             'paginate' => [
                 'page' => 1,
                 'per_page' => 25,

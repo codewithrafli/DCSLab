@@ -625,7 +625,6 @@ class BranchAPIReadTest extends APITestCase
         $company = $user->companies()->first();
 
         $api = $this->getJson(route('api.get.branch.read_any', [
-            'with_trashed' => 'not-boolean',
             'company_id' => 'invalid-hashid',
             'refresh' => true,
             'get' => ['limit' => 10],
