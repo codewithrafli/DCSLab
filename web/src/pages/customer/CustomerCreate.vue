@@ -634,7 +634,7 @@ watch(
             href="#"
             variant="primary"
             class="w-28 shadow-md"
-            :disabled="customerForm.validating"
+            :disabled="customerForm.validating || customerForm.hasErrors"
           >
             <Lucide
               v-if="customerForm.validating"

@@ -2,6 +2,7 @@
 // #region Imports
 import { onMounted, ref, computed, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { isAxiosError, AxiosError } from "axios";
 import CashAccountService from "@/services/CashAccountService";
 import DashboardService from "@/services/DashboardService";
 import CacheService from "@/services/CacheService";
@@ -140,7 +141,7 @@ const onSubmit = async () => {
       let errorList: Record<
         string,
         Array<string>
-      > = convertErrorTypeToAlertListType(error as Error);
+      > = convertErrorTypeToAlertListType(error);
       showAlertPlaceholder("danger", "", errorList);
     })
     .finally(() => {
@@ -176,10 +177,37 @@ const showAlertPlaceholder = (
   emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
+const convertErrorTypeToAlertListType = (error: unknown) => {
   const record: Record<string, Array<string>> = {};
+  const anyError = error as any;
+  const response = isAxiosError(error)
+    ? (error as AxiosError).response
+    : anyError?.response;
 
-  record.error = [error.message];
+  if (response && response.data) {
+    const data = response.data as any;
+    if (data.errors && typeof data.errors === "object") {
+      for (const key of Object.keys(data.errors)) {
+        const value = data.errors[key];
+        if (Array.isArray(value)) {
+          record[key] = value;
+        } else if (value !== undefined && value !== null) {
+          record[key] = [String(value)];
+        }
+      }
+      return record;
+    }
+    if (data.message) {
+      record.error = [String(data.message)];
+      return record;
+    }
+  }
+
+  if (error instanceof Error && error.message) {
+    record.error = [error.message];
+  } else {
+    record.error = ["Unknown error"];
+  }
 
   return record;
 };
@@ -320,7 +348,7 @@ watch(
             href="#"
             variant="primary"
             class="w-28 shadow-md"
-            :disabled="cashAccountForm.validating"
+            :disabled="cashAccountForm.validating || cashAccountForm.hasErrors"
           >
             <Lucide
               v-if="cashAccountForm.validating"

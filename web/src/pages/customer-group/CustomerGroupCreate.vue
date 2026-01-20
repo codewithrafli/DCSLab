@@ -26,6 +26,7 @@ import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
 import { useRouter } from "vue-router";
 import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
 import { ErrorCode } from "@/types/enums/ErrorCode";
+import { isAxiosError, AxiosError } from "axios";
 // #endregion
 
 // #region Interfaces
@@ -92,7 +93,7 @@ const selectedUserLocation = computed(
 // #region Lifecycle Hooks
 onMounted(async () => {
   emits("mode-state", ViewMode.FORM_CREATE);
-  getDDL();
+  await getDDL();
   loadFromCache();
   if (!isUserLocationSelected.value) {
     router.push({
@@ -120,22 +121,20 @@ const loadFromCache = () => {
   customerGroupForm.setData(data);
 };
 
-const getDDL = (): void => {
-  dashboardServices
-    .getStatusDDL()
-    .then((result: Array<DropDownOption> | null) => {
-      statusDDL.value = result;
-    });
-  dashboardServices
-    .getPaymentTermTypesDDL()
-    .then((result: Array<DropDownOption> | null) => {
-      paymentTermTypeDDL.value = result;
-    });
-  dashboardServices
-    .getRoundingTypesDDL()
-    .then((result: Array<DropDownOption> | null) => {
-      roundOnDDL.value = result;
-    });
+const getDDL = async (): Promise<void> => {
+  try {
+    const [status, paymentTermType, roundOn] = await Promise.all([
+      dashboardServices.getStatusDDL(),
+      dashboardServices.getPaymentTermTypesDDL(),
+      dashboardServices.getRoundingTypesDDL(),
+    ]);
+
+    statusDDL.value = status;
+    paymentTermTypeDDL.value = paymentTermType;
+    roundOnDDL.value = roundOn;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const handleExpandCard = (index: number) => {
@@ -168,7 +167,7 @@ const onSubmit = async () => {
       let errorList: Record<
         string,
         Array<string>
-      > = convertErrorTypeToAlertListType(error as Error);
+      > = convertErrorTypeToAlertListType(error);
       showAlertPlaceholder("danger", "", errorList);
     })
     .finally(() => {
@@ -203,9 +202,37 @@ const showAlertPlaceholder = (
   emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
+const convertErrorTypeToAlertListType = (error: unknown) => {
   const record: Record<string, Array<string>> = {};
-  record.error = [error.message];
+  const anyError = error as any;
+  const response = isAxiosError(error)
+    ? (error as AxiosError).response
+    : anyError?.response;
+
+  if (response && response.data) {
+    const data = response.data as any;
+    if (data.errors && typeof data.errors === "object") {
+      for (const key of Object.keys(data.errors)) {
+        const value = data.errors[key];
+        if (Array.isArray(value)) {
+          record[key] = value;
+        } else if (value !== undefined && value !== null) {
+          record[key] = [String(value)];
+        }
+      }
+      return record;
+    }
+    if (data.message) {
+      record.error = [String(data.message)];
+      return record;
+    }
+  }
+
+  if (error instanceof Error && error.message) {
+    record.error = [error.message];
+  } else {
+    record.error = ["Unknown error"];
+  }
   return record;
 };
 // #endregion

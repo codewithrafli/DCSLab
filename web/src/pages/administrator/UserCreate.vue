@@ -2,6 +2,7 @@
 // #region Imports
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { isAxiosError, AxiosError } from "axios";
 import { ServiceResponse } from "@/types/services/ServiceResponse";
 import { Resource } from "@/types/resources/Resource";
 import { Role } from "@/types/models/Role";
@@ -81,20 +82,23 @@ const loadFromCache = () => {
     userForm.setData(data);
 };
 
-const getDDL = (): void => {
-    roleServices.readAny().then((result: ServiceResponse<Resource<Array<Role>> | null>) => {
-        if (result.success && result.data) {
-            rolesDDL.value = result.data.data as Array<Role>;
+const getDDL = async (): Promise<void> => {
+    try {
+        const [roleResult, countriesResult, statusResult] = await Promise.all([
+            roleServices.readAny(),
+            dashboardServices.getCountriesDDL(),
+            dashboardServices.getStatusDDL()
+        ]);
+
+        if (roleResult.success && roleResult.data) {
+            rolesDDL.value = roleResult.data.data as Array<Role>;
         }
-    });
 
-    dashboardServices.getCountriesDDL().then((result: Array<DropDownOption> | null) => {
-        countriesDDL.value = result;
-    });
-
-    dashboardServices.getStatusDDL().then((result: Array<DropDownOption> | null) => {
-        statusDDL.value = result;
-    });
+        countriesDDL.value = countriesResult;
+        statusDDL.value = statusResult;
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 const handleExpandCard = (index: number) => {
@@ -123,7 +127,7 @@ const onSubmit = async () => {
         resetForm();
         router.push({ name: 'side-menu-administrator-user-list' });
     }).catch(error => {
-        let errorList: Record<string, Array<string>> = convertErrorTypeToAlertListType(error as Error);
+        let errorList: Record<string, Array<string>> = convertErrorTypeToAlertListType(error);
         showAlertPlaceholder('danger', '', errorList);
     }).finally(() => {
         emits('loading-state', false);
@@ -145,11 +149,38 @@ const showAlertPlaceholder = (pAlertType: 'hidden'|'danger'|'success'|'warning'|
   emits('show-alertplaceholder', ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
+const convertErrorTypeToAlertListType = (error: unknown) => {
     const record: Record<string, Array<string>> = {};
 
-    record.error = [error.message];
+    const anyError = error as any;
+    const response = isAxiosError(error)
+        ? (error as AxiosError).response
+        : anyError?.response;
 
+    if (response && response.data) {
+        const data = response.data as any;
+
+        if (data.errors && typeof data.errors === "object") {
+            for (const key of Object.keys(data.errors)) {
+                const value = data.errors[key];
+                if (Array.isArray(value)) {
+                    record[key] = value;
+                } else if (value !== undefined && value !== null) {
+                    record[key] = [String(value)];
+                }
+            }
+            return record;
+        }
+        if (data.message) {
+            record.error = [String(data.message)];
+            return record;
+        }
+    }
+    if (error instanceof Error && error.message) {
+        record.error = [error.message];
+    } else {
+        record.error = ["Unknown error"];
+    }
     return record;
 };
 // #endregion

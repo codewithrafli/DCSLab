@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { isAxiosError, AxiosError } from "axios";
 import StockAdjustmentCategoryService from "@/services/StockAdjustmentCategoryService";
 import CacheService from "@/services/CacheService";
 import { TwoColumnsLayout } from "@/components/Base/Form/FormLayout";
@@ -112,7 +113,7 @@ const onSubmit = async () => {
             router.push({ name: "side-menu-stock-adjustment-stock-adjustment-category-list" });
         })
         .catch((error) => {
-            const errorList: Record<string, Array<string>> = convertErrorTypeToAlertListType(error as Error);
+            const errorList: Record<string, Array<string>> = convertErrorTypeToAlertListType(error);
             showAlertPlaceholder("danger", "", errorList);
         })
         .finally(() => {
@@ -147,11 +148,37 @@ const showAlertPlaceholder = (
     emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
+const convertErrorTypeToAlertListType = (error: unknown) => {
     const record: Record<string, Array<string>> = {};
+    const anyError = error as any;
+    const response = isAxiosError(error)
+        ? (error as AxiosError).response
+        : anyError?.response;
 
-    record.error = [error.message];
+    if (response && response.data) {
+        const data = response.data as any;
+        if (data.errors && typeof data.errors === "object") {
+            for (const key of Object.keys(data.errors)) {
+                const value = data.errors[key];
+                if (Array.isArray(value)) {
+                    record[key] = value;
+                } else if (value !== undefined && value !== null) {
+                    record[key] = [String(value)];
+                }
+            }
+            return record;
+        }
+        if (data.message) {
+            record.error = [String(data.message)];
+            return record;
+        }
+    }
 
+    if (error instanceof Error && error.message) {
+        record.error = [error.message];
+    } else {
+        record.error = ["Unknown error"];
+    }
     return record;
 };
 
@@ -220,7 +247,7 @@ watch(
                         href="#"
                         variant="primary"
                         class="w-28 shadow-md"
-                        :disabled="stockAdjustmentCategoryForm.validating"
+                        :disabled="stockAdjustmentCategoryForm.validating || stockAdjustmentCategoryForm.hasErrors"
                     >
                         <Lucide v-if="stockAdjustmentCategoryForm.validating" icon="Loader" class="animate-spin" />
                         <template v-else>

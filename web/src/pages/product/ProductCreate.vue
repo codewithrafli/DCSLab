@@ -102,7 +102,6 @@ const selectedUserLocation = computed(
 // #region Lifecycle Hooks
 onMounted(async () => {
     emits("mode-state", ViewMode.FORM_CREATE);
-    loadFromCache();
     if (!isUserLocationSelected.value) {
         router.push({
             name: "side-menu-error-code",
@@ -127,6 +126,7 @@ onMounted(async () => {
     }
 
     await Promise.all([getCategoryDDL(), getBrandDDL(), getUnitDDL(), getStatusDDL()]);
+    loadFromCache();
     setCompanyIdData();
 });
 // #endregion
@@ -798,7 +798,7 @@ watch(
             <template #card-items-button>
                 <div class="flex gap-4">
                     <Button type="submit" href="#" variant="primary" class="w-28 shadow-md"
-                        :disabled="productForm.validating">
+                        :disabled="productForm.validating || productForm.hasErrors">
                         <Lucide v-if="productForm.validating" icon="Loader" class="animate-spin" />
                         <template v-else>
                             {{ t("components.buttons.submit") }}
