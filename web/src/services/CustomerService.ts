@@ -105,9 +105,9 @@ export default class CustomerService {
 
         try {
             const queryParams: Record<string, any> = {};
-            queryParams["with_trashed"] = args.with_trashed ? 1 : 0;
-            queryParams["company_id"] = args.company_id;
-            queryParams["search"] = args.search ? args.search : "";
+            if (args.with_trashed !== undefined) queryParams["with_trashed"] = args.with_trashed;
+            if (args.company_id) queryParams["company_id"] = args.company_id;
+            if (args.search) queryParams["search"] = args.search;
             if (args.status !== undefined && args.status !== null) queryParams["status"] = args.status;
             if (args.include_id) queryParams["include_id"] = args.include_id;
 
@@ -205,12 +205,15 @@ export default class CustomerService {
         }
 
         try {
-            const url = route('api.post.db.customer.customer.delete', ulid, false, this.ziggyRoute);
+            const url = route('api.post.db.customer.customer.delete', {
+                customer: ulid
+            }, false, this.ziggyRoute);
 
             const response: AxiosResponse<boolean | null> = await axios.post(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
+                result.data = response.data;
             }
 
             return result;

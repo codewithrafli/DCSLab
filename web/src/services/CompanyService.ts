@@ -46,9 +46,9 @@ export default class CompanyService {
 
         try {
             const queryParams: Record<string, any> = {};
-            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            if (args.with_trashed !== undefined) queryParams['with_trashed'] = args.with_trashed;
             
-            queryParams['search'] = args.search ? args.search : '';
+            if (args.search) queryParams['search'] = args.search;
             if (args.status) queryParams['status'] = args.status;
             if (args.default !== undefined) queryParams['default'] = args.default;
             if (args.include_id) queryParams['include_id'] = args.include_id;
@@ -89,9 +89,9 @@ export default class CompanyService {
 
         try {
             const queryParams: Record<string, any> = {};
-            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            if (args.with_trashed !== undefined) queryParams['with_trashed'] = args.with_trashed;
             
-            queryParams['search'] = args.search ? args.search : '';
+            if (args.search) queryParams['search'] = args.search;
             if (args.status) queryParams['status'] = args.status;
             if (args.default !== undefined) queryParams['default'] = args.default;
             if (args.include_id) queryParams['include_id'] = args.include_id;
@@ -173,12 +173,13 @@ export default class CompanyService {
         }
 
         try {
-            const url = route('api.post.company.delete', ulid, false, this.ziggyRoute);
+            const url = route('api.post.company.delete', { company: ulid }, false, this.ziggyRoute);
 
             const response: AxiosResponse<boolean | null> = await axios.post(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
+                result.data = response.data;
             }
 
             return result;

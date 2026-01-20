@@ -143,17 +143,17 @@ export default class ProductService {
 
         try {
             const queryParams: Record<string, any> = {};
-            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            if (args.with_trashed !== undefined) queryParams['with_trashed'] = args.with_trashed;            
+            if (args.company_id) queryParams['company_id'] = args.company_id;
             
-            queryParams['company_id'] = args.company_id;
-            queryParams['search'] = args.search ? args.search : '';
+            if (args.search) queryParams['search'] = args.search;
             if (args.category_id) queryParams['category_id'] = args.category_id;
             if (args.brand_id) queryParams['brand_id'] = args.brand_id;
-            if (args.is_taxable !== undefined && args.is_taxable !== null) queryParams['is_taxable'] = args.is_taxable ? 1 : 0;
+            if (args.is_taxable !== undefined && args.is_taxable !== null) queryParams['is_taxable'] = args.is_taxable;
             if (args.vat_rate !== undefined && args.vat_rate !== null) queryParams['vat_rate'] = args.vat_rate;
-            if (args.is_price_include_vat !== undefined && args.is_price_include_vat !== null) queryParams['is_price_include_vat'] = args.is_price_include_vat ? 1 : 0;
-            if (args.is_use_serial_number !== undefined && args.is_use_serial_number !== null) queryParams['is_use_serial_number'] = args.is_use_serial_number ? 1 : 0;
-            if (args.is_expirable !== undefined && args.is_expirable !== null) queryParams['is_expirable'] = args.is_expirable ? 1 : 0;
+            if (args.is_price_include_vat !== undefined && args.is_price_include_vat !== null) queryParams['is_price_include_vat'] = args.is_price_include_vat;
+            if (args.is_use_serial_number !== undefined && args.is_use_serial_number !== null) queryParams['is_use_serial_number'] = args.is_use_serial_number;
+            if (args.is_expirable !== undefined && args.is_expirable !== null) queryParams['is_expirable'] = args.is_expirable;
             if (args.type) queryParams['type'] = args.type;
             if (args.status) queryParams['status'] = args.status;
             if (args.include_id) queryParams['include_id'] = args.include_id;
@@ -266,8 +266,8 @@ export default class ProductService {
         }
     }
 
-    public async delete(ulid: string): Promise<ServiceResponse<any>> {
-        const result: ServiceResponse<any> = {
+    public async delete(ulid: string): Promise<ServiceResponse<boolean | null>> {
+        const result: ServiceResponse<boolean | null> = {
             success: false
         }
 
@@ -276,7 +276,7 @@ export default class ProductService {
                 product: ulid
             }, false, this.ziggyRoute);
 
-            const response: AxiosResponse<any> = await axios.post(url);
+            const response: AxiosResponse<boolean | null> = await axios.post(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;

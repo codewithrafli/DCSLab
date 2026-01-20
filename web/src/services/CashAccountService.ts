@@ -51,11 +51,11 @@ export default class CashAccountService {
 
         try {
             const queryParams: Record<string, any> = {};
-            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;            
-            queryParams['company_id'] = args.company_id;
-
+            if (args.with_trashed !== undefined) queryParams['with_trashed'] = args.with_trashed;            
+            if (args.company_id) queryParams['company_id'] = args.company_id;
             if (args.branch_id) queryParams['branch_id'] = args.branch_id;
-            queryParams['search'] = args.search ? args.search : '';
+            
+            if (args.search) queryParams['search'] = args.search;
             if (args.include_id) queryParams['include_id'] = args.include_id;
 
             queryParams['refresh'] = args.refresh;
@@ -94,11 +94,11 @@ export default class CashAccountService {
 
         try {
             const queryParams: Record<string, any> = {};
-            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;            
-            queryParams['company_id'] = args.company_id;            
+            if (args.with_trashed !== undefined) queryParams['with_trashed'] = args.with_trashed;            
+            if (args.company_id) queryParams['company_id'] = args.company_id;            
             if (args.branch_id) queryParams['branch_id'] = args.branch_id;
             
-            queryParams['search'] = args.search ? args.search : '';
+            if (args.search) queryParams['search'] = args.search;
             if (args.include_id) queryParams['include_id'] = args.include_id;
 
             queryParams['refresh'] = args.refresh;
@@ -177,8 +177,8 @@ export default class CashAccountService {
         return form;
     }
 
-    public async delete(ulid: string): Promise<ServiceResponse<any>> {
-        const result: ServiceResponse<any> = {
+    public async delete(ulid: string): Promise<ServiceResponse<boolean | null>> {
+        const result: ServiceResponse<boolean | null> = {
             success: false
         }
 
@@ -187,7 +187,7 @@ export default class CashAccountService {
                 cash_account: ulid
             }, false, this.ziggyRoute);
 
-            const response: AxiosResponse<any> = await axios.post(url);
+            const response: AxiosResponse<boolean | null> = await axios.post(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;

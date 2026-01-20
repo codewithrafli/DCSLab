@@ -49,10 +49,10 @@ export default class ProductCategoryService {
 
         try {
             const queryParams: Record<string, any> = {};
-            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            if (args.with_trashed !== undefined) queryParams['with_trashed'] = args.with_trashed;
             
             queryParams['company_id'] = args.company_id;
-            queryParams['search'] = args.search ? args.search : '';
+            if (args.search) queryParams['search'] = args.search;
             if (args.type) queryParams['type'] = args.type;
             if (args.include_id) queryParams['include_id'] = args.include_id;
 
@@ -92,10 +92,10 @@ export default class ProductCategoryService {
 
         try {
             const queryParams: Record<string, any> = {};
-            queryParams['with_trashed'] = args.with_trashed ? 1 : 0;
+            if (args.with_trashed !== undefined) queryParams['with_trashed'] = args.with_trashed;
             
             queryParams['company_id'] = args.company_id;
-            queryParams['search'] = args.search ? args.search : '';
+            if (args.search) queryParams['search'] = args.search;
             if (args.type) queryParams['type'] = args.type;
             if (args.include_id) queryParams['include_id'] = args.include_id;
 
@@ -173,8 +173,8 @@ export default class ProductCategoryService {
         return form;
     }
 
-    public async delete(ulid: string): Promise<ServiceResponse<any>> {
-        const result: ServiceResponse<any> = {
+    public async delete(ulid: string): Promise<ServiceResponse<boolean | null>> {
+        const result: ServiceResponse<boolean | null> = {
             success: false
         }
 
@@ -183,7 +183,7 @@ export default class ProductCategoryService {
                 product_category: ulid
             }, false, this.ziggyRoute);
 
-            const response: AxiosResponse<any> = await axios.post(url);
+            const response: AxiosResponse<boolean | null> = await axios.post(url);
 
             if (response.status == StatusCode.OK) {
                 result.success = true;
