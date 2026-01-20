@@ -4,16 +4,18 @@ export interface ProductReadAnyPaginateRequest {
     with_trashed: boolean;
     company_id: string;
     search?: string | null;
-    brand_id?: string | null;
+
     category_id?: string | null;
-    is_expirable?: boolean | null;
-    is_price_include_vat?: boolean | null;
+    brand_id?: string | null;
     is_taxable?: boolean | null;
-    is_use_serial_number?: boolean | null;
-    status?: string | number;
-    type?: number | null;
     vat_rate?: number | null;
+    is_price_include_vat?: boolean | null;
+    is_use_serial_number?: boolean | null;
+    is_expirable?: boolean | null;
+    type?: number | null;
+    status?: string | number;
     include_id?: string;
+    
     refresh: boolean;
     page: number;
     per_page: number;
@@ -23,16 +25,18 @@ export interface ProductReadAnyGetRequest {
     with_trashed: boolean;
     company_id: string;
     search?: string | null;
-    brand_id?: string | null;
+
     category_id?: string | null;
-    is_expirable?: boolean | null;
-    is_price_include_vat?: boolean | null;
+    brand_id?: string | null;
     is_taxable?: boolean | null;
-    is_use_serial_number?: boolean | null;
-    status?: string | number;
-    type?: number | null;
     vat_rate?: number | null;
+    is_price_include_vat?: boolean | null;
+    is_use_serial_number?: boolean | null;
+    is_expirable?: boolean | null;
+    type?: number | null;
+    status?: string | number;
     include_id?: string;
+
     refresh: boolean;
     limit: number;
 }

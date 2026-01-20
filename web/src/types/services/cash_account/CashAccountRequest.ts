@@ -1,8 +1,8 @@
 export interface CashAccountReadAnyPaginateRequest {
     with_trashed: boolean;
     company_id: string;
-    branch_id?: string | null;
     search?: string | null;
+    branch_id?: string | null;
     include_id?: string;
     refresh: boolean;
     page: number;
@@ -12,8 +12,8 @@ export interface CashAccountReadAnyPaginateRequest {
 export interface CashAccountReadAnyGetRequest {
     with_trashed: boolean;
     company_id: string;
-    branch_id?: string | null;
     search?: string | null;
+    branch_id?: string | null;
     include_id?: string;
     refresh: boolean;
     limit: number;

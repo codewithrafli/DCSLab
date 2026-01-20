@@ -1,8 +1,8 @@
 export interface WarehouseReadAnyPaginateRequest {
     with_trashed: boolean;
     company_id: string;
-    branch_id?: string | null;
     search?: string | null;
+    branch_id?: string | null;
     status?: string | number;
     refresh: boolean;
     page: number;
@@ -12,8 +12,8 @@ export interface WarehouseReadAnyPaginateRequest {
 export interface WarehouseReadAnyGetRequest {
     with_trashed: boolean;
     company_id: string;
-    branch_id?: string | null;
     search?: string | null;
+    branch_id?: string | null;
     status?: string | number;
     refresh: boolean;
     limit: number;
