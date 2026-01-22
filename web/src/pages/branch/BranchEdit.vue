@@ -1,8 +1,9 @@
 <script setup lang="ts">
 // #region Imports
-import { onMounted, ref, computed, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
+import { convertErrorTypeToAlertListType } from "@/utils/helper";
 import BranchService from "@/services/BranchService";
 import DashboardService from "@/services/DashboardService";
 import CacheService from "@/services/CacheService";
@@ -74,37 +75,38 @@ onMounted(async () => {
         router.push({ name: 'side-menu-error-code', params: { code: ErrorCode.USERLOCATION_REQUIRED } });
     }
 
-    getDDL();
-
-    await loadData(route.params.ulid as string);
+    await Promise.all([
+        getDDL(),
+        loadData(route.params.ulid as string)
+    ]);
 });
 // #endregion
 
 // #region Methods
 const loadData = async (ulid: string) => {
     emits('loading-state', true);
-    let response: ServiceResponse<Branch | null> = await branchServices.read(ulid);
+    let result: ServiceResponse<Branch | null> = await branchServices.read(ulid);
 
-    if (response && response.data) {
+    if (result.success && result.data) {
         branchForm.setData({
-            company_id: response.data.company.id,
-            code: response.data.code,
-            name: response.data.name,
-            address: response.data.address,
-            city: response.data.city,
-            contact: response.data.contact,
-            is_main: response.data.is_main,
-            remarks: response.data.remarks,
-            status: response.data.status,
+            company_id: result.data.company.id,
+            code: result.data.code,
+            name: result.data.name,
+            address: result.data.address,
+            city: result.data.city,
+            contact: result.data.contact,
+            is_main: result.data.is_main,
+            remarks: result.data.remarks,
+            status: result.data.status,
         });
+    } else {
+        router.push({ name: 'side-menu-company-branch-list' });
     }
     emits('loading-state', false);
 };
 
-const getDDL = (): void => {
-    dashboardServices.getStatusDDL().then((result: Array<DropDownOption> | null) => {
-        statusDDL.value = result;
-    });
+const getDDL = async (): Promise<void> => {
+    statusDDL.value = await dashboardServices.getStatusDDL();
 };
 
 const handleExpandCard = (index: number) => {
@@ -130,7 +132,6 @@ const onSubmit = async () => {
 
     emits('loading-state', true);
     await branchForm.submit().then(() => {
-        resetForm();
         emits('update-profile');
         router.push({ name: 'side-menu-company-branch-list' });
     }).catch(error => {
@@ -166,13 +167,6 @@ const showAlertPlaceholder = (pAlertType: 'hidden' | 'danger' | 'success' | 'war
     emits('show-alertplaceholder', ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
-    const record: Record<string, Array<string>> = {};
-
-    record.error = [error.message];
-
-    return record;
-};
 // #endregion
 
 // #region Watchers
@@ -276,7 +270,7 @@ watch(
             <template #card-items-button>
                 <div class="flex gap-4">
                     <Button type="submit" href="#" variant="primary" class="w-28 shadow-md"
-                        :disabled="branchForm.validating">
+                        :disabled="branchForm.validating || branchForm.hasErrors">
                         <Lucide v-if="branchForm.validating" icon="Loader" class="animate-spin" />
                         <template v-else>
                             {{ t("components.buttons.submit") }}

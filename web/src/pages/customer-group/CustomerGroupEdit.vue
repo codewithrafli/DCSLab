@@ -2,6 +2,7 @@
 // #region Imports
 import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { convertErrorTypeToAlertListType } from "@/utils/helper";
 import { useRoute, useRouter } from "vue-router";
 import CustomerGroupService from "@/services/CustomerGroupService";
 import DashboardService from "@/services/DashboardService";
@@ -67,8 +68,10 @@ const customerGroupForm = customerGroupServices.useCustomerGroupEditForm(route.p
 // #region Lifecycle Hooks
 onMounted(async () => {
     emits('mode-state', ViewMode.FORM_EDIT);
-    getDDL();
-    await loadData(route.params.ulid as string);
+    await Promise.all([
+        getDDL(),
+        loadData(route.params.ulid as string)
+    ]);
 });
 // #endregion
 
@@ -102,16 +105,15 @@ const loadData = async (ulid: string) => {
     emits('loading-state', false);
 }
 
-const getDDL = (): void => {
-    dashboardServices.getStatusDDL().then((result: Array<DropDownOption> | null) => {
-        statusDDL.value = result;
-    });
-    dashboardServices.getPaymentTermTypesDDL().then((result: Array<DropDownOption> | null) => {
-        paymentTermTypeDDL.value = result;
-    });
-    dashboardServices.getRoundingTypesDDL().then((result: Array<DropDownOption> | null) => {
-        roundOnDDL.value = result;
-    });
+const getDDL = async (): Promise<void> => {
+    const [status, paymentTerm, rounding] = await Promise.all([
+        dashboardServices.getStatusDDL(),
+        dashboardServices.getPaymentTermTypesDDL(),
+        dashboardServices.getRoundingTypesDDL()
+    ]);
+    statusDDL.value = status;
+    paymentTermTypeDDL.value = paymentTerm;
+    roundOnDDL.value = rounding;
 }
 
 const handleExpandCard = (index: number) => {
@@ -169,11 +171,6 @@ const showAlertPlaceholder = (pAlertType: 'hidden' | 'danger' | 'success' | 'war
     emits('show-alertplaceholder', ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
-    const record: Record<string, Array<string>> = {};
-    record.error = [error.message];
-    return record;
-};
 // #endregion
 
 // #region Watchers
@@ -181,8 +178,6 @@ watch(
     customerGroupForm,
     debounce((newValue): void => {
         cacheServices.setLastEntity('CUSTOMER_GROUP_EDIT', newValue.data())
-        if (customerGroupForm.hasErrors) {
-        }
     }, 500),
     { deep: true }
 );

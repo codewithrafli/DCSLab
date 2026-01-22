@@ -2,6 +2,8 @@
 // #region Imports
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { isAxiosError, AxiosError } from "axios";
+import { convertErrorTypeToAlertListType } from "@/utils/helper";
 import ProductService from "@/services/ProductService";
 import ProductCategoryService from "@/services/ProductCategoryService";
 import UnitService from "@/services/UnitService";
@@ -201,7 +203,6 @@ const onSubmit = async () => {
     await productServiceForm
         .submit()
         .then(() => {
-            resetForm();
             emits("update-profile");
             router.push({ name: "side-menu-product-product-service-list" }); 
         })
@@ -217,10 +218,10 @@ const onSubmit = async () => {
         });
 };
 
-const resetForm = () => {
+const resetForm = async () => {
     productServiceForm.reset();
     productServiceForm.setErrors({});
-    getServiceProduct(); // Reload data on reset
+    await getServiceProduct(); // Reload data on reset
 };
 
 const setCode = () => {
@@ -245,15 +246,16 @@ const showAlertPlaceholder = (
     emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
-    const record: Record<string, Array<string>> = {};
-    record.error = [error.message];
-    return record;
-};
 // #endregion
 
 // #region Watchers
-// Removed watcher for cache as we are editing
+watch(
+    productServiceForm,
+    debounce((newValue): void => {
+        cacheServices.setLastEntity("PRODUCT_SERVICE_EDIT", newValue.data());
+    }, 500),
+    { deep: true }
+);
 // #endregion
 </script>
 
@@ -495,7 +497,7 @@ const convertErrorTypeToAlertListType = (error: Error) => {
                         href="#"
                         variant="primary"
                         class="w-28 shadow-md"
-                        :disabled="productServiceForm.validating"
+                        :disabled="productServiceForm.validating || productServiceForm.hasErrors"
                     >
                         <Lucide
                             v-if="productServiceForm.validating"

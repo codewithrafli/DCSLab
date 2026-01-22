@@ -1,8 +1,11 @@
 <script setup lang="ts">
 // #region Imports
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import {
+    convertErrorTypeToAlertListType
+} from "@/utils/helper";
+import { useRoute, useRouter } from "vue-router";
 import ProductCategoryService from "@/services/ProductCategoryService";
 import DashboardService from "@/services/DashboardService";
 import CacheService from "@/services/CacheService";
@@ -22,7 +25,6 @@ import Button from "@/components/Base/Button";
 import { debounce } from "lodash";
 import Lucide from "@/components/Base/Lucide";
 import { ProductCategory } from "@/types/models/ProductCategory";
-import { useRouter } from "vue-router";
 import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
 import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
 import { ErrorCode } from "@/types/enums/ErrorCode";
@@ -88,16 +90,14 @@ onMounted(async () => {
             params: { code: ErrorCode.USERLOCATION_REQUIRED },
         });
     }
-    getDDL();
+    await getDDL();
     await loadData(route.params.ulid as string);
 });
 // #endregion
 
 // #region Methods
-const getDDL = (): void => {
-    productCategoryService.getTypes().then((result: Array<DropDownOption> | null) => {
-        typeDDL.value = result;
-    });
+const getDDL = async (): Promise<void> => {
+    typeDDL.value = await productCategoryService.getTypes();
 };
 
 const loadData = async (ulid: string) => {
@@ -138,7 +138,6 @@ const onSubmit = async () => {
     await productCategoryForm
         .submit()
         .then(() => {
-            resetForm();
             emits("update-profile");
             router.push({ name: "side-menu-product-product-category-list" });
         })
@@ -182,20 +181,12 @@ const showAlertPlaceholder = (
     emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
-    const record: Record<string, Array<string>> = {};
-    record.error = [error.message];
-    return record;
-};
-// #endregion
 
 // #region Watchers
 watch(
     productCategoryForm,
     debounce((newValue): void => {
         cacheServices.setLastEntity("PRODUCT_CATEGORY_EDIT", newValue.data());
-        if (productCategoryForm.hasErrors) {
-        }
     }, 500),
     { deep: true }
 );
@@ -280,7 +271,7 @@ watch(
                         variant="primary"
                         class="w-28 shadow-md"
                         :disabled="
-                            productCategoryForm.validating
+                            productCategoryForm.validating || productCategoryForm.hasErrors
                         "
                     >
                         <Lucide

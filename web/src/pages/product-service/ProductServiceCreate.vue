@@ -2,7 +2,7 @@
 // #region Imports
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { isAxiosError, AxiosError } from "axios";
+import { convertErrorTypeToAlertListType } from "@/utils/helper";
 import ProductService from "@/services/ProductService";
 import ProductCategoryService from "@/services/ProductCategoryService";
 import UnitService from "@/services/UnitService";
@@ -232,42 +232,6 @@ const showAlertPlaceholder = (
     };
     emits("show-alertplaceholder", ap);
 };
-
-const convertErrorTypeToAlertListType = (error: unknown) => {
-    const record: Record<string, Array<string>> = {};
-    const anyError = error as any;
-    const response = isAxiosError(error)
-        ? (error as AxiosError).response
-        : anyError?.response;
-
-    if (response && response.data) {
-        const data = response.data as any;
-        if (data.errors && typeof data.errors === "object") {
-            for (const key of Object.keys(data.errors)) {
-                const value = data.errors[key];
-                if (Array.isArray(value)) {
-                    record[key] = value;
-                } else if (value !== undefined && value !== null) {
-                    record[key] = [String(value)];
-                }
-            }
-            return record;
-        }
-        if (data.message) {
-            record.error = [String(data.message)];
-            return record;
-        }
-    }
-
-    if (error instanceof Error && error.message) {
-        record.error = [error.message];
-    } else {
-        record.error = ["Unknown error"];
-    }
-
-    return record;
-};
-// #endregion
 
 // #region Watchers
 watch(

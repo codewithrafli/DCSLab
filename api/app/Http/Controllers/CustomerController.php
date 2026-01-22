@@ -138,8 +138,7 @@ class CustomerController extends BaseController
             $result = $this->customerActions->readAny(
                 withTrashed: $validatedRequest['with_trashed'],
                 companyId: $validatedRequest['company_id'],
-
-                search: $validatedRequest['search'],
+                search: $validatedRequest['search'] ?? null,
                 isMember: $validatedRequest['is_member'],
                 groupId: $validatedRequest['group_id'],
                 zone: $validatedRequest['zone'],

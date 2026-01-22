@@ -2,6 +2,9 @@
 // #region Imports
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import {
+    convertErrorTypeToAlertListType
+} from "@/utils/helper";
 import { useRoute, useRouter } from "vue-router";
 import UnitService from "@/services/UnitService";
 import CacheService from "@/services/CacheService";
@@ -137,16 +140,11 @@ const onSubmit = async () => {
     emits("loading-state", true);
     await unitForm
         .submit()
-        .then((response: any) => {
-            resetForm();
+        .then(() => {
             emits("update-profile");
-            emits("show-alertplaceholder", "success", "success", {
-                success: [t("components.alert_placeholder.content.success")],
-            });
             router.push({ name: "side-menu-product-unit-list" });
         })
-        .catch((error: any) => {
-            console.error(error);
+        .catch((error) => {
             let errorList: Record<
                 string,
                 Array<string>
@@ -186,20 +184,12 @@ const showAlertPlaceholder = (
     emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
-    const record: Record<string, Array<string>> = {};
-    record.error = [error.message];
-    return record;
-};
-// #endregion
 
 // #region Watchers
 watch(
     unitForm,
     debounce((newValue): void => {
         cacheServices.setLastEntity("UNIT_EDIT", newValue.data());
-        if (unitForm.hasErrors) {
-        }
     }, 500),
     { deep: true }
 );
@@ -226,10 +216,9 @@ watch(
             <template #card-items-1>
                 <div class="p-5">
                     <div class="pb-4">
-                        <FormLabel
-                            htmlFor="code"
-                            :label="t('views.unit.fields.code')"
-                        />
+                        <FormLabel :class="{ 'text-danger': unitForm.invalid('code') }">
+                            {{ t('views.unit.fields.code') }}
+                        </FormLabel>
                         <FormInputCode
                             id="code"
                             v-model="unitForm.code"
@@ -240,11 +229,9 @@ watch(
                         <FormErrorMessages :messages="unitForm.errors.code" />
                     </div>
                     <div class="pb-4">
-                        <FormLabel
-                            htmlFor="name"
-                            :label="t('views.unit.fields.name')"
-                            :required="true"
-                        />
+                        <FormLabel :class="{ 'text-danger': unitForm.invalid('name') }">
+                            {{ t('views.unit.fields.name') }}
+                        </FormLabel>
                         <FormInput
                             id="name"
                             type="text"
@@ -256,10 +243,9 @@ watch(
                         <FormErrorMessages :messages="unitForm.errors.name" />
                     </div>
                     <div class="pb-4">
-                        <FormLabel
-                            htmlFor="description"
-                            :label="t('views.unit.fields.description')"
-                        />
+                        <FormLabel>
+                            {{ t('views.unit.fields.description') }}
+                        </FormLabel>
                         <FormTextarea
                             id="description"
                             v-model="unitForm.description"
@@ -274,11 +260,9 @@ watch(
                         />
                     </div>
                     <div class="pb-4">
-                        <FormLabel
-                            htmlFor="type"
-                            :label="t('views.unit.fields.type')"
-                            :required="true"
-                        />
+                        <FormLabel :class="{ 'text-danger': unitForm.invalid('type') }">
+                            {{ t('views.unit.fields.type') }}
+                        </FormLabel>
                         <FormSelect
                             v-model="unitForm.type"
                             :class="{ 'border-danger': unitForm.invalid('type') }"
@@ -301,7 +285,7 @@ watch(
                         href="#"
                         variant="primary"
                         class="w-28 shadow-md"
-                        :disabled="unitForm.validating"
+                        :disabled="unitForm.validating || unitForm.hasErrors"
                     >
                         <Lucide
                             v-if="unitForm.validating"

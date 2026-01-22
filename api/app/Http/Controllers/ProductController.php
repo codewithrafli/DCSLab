@@ -249,8 +249,8 @@ class ProductController extends BaseController
         try {
             $result = $this->productActions->readAny(
                 withTrashed: $validatedRequest['with_trashed'],
-                search: $validatedRequest['search'],
                 companyId: $validatedRequest['company_id'],
+                search: $validatedRequest['search'] ?? null,
                 categoryId: $validatedRequest['category_id'] ?? null,
                 brandId: $validatedRequest['brand_id'] ?? null,
                 isTaxable: $validatedRequest['is_taxable'] ?? null,

@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 import BrandService from "@/services/BrandService";
 import CacheService from "@/services/CacheService";
+import { convertErrorTypeToAlertListType } from "@/utils/helper";
 import { TwoColumnsLayout } from "@/components/Base/Form/FormLayout";
 import {
     FormInput,
@@ -19,7 +20,6 @@ import { ViewMode } from "@/types/enums/ViewMode";
 import Button from "@/components/Base/Button";
 import { debounce } from "lodash";
 import { Brand } from "@/types/models/Brand";
-import { useRouter } from "vue-router";
 import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
 import { ErrorCode } from "@/types/enums/ErrorCode";
 import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
@@ -126,16 +126,11 @@ const onSubmit = async () => {
     emits("loading-state", true);
     await brandForm
         .submit()
-        .then((response: any) => {
-            resetForm();
+        .then(() => {
             emits("update-profile");
-            emits("show-alertplaceholder", "success", "success", {
-                success: [t("components.alert_placeholder.content.success")],
-            });
             router.push({ name: "side-menu-product-brand-list" });
         })
-        .catch((error: any) => {
-            console.error(error);
+        .catch((error) => {
             let errorList: Record<
                 string,
                 Array<string>
@@ -175,11 +170,6 @@ const showAlertPlaceholder = (
     emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
-    const record: Record<string, Array<string>> = {};
-    record.error = [error.message];
-    return record;
-};
 // #endregion
 
 // #region Watchers
@@ -187,8 +177,6 @@ watch(
     brandForm,
     debounce((newValue): void => {
         cacheServices.setLastEntity("BRAND_EDIT", newValue.data());
-        if (brandForm.hasErrors) {
-        }
     }, 500),
     { deep: true }
 );
@@ -254,7 +242,7 @@ watch(
                         href="#"
                         variant="primary"
                         class="w-28 shadow-md"
-                        :disabled="brandForm.validating"
+                        :disabled="brandForm.validating || brandForm.hasErrors"
                     >
                         <Lucide
                             v-if="brandForm.validating"

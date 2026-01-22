@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { convertErrorTypeToAlertListType } from "@/utils/helper";
 import StockAdjustmentCategoryService from "@/services/StockAdjustmentCategoryService";
+import CacheService from "@/services/CacheService";
 import { TwoColumnsLayout } from "@/components/Base/Form/FormLayout";
 import {
     FormInput,
@@ -14,6 +16,7 @@ import { CardState } from "@/types/enums/CardState";
 import Button from "@/components/Base/Button";
 import { ViewMode } from "@/types/enums/ViewMode";
 import Lucide from "@/components/Base/Lucide";
+import { debounce } from "lodash";
 import { useSelectedUserLocationStore } from "@/stores/selected-user-location";
 import { useRoute, useRouter } from "vue-router";
 import type { AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
@@ -25,6 +28,7 @@ const route = useRoute();
 const selectedUserLocationStore = useSelectedUserLocationStore();
 
 const stockAdjustmentCategoryService = new StockAdjustmentCategoryService();
+const cacheServices = new CacheService();
 
 const emits = defineEmits([
     "mode-state",
@@ -118,8 +122,10 @@ const onSubmit = async () => {
         });
 };
 
-const resetForm = () => {
-    getStockAdjustmentCategory();
+const resetForm = async () => {
+    stockAdjustmentCategoryForm.reset();
+    stockAdjustmentCategoryForm.setErrors({});
+    await getStockAdjustmentCategory();
 };
 
 const setCode = () => {
@@ -144,13 +150,13 @@ const showAlertPlaceholder = (
     emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: Error) => {
-    const record: Record<string, Array<string>> = {};
-
-    record.error = [error.message];
-
-    return record;
-};
+watch(
+    stockAdjustmentCategoryForm,
+    debounce((newValue): void => {
+        cacheServices.setLastEntity("STOCK_ADJUSTMENT_CATEGORY_EDIT", newValue.data());
+    }, 500),
+    { deep: true }
+);
 </script>
 
 <template>
@@ -208,7 +214,7 @@ const convertErrorTypeToAlertListType = (error: Error) => {
                         href="#"
                         variant="primary"
                         class="w-28 shadow-md"
-                        :disabled="stockAdjustmentCategoryForm.validating"
+                        :disabled="stockAdjustmentCategoryForm.validating || stockAdjustmentCategoryForm.hasErrors"
                     >
                         <Lucide v-if="stockAdjustmentCategoryForm.validating" icon="Loader" class="animate-spin" />
                         <template v-else>

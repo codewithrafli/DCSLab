@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // #region Imports
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import ProductService from "@/services/ProductService";
 import ProductCategoryService from "@/services/ProductCategoryService";
@@ -31,8 +31,7 @@ import { useRoute, useRouter } from "vue-router";
 import { type AlertPlaceholderProps } from "@/components/AlertPlaceholder/AlertPlaceholder.vue";
 import { ErrorCode } from "@/types/enums/ErrorCode";
 import { DropDownOption } from "@/types/models/DropDownOption";
-import { formatCurrency } from "@/utils/helper";
-import { AxiosError, isAxiosError } from "axios";
+import { formatCurrency, convertErrorTypeToAlertListType } from "@/utils/helper";
 // #endregion
 
 // #region Declarations
@@ -264,8 +263,10 @@ const onSubmit = async () => {
         });
 };
 
-const resetForm = () => {
-    getProduct();
+const resetForm = async () => {
+  productForm.reset();
+  productForm.setErrors({});
+  await getProduct();
 };
 
 const setCode = () => {
@@ -347,45 +348,16 @@ const showAlertPlaceholder = (
     emits("show-alertplaceholder", ap);
 };
 
-const convertErrorTypeToAlertListType = (error: unknown) => {
-    const record: Record<string, Array<string>> = {};
+// #endregion
 
-    const anyError = error as any;
-    const response = isAxiosError(error)
-        ? (error as AxiosError).response
-        : anyError?.response;
-
-    if (response && response.data) {
-        const data = response.data as any;
-
-        if (data.errors && typeof data.errors === "object") {
-            for (const key of Object.keys(data.errors)) {
-                const value = data.errors[key];
-
-                if (Array.isArray(value)) {
-                    record[key] = value;
-                } else if (value !== undefined && value !== null) {
-                    record[key] = [String(value)];
-                }
-            }
-
-            return record;
-        }
-
-        if (data.message) {
-            record.error = [String(data.message)];
-            return record;
-        }
-    }
-
-    if (error instanceof Error && error.message) {
-        record.error = [error.message];
-    } else {
-        record.error = ["Unknown error"];
-    }
-
-    return record;
-};
+// #region Watchers
+watch(
+    productForm,
+    debounce((newValue): void => {
+        cacheServices.setLastEntity("PRODUCT_EDIT", newValue.data());
+    }, 500),
+    { deep: true }
+);
 // #endregion
 
 </script>
